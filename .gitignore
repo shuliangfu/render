@@ -1,0 +1,35 @@
+# Deno 相关
+.deno/
+deno.lock
+
+# Bun 相关
+bun.lock
+bun.lockb
+package.json
+.npmrc
+
+# 依赖
+node_modules/
+
+# 构建输出
+dist/
+build/
+out/
+
+# 环境变量
+.env
+.env.local
+
+# IDE
+.vscode/
+.cursor/
+.idea/
+
+# 系统文件
+.DS_Store
+
+# 测试数据
+tests/data/
+
+
+docs/

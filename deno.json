@@ -1,0 +1,53 @@
+{
+  "name": "@dreamer/render",
+  "version": "1.0.0-beta.1",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/mod.ts"
+  },
+  "publish": {
+    "include": [
+      "src/**/*.ts",
+      "LICENSE.md",
+      "README.md",
+      "TEST_REPORT.md"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      "**/test/**",
+      "**/tests/**"
+    ]
+  },
+  "lint": {
+    "include": [
+      "src/"
+    ],
+    "rules": {
+      "tags": [
+        "recommended"
+      ],
+      "exclude": [
+        "no-explicit-any"
+      ]
+    }
+  },
+  "imports": {
+    "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@1.0.0-beta.16",
+    "@dreamer/test": "jsr:@dreamer/test@^1.0.0-beta.12",
+    "react": "npm:react@^18.3.1",
+    "react-dom/server": "npm:react-dom@^18.3.1/server",
+    "react-dom/client": "npm:react-dom@^18.3.1/client",
+    "preact": "npm:preact@^10.28.1",
+    "preact-render-to-string": "npm:preact-render-to-string@^6.2.0",
+    "vue": "npm:vue@^3.4.27",
+    "@vue/server-renderer": "npm:@vue/server-renderer@^3.4.27"
+  },
+  "nodeModulesDir": "auto",
+  "compilerOptions": {
+    "lib": [
+      "deno.window",
+      "dom"
+    ]
+  }
+}
