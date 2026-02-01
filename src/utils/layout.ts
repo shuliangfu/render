@@ -7,10 +7,15 @@
 import type { LayoutComponent } from "../types.ts";
 
 /**
- * 检查组件是否导出了 layout = false
+ * 检查组件是否导出了 inheritLayout = false
+ *
+ * 用于跳过布局继承，页面组件可以导出：
+ * ```typescript
+ * export const inheritLayout = false;
+ * ```
  *
  * @param component 组件
- * @returns 如果组件导出了 layout = false，返回 true
+ * @returns 如果组件导出了 inheritLayout = false，返回 true
  */
 export function shouldSkipLayouts(component: unknown): boolean {
   // 支持函数组件和对象组件
@@ -20,18 +25,18 @@ export function shouldSkipLayouts(component: unknown): boolean {
 
   const comp = component as Record<string, unknown>;
 
-  // 检查是否有 layout 导出（支持函数组件和对象组件）
-  if ("layout" in comp && comp.layout === false) {
+  // 检查是否有 inheritLayout 导出（支持函数组件和对象组件）
+  if ("inheritLayout" in comp && comp.inheritLayout === false) {
     return true;
   }
 
-  // 检查 default export 的对象是否有 layout 属性
+  // 检查 default export 的对象是否有 inheritLayout 属性
   if (
     "default" in comp && typeof comp.default === "object" &&
     comp.default !== null
   ) {
     const defaultComp = comp.default as Record<string, unknown>;
-    if ("layout" in defaultComp && defaultComp.layout === false) {
+    if ("inheritLayout" in defaultComp && defaultComp.inheritLayout === false) {
       return true;
     }
   }

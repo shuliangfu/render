@@ -1,17 +1,13 @@
 /**
- * @dreamer/render 主模块测试
+ * @dreamer/render 主模块测试（服务端）
+ *
+ * 注意：客户端渲染（CSR）和 Hydration 测试已移至 client.test.ts
  */
 
 import { assertRejects, describe, expect, it } from "@dreamer/test";
-import {
-  type Engine,
-  hydrate,
-  renderCSR,
-  renderSSG,
-  renderSSR,
-} from "../src/mod.ts";
+import { type Engine, renderSSG, renderSSR } from "../src/mod.ts";
 
-describe("@dreamer/render", () => {
+describe("@dreamer/render（服务端）", () => {
   describe("类型导出", () => {
     it("应该导出 Engine 类型", () => {
       const engine: Engine = "react";
@@ -46,55 +42,6 @@ describe("@dreamer/render", () => {
           }),
         Error,
       );
-    });
-  });
-
-  describe("renderCSR", () => {
-    it("应该在非浏览器环境抛出错误", async () => {
-      // 在 Bun 中，虽然 globalThis.document 是 undefined，但 React 的 createRoot 可能仍然被调用
-      // 导致抛出不同的错误消息，所以我们需要更宽松的检查
-      try {
-        await renderCSR({
-          engine: "react",
-          component: () => null,
-          container: "#app",
-        });
-        // 如果没有抛出错误，测试失败
-        throw new Error("期望抛出错误，但没有抛出");
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : String(error);
-        // 检查是否包含预期的错误消息（可能是环境检查错误或 React 的错误）
-        if (!msg.includes("CSR 渲染只能在浏览器环境中运行") &&
-            !msg.includes("容器元素未找到") &&
-            !msg.includes("Target container")) {
-          throw new Error(`期望错误消息包含 "CSR 渲染只能在浏览器环境中运行"、"容器元素未找到" 或 "Target container"，实际消息: ${msg}`);
-        }
-      }
-    });
-  });
-
-  describe("hydrate", () => {
-    it("应该在非浏览器环境抛出错误", async () => {
-      // 在 Bun 中，虽然 globalThis.document 是 undefined，但 React 的 hydrateRoot 可能仍然被调用
-      // 导致抛出不同的错误消息，所以我们需要更宽松的检查
-      try {
-        hydrate({
-          engine: "react",
-          component: () => null,
-          container: "#app",
-        });
-        // 如果没有抛出错误，测试失败
-        throw new Error("期望抛出错误，但没有抛出");
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : String(error);
-        // 检查是否包含预期的错误消息（可能是环境检查错误或 React 的错误）
-        if (!msg.includes("水合") &&
-            !msg.includes("浏览器环境") &&
-            !msg.includes("DOM element") &&
-            !msg.includes("Target container")) {
-          throw new Error(`期望错误消息包含 "水合"、"浏览器环境"、"DOM element" 或 "Target container"，实际消息: ${msg}`);
-        }
-      }
     });
   });
 

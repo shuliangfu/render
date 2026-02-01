@@ -114,7 +114,7 @@ export interface ErrorHandler {
   onError?: (error: Error, context: {
     engine: Engine;
     component: unknown;
-    phase: "ssr" | "csr" | "hydrate";
+    phase: "ssr";
   }) => void | Promise<void>;
   /** 错误降级组件（用于 SSR 错误时显示） */
   fallbackComponent?: unknown;
@@ -145,7 +145,7 @@ export interface PerformanceMetrics {
   /** 引擎类型 */
   engine: Engine;
   /** 渲染阶段 */
-  phase: "ssr" | "csr" | "hydrate";
+  phase: "ssr";
   /** 其他指标 */
   [key: string]: unknown;
 }
@@ -202,7 +202,7 @@ export interface SSROptions {
   props?: Record<string, unknown>;
   /** 布局组件列表（从外到内，支持多层嵌套） */
   layouts?: LayoutComponent[];
-  /** 是否跳过所有布局（如果组件导出了 layout = false） */
+  /** 是否跳过所有布局（如果组件导出了 inheritLayout = false） */
   skipLayouts?: boolean;
   /** HTML 模板（可选，用于包装渲染结果） */
   template?: string;
@@ -235,61 +235,7 @@ export interface SSROptions {
   options?: Record<string, unknown>;
 }
 
-/**
- * 客户端渲染选项
- */
-export interface CSROptions {
-  /** 模板引擎类型 */
-  engine: Engine;
-  /** 组件（React/Preact 组件或 Vue3 组件） */
-  component: unknown;
-  /** 组件属性 */
-  props?: Record<string, unknown>;
-  /** 布局组件列表（从外到内，支持多层嵌套） */
-  layouts?: LayoutComponent[];
-  /** 是否跳过所有布局（如果组件导出了 layout = false） */
-  skipLayouts?: boolean;
-  /** 挂载容器（DOM 元素或选择器） */
-  container: string | HTMLElement;
-  /** Load Context（用于传递给组件的 metadata 函数） */
-  loadContext?: LoadContext;
-  /** 错误处理选项 */
-  errorHandler?: ErrorHandler;
-  /** 性能监控选项 */
-  performance?: PerformanceOptions;
-  /** Context API 数据（动态设置元数据和数据） */
-  contextData?: ContextData;
-  /** 自定义渲染选项（模板引擎特定） */
-  options?: Record<string, unknown>;
-}
-
-/**
- * 水合选项
- */
-export interface HydrationOptions {
-  /** 模板引擎类型 */
-  engine: Engine;
-  /** 组件（React/Preact 组件或 Vue3 组件） */
-  component: unknown;
-  /** 组件属性 */
-  props?: Record<string, unknown>;
-  /** 布局组件列表（从外到内，支持多层嵌套） */
-  layouts?: LayoutComponent[];
-  /** 是否跳过所有布局（如果组件导出了 layout = false） */
-  skipLayouts?: boolean;
-  /** 挂载容器（DOM 元素或选择器） */
-  container: string | HTMLElement;
-  /** 是否启用严格模式（仅 React） */
-  strictMode?: boolean;
-  /** 错误处理选项 */
-  errorHandler?: ErrorHandler;
-  /** 性能监控选项 */
-  performance?: PerformanceOptions;
-  /** Context API 数据（动态设置元数据和数据） */
-  contextData?: ContextData;
-  /** 自定义水合选项（模板引擎特定） */
-  options?: Record<string, unknown>;
-}
+// 注意：CSROptions、HydrationOptions、CSRRenderResult 已移至 @dreamer/render/client
 
 /**
  * 静态站点生成选项
@@ -347,14 +293,4 @@ export interface RenderResult {
   originalSize?: number;
 }
 
-/**
- * CSR 渲染结果（包含清理函数）
- */
-export interface CSRRenderResult {
-  /** 卸载函数，用于清理渲染的内容 */
-  unmount: () => void;
-  /** 更新函数，用于更新组件属性（如果支持） */
-  update?: (props: Record<string, unknown>) => void;
-  /** 渲染实例（模板引擎特定，用于高级操作） */
-  instance?: unknown;
-}
+// 注意：CSRRenderResult 已移至 @dreamer/render/client

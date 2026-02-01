@@ -102,7 +102,7 @@ describe("Preact 适配器", () => {
       const Layout = ({ children }: any) =>
         h("div", null, "Layout: ", children);
       const Page = () => h("div", null, "Page");
-      Page.layout = false;
+      Page.inheritLayout = false;
 
       const result = await preactAdapter.renderSSR({
         engine: "preact",

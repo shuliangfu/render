@@ -19,7 +19,7 @@ export async function handleRenderError(
   context: {
     engine: Engine;
     component: unknown;
-    phase: "ssr" | "csr" | "hydrate";
+    phase: "ssr";
   },
   errorHandler?: ErrorHandler,
 ): Promise<boolean> {
@@ -47,22 +47,6 @@ export async function handleRenderError(
 }
 
 /**
- * 创建错误边界包装组件（React）
- *
- * @param component 原始组件
- * @param fallbackComponent 降级组件
- * @returns 包装后的组件
- */
-export function createErrorBoundary(
-  component: unknown,
-  fallbackComponent?: unknown,
-): unknown {
-  // 这是一个占位函数，实际的错误边界应该在适配器中实现
-  // React 使用 ErrorBoundary，Preact 和 Vue3 使用各自的错误处理机制
-  return component;
-}
-
-/**
  * 生成错误降级 HTML
  *
  * @param error 错误对象
@@ -83,7 +67,9 @@ export function generateErrorHTML(
     <div style="padding: 20px; font-family: sans-serif;">
       <h1>渲染错误</h1>
       <p>${error.message}</p>
-      <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">${error.stack || ""}</pre>
+      <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">${
+    error.stack || ""
+  }</pre>
     </div>
   `;
 }

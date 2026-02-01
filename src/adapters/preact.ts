@@ -1,26 +1,22 @@
 /**
- * Preact 渲染适配器
+ * Preact 服务端渲染适配器
  *
- * 提供 Preact 模板引擎的 SSR、CSR 和 Hydration 功能
+ * 仅提供 Preact 模板引擎的 SSR 功能
  * 支持流式渲染、错误处理、性能监控等所有功能
+ *
+ * 注意：客户端渲染（CSR）和 Hydration 已移至 @dreamer/render/client
  */
 
-import { createElement, render } from "preact";
+import { createElement } from "preact";
 import { renderToString } from "preact-render-to-string";
-import type {
-  CSROptions,
-  CSRRenderResult,
-  HydrationOptions,
-  RenderResult,
-  SSROptions,
-} from "../types.ts";
+import type { RenderResult, SSROptions } from "../types.ts";
 import { handleRenderError } from "../utils/error-handler.ts";
+import { injectComponentHtml } from "../utils/html-inject.ts";
 import {
   composeLayouts,
   createComponentTree,
   shouldSkipLayouts,
 } from "../utils/layout.ts";
-import { injectComponentHtml } from "../utils/html-inject.ts";
 import {
   createPerformanceMonitor,
   recordPerformanceMetrics,
@@ -101,7 +97,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   }
 
   try {
-    // 检查组件是否导出了 layout = false
+    // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
     // 组合布局和组件
@@ -174,162 +170,5 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
 
     throw error;
-  }
-}
-
-/**
- * Preact 客户端渲染
- *
- * @param options CSR 选项
- * @returns 渲染结果，包含卸载函数
- */
-export function renderCSR(options: CSROptions): CSRRenderResult {
-  const {
-    component,
-    props = {},
-    layouts,
-    skipLayouts,
-    container,
-    errorHandler,
-    performance: perfOptions,
-  } = options;
-
-  // 性能监控
-  const perfMonitor = createPerformanceMonitor(perfOptions);
-  if (perfMonitor) {
-    perfMonitor.start("preact", "csr");
-  }
-
-  try {
-    // 获取容器元素
-    const containerElement = typeof container === "string"
-      ? document.querySelector(container) as HTMLElement
-      : container;
-
-    if (!containerElement) {
-      throw new Error(`容器元素未找到: ${container}`);
-    }
-
-    // 清空容器（如果已有内容）
-    containerElement.innerHTML = "";
-
-    // 检查组件是否导出了 layout = false
-    const shouldSkip = skipLayouts || shouldSkipLayouts(component);
-
-    // 组合布局和组件
-    const componentConfig = layouts && layouts.length > 0 && !shouldSkip
-      ? composeLayouts("preact", component, props, layouts, shouldSkip)
-      : { component, props };
-
-    // 创建 Preact 元素树
-    const element = createComponentTree(
-      (comp: unknown, props: unknown, ...children: unknown[]) =>
-        createElement(comp as any, props as any, ...(children as any[])),
-      componentConfig as { component: unknown; props: Record<string, unknown> },
-    ) as any;
-
-    render(element, containerElement);
-
-    // 结束性能监控
-    if (perfMonitor) {
-      const metrics = perfMonitor.end();
-      recordPerformanceMetrics(metrics, perfOptions);
-    }
-
-    // 返回卸载函数和更新函数
-    return {
-      unmount: () => {
-        render(null, containerElement);
-      },
-      update: (newProps: Record<string, unknown>) => {
-        const newElement = createElement(component as any, newProps);
-        render(newElement, containerElement);
-      },
-      instance: containerElement,
-    };
-  } catch (error) {
-    // 处理错误
-    handleRenderError(
-      error,
-      { engine: "preact", component, phase: "csr" },
-      errorHandler,
-    );
-
-    throw new Error(
-      `Preact CSR 渲染失败: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
-  }
-}
-
-/**
- * Preact 水合
- *
- * @param options 水合选项
- */
-export function hydrate(options: HydrationOptions): void {
-  const {
-    component,
-    props = {},
-    layouts,
-    skipLayouts,
-    container,
-    errorHandler,
-    performance: perfOptions,
-  } = options;
-
-  // 性能监控
-  const perfMonitor = createPerformanceMonitor(perfOptions);
-  if (perfMonitor) {
-    perfMonitor.start("preact", "hydrate");
-  }
-
-  try {
-    // 获取容器元素
-    const containerElement = typeof container === "string"
-      ? document.querySelector(container) as HTMLElement
-      : container;
-
-    if (!containerElement) {
-      throw new Error(`容器元素未找到: ${container}`);
-    }
-
-    // 检查组件是否导出了 layout = false
-    const shouldSkip = skipLayouts || shouldSkipLayouts(component);
-
-    // 组合布局和组件
-    const componentConfig = layouts && layouts.length > 0 && !shouldSkip
-      ? composeLayouts("preact", component, props, layouts, shouldSkip)
-      : { component, props };
-
-    // 创建 Preact 元素树
-    const element = createComponentTree(
-      (comp: unknown, props: unknown, ...children: unknown[]) =>
-        createElement(comp as any, props as any, ...(children as any[])),
-      componentConfig as { component: unknown; props: Record<string, unknown> },
-    ) as any;
-
-    // Preact 的水合使用 render，它会自动检测是否需要水合
-    render(element, containerElement);
-
-    // 结束性能监控
-    if (perfMonitor) {
-      const metrics = perfMonitor.end();
-      recordPerformanceMetrics(metrics, perfOptions);
-    }
-  } catch (error) {
-    // 处理错误
-    handleRenderError(
-      error,
-      { engine: "preact", component, phase: "hydrate" },
-      errorHandler,
-    );
-
-    throw new Error(
-      `Preact 水合失败: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
   }
 }

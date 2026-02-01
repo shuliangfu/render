@@ -4,14 +4,20 @@
  * 用于监控渲染性能
  */
 
-import type { Engine, PerformanceMetrics, PerformanceOptions } from "../types.ts";
+import type {
+  Engine,
+  PerformanceMetrics,
+  PerformanceOptions,
+} from "../types.ts";
 
 /**
  * 获取高精度时间戳（兼容 Deno 和 Bun）
  */
 function getNow(): number {
   // 优先使用 performance.now()（浏览器和 Node.js）
-  if (typeof performance !== "undefined" && typeof performance.now === "function") {
+  if (
+    typeof performance !== "undefined" && typeof performance.now === "function"
+  ) {
     return performance.now();
   }
   // 降级到 Date.now()
@@ -28,7 +34,7 @@ export class PerformanceMonitor {
   /**
    * 开始监控
    */
-  start(engine: Engine, phase: "ssr" | "csr" | "hydrate"): void {
+  start(engine: Engine, phase: "ssr"): void {
     this.startTime = getNow();
     this.metrics = {
       engine,

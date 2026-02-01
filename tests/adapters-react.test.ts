@@ -102,7 +102,7 @@ describe("React 适配器", () => {
       const Layout = ({ children }: any) =>
         React.createElement("div", null, "Layout: ", children);
       const Page = () => React.createElement("div", null, "Page");
-      Page.layout = false;
+      Page.inheritLayout = false;
 
       const result = await reactAdapter.renderSSR({
         engine: "react",

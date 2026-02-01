@@ -127,7 +127,7 @@ describe("Vue3 适配器", () => {
           return () => h("div", null, "Page");
         },
       };
-      (Page as any).layout = false;
+      (Page as any).inheritLayout = false;
 
       const result = await vue3Adapter.renderSSR({
         engine: "vue3",

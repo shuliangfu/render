@@ -565,7 +565,7 @@ describe("SSR 全面测试", () => {
     it("应该支持跳过布局", async () => {
       const Layout = ({ children }: any) => `Layout: ${children}`;
       const Page = () => "Page";
-      Page.layout = false;
+      Page.inheritLayout = false;
 
       const result = await renderSSR({
         engine: "react",
