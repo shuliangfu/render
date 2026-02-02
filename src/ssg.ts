@@ -100,6 +100,8 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     generateSitemap: shouldGenerateSitemap = false,
     generateRobots: shouldGenerateRobots = false,
     options: customOptions = {},
+    Vue,
+    renderer,
   } = options;
 
   // 确保输出目录存在
@@ -124,7 +126,8 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       // 使用 SSR 渲染
       // 如果 enableDataInjection 为 true，则注入数据（用于 Hydration）
       // 否则跳过数据注入（纯静态页面）
-      const result = await renderSSR({
+      // deno-lint-ignore no-explicit-any
+      const ssrOptions: any = {
         engine,
         component: componentToRender,
         props: {
@@ -138,21 +141,15 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
           url: route,
           params: {},
         },
-      });
+      };
 
-      // 调试：检查 result.html 的实际值（仅 Vue3）
-      if (engine === "vue3") {
-        console.log("Vue3 SSG Debug - result type:", typeof result);
-        console.log("Vue3 SSG Debug - result.html type:", typeof result.html);
-        console.log(
-          "Vue3 SSG Debug - result.html value:",
-          JSON.stringify(result.html),
-        );
-        console.log(
-          "Vue3 SSG Debug - result.html === '[object Object]':",
-          result.html === "[object Object]",
-        );
+      // Vue 2 SSR 需要额外的参数
+      if (engine === "vue2") {
+        ssrOptions.Vue = Vue;
+        ssrOptions.renderer = renderer;
       }
+
+      const result = await renderSSR(ssrOptions);
 
       // 构建输出文件路径
       // 将路由路径转换为文件路径

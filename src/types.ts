@@ -5,7 +5,7 @@
 /**
  * 支持的模板引擎类型
  */
-export type Engine = "react" | "preact" | "vue3";
+export type Engine = "react" | "preact" | "vue2" | "vue3";
 
 /**
  * 元数据
@@ -263,6 +263,18 @@ export interface SSGOptions {
   generateRobots?: boolean;
   /** 自定义选项 */
   options?: Record<string, unknown>;
+  /**
+   * Vue 2 SSR 专用：Vue 构造函数
+   * 当 engine 为 "vue2" 时必须提供
+   */
+  // deno-lint-ignore no-explicit-any
+  Vue?: any;
+  /**
+   * Vue 2 SSR 专用：服务端渲染器
+   * 当 engine 为 "vue2" 时必须提供，通过 vue-server-renderer 的 createRenderer() 创建
+   */
+  // deno-lint-ignore no-explicit-any
+  renderer?: any;
 }
 
 /**

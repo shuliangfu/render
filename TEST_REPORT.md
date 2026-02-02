@@ -4,11 +4,11 @@
 
 | 项目 | 内容 |
 |------|------|
-| 测试库版本 | @dreamer/render@1.0.0-beta.2 |
-| 运行时适配器 | @dreamer/runtime-adapter@1.0.0-beta.9 |
+| 测试库版本 | @dreamer/render@1.0.0-beta.5 |
+| 运行时适配器 | @dreamer/runtime-adapter@1.0.0-beta.22 |
 | 测试框架 | @dreamer/test@1.0.0-beta.40 |
-| 测试时间 | 2026-02-01 |
-| 测试环境 | Deno 2.6.4 (stable, aarch64-apple-darwin) |
+| 测试时间 | 2026-02-02 |
+| 测试环境 | Deno 2.6.4 / Bun 1.3.5 |
 
 ## 测试结果
 
@@ -16,11 +16,19 @@
 
 | 指标 | 数值 |
 |------|------|
-| 总测试数 | 229 |
-| 通过 | 229 ✅ |
+| 总测试数 | 250 |
+| 通过 | 250 ✅ |
 | 失败 | 0 ❌ |
 | 通过率 | 100% |
-| 执行时间 | 38s |
+| Deno 执行时间 | 38s |
+| Bun 执行时间 | 241ms |
+
+### 运行时兼容性
+
+| 运行时 | 版本 | 测试结果 |
+|--------|------|----------|
+| Deno | 2.6.4 | ✅ 250 passed |
+| Bun | 1.3.5 | ✅ 250 passed |
 
 ### 测试文件统计
 
@@ -28,15 +36,16 @@
 |---------|---------|------|
 | `adapters-preact.test.ts` | 11 | ✅ 全部通过 |
 | `adapters-react.test.ts` | 10 | ✅ 全部通过 |
+| `adapters-vue2.test.ts` | 10 | ✅ 全部通过 |
 | `adapters-vue3.test.ts` | 9 | ✅ 全部通过 |
-| `client-browser.test.ts` | 25 | ✅ 全部通过 |
+| `client-browser.test.ts` | 31 | ✅ 全部通过 |
 | `client-utils.test.ts` | 26 | ✅ 全部通过 |
 | `edge-cases.test.ts` | 13 | ✅ 全部通过 |
 | `layout.test.ts` | 35 | ✅ 全部通过 |
 | `mod.test.ts` | 6 | ✅ 全部通过 |
 | `ssg-advanced.test.ts` | 12 | ✅ 全部通过 |
-| `ssg.test.ts` | 19 | ✅ 全部通过 |
-| `ssr-comprehensive.test.ts` | 31 | ✅ 全部通过 |
+| `ssg.test.ts` | 22 | ✅ 全部通过 |
+| `ssr-comprehensive.test.ts` | 33 | ✅ 全部通过 |
 | `ssr.test.ts` | 10 | ✅ 全部通过 |
 | `utils.test.ts` | 22 | ✅ 全部通过 |
 
@@ -66,7 +75,20 @@
 - ✅ 错误处理
 - ✅ 性能监控
 
-### 3. 服务端适配器 - Vue3 (adapters-vue3.test.ts) - 9 个测试
+### 3. 服务端适配器 - Vue2 (adapters-vue2.test.ts) - 10 个测试
+
+- ✅ SSR 渲染基础功能
+- ✅ 带属性的组件渲染
+- ✅ 使用模板渲染
+- ✅ 布局系统支持
+- ✅ 嵌套布局支持
+- ✅ `inheritLayout = false` 跳过布局
+- ✅ 缺少 Vue 构造函数时抛出错误
+- ✅ 缺少渲染器时抛出错误
+- ✅ 空组件处理
+- ✅ 类型定义验证
+
+### 4. 服务端适配器 - Vue3 (adapters-vue3.test.ts) - 9 个测试
 
 - ✅ SSR 渲染基础功能
 - ✅ 带属性的组件渲染
@@ -77,7 +99,7 @@
 - ✅ 错误处理
 - ✅ 性能监控
 
-### 4. 客户端浏览器测试 (client-browser.test.ts) - 25 个测试
+### 5. 客户端浏览器测试 (client-browser.test.ts) - 31 个测试
 
 #### 通用测试
 - ✅ 导出所有必要的函数
@@ -103,15 +125,23 @@
 - ✅ CSR 返回性能指标
 - ✅ 非浏览器环境检测
 
+#### Vue2 适配器
+- ✅ 容器不存在时抛出错误（CSR）
+- ✅ 性能监控支持
+- ✅ Hydration 容器不存在时抛出错误
+- ✅ 性能监控器引擎信息记录
+- ✅ 非浏览器环境检测
+
 #### Vue3 适配器
 - ✅ 容器不存在时抛出错误（CSR）
 - ✅ 性能监控支持
 - ✅ Hydration 容器不存在时抛出错误
 - ✅ 支持卸载组件
+- ✅ 支持 update 函数
 - ✅ CSR 返回性能指标
 - ✅ 非浏览器环境检测
 
-### 5. 客户端工具函数 (client-utils.test.ts) - 26 个测试
+### 6. 客户端工具函数 (client-utils.test.ts) - 26 个测试
 
 #### 布局工具 (layout)
 - ✅ `shouldSkipLayouts` - `inheritLayout = false` 检测
@@ -145,7 +175,7 @@
 - ✅ `handleRenderError` 支持异步回调
 - ✅ `handleRenderError` logError 选项控制
 
-### 6. 边界情况测试 (edge-cases.test.ts) - 13 个测试
+### 7. 边界情况测试 (edge-cases.test.ts) - 13 个测试
 
 - ✅ 大量数据处理（load 方法）
 - ✅ 大量元数据处理
@@ -161,7 +191,7 @@
 - ✅ 空字符串和 null 处理
 - ✅ 超长字符串处理
 
-### 7. 布局继承测试 (layout.test.ts) - 35 个测试
+### 8. 布局继承测试 (layout.test.ts) - 35 个测试
 
 #### 服务端 shouldSkipLayouts
 - ✅ 组件直接导出 `inheritLayout = false` 返回 true
@@ -216,7 +246,7 @@
 - ✅ 页面组件 `inheritLayout = false` 完全跳过布局
 - ✅ 三层嵌套布局正确渲染
 
-### 8. 主模块测试 (mod.test.ts) - 6 个测试
+### 9. 主模块测试 (mod.test.ts) - 6 个测试
 
 - ✅ 导出 renderSSR 函数
 - ✅ 导出 renderSSG 函数
@@ -225,7 +255,7 @@
 - ✅ 导出所有类型定义
 - ✅ 导出工具函数
 
-### 9. SSG 高级测试 (ssg-advanced.test.ts) - 12 个测试
+### 10. SSG 高级测试 (ssg-advanced.test.ts) - 12 个测试
 
 - ✅ 自定义模板支持
 - ✅ 模板占位符替换
@@ -240,15 +270,18 @@
 - ✅ 动态路由展开
 - ✅ 元数据注入
 
-### 10. SSG 基础测试 (ssg.test.ts) - 19 个测试
+### 11. SSG 基础测试 (ssg.test.ts) - 22 个测试
 
 - ✅ React SSG 生成
 - ✅ Preact SSG 生成
+- ✅ Vue2 SSG 生成
 - ✅ Vue3 SSG 生成
+- ✅ Vue2 Sitemap 和 Robots 生成
+- ✅ Vue2 路由数据处理
 - ✅ 多路由生成
 - ✅ 动态路由展开
-- ✅ Sitemap 生成
-- ✅ Robots.txt 生成
+- ✅ Sitemap 生成（React/Preact/Vue3）
+- ✅ Robots.txt 生成（React/Preact/Vue3）
 - ✅ 自定义基础 URL
 - ✅ 元数据支持
 - ✅ 布局支持
@@ -257,12 +290,14 @@
 - ✅ 路由参数传递
 - ✅ 自定义输出路径
 
-### 11. SSR 全面测试 (ssr-comprehensive.test.ts) - 31 个测试
+### 12. SSR 全面测试 (ssr-comprehensive.test.ts) - 33 个测试
 
 #### 基础渲染
 - ✅ React SSR 渲染
 - ✅ Preact SSR 渲染
+- ✅ Vue2 SSR 渲染（通过适配器）
 - ✅ Vue3 SSR 渲染
+- ✅ Vue2 缺少构造函数时抛出错误
 - ✅ 组件属性传递
 - ✅ HTML 模板支持
 
@@ -303,7 +338,7 @@
 - ✅ 元数据缓存
 - ✅ 缓存键生成
 
-### 12. SSR 基础测试 (ssr.test.ts) - 10 个测试
+### 13. SSR 基础测试 (ssr.test.ts) - 10 个测试
 
 - ✅ React SSR 渲染
 - ✅ Preact SSR 渲染
@@ -316,7 +351,7 @@
 - ✅ 元数据支持
 - ✅ 布局支持
 
-### 13. 工具函数测试 (utils.test.ts) - 22 个测试
+### 14. 工具函数测试 (utils.test.ts) - 22 个测试
 
 #### 元数据工具
 - ✅ 静态元数据提取
@@ -402,31 +437,34 @@
 |------|-----|-----|-----------|-----|
 | React | ✅ | ✅ | ✅ | ✅ |
 | Preact | ✅ | ✅ | ✅ | ✅ |
+| Vue2 (2.7+) | ✅ | ✅ | ✅ | ✅ |
 | Vue3 | ✅ | ✅ | ✅ | ✅ |
 
 ## 优点
 
 1. **完整的渲染模式支持**：SSR、CSR、Hydration、SSG 全覆盖
-2. **多引擎支持**：React、Preact、Vue3 三引擎统一 API
+2. **四引擎支持**：React、Preact、Vue2（2.7+）、Vue3 统一 API
 3. **布局系统完善**：支持多层嵌套、条件跳过、属性过滤
 4. **客户端功能完整**：错误处理、性能监控、卸载/更新
 5. **类型安全**：完整的 TypeScript 类型定义
 6. **服务端客户端分离**：`@dreamer/render` (服务端) 和 `@dreamer/render/client` (客户端)
+7. **跨运行时兼容**：Deno 和 Bun 全面支持
 
 ## 结论
 
-`@dreamer/render` 库的所有功能均已通过全面测试，测试覆盖率达到 100%。所有 229 个测试用例均能正常通过，代码质量良好，可以安全使用。
+`@dreamer/render` 库的所有功能均已通过全面测试，测试覆盖率达到 100%。所有 250 个测试用例均能在 Deno 和 Bun 运行时正常通过，代码质量良好，可以安全使用。
 
 本次更新重点：
-- 新增客户端渲染模块 (`@dreamer/render/client`)
-- 新增错误处理和性能监控功能
-- 将 `layout = false` 改为 `inheritLayout = false`
-- 增加 51 个客户端相关测试
-- 增加 35 个布局继承专项测试
+- 新增 Vue2（2.7+）支持（服务端 SSR/SSG 和客户端 CSR/Hydration）
+- 新增 Vue2 适配器测试（10 个）
+- 新增 Vue2 浏览器测试（5 个）
+- 新增 Vue2 SSG 测试（3 个）
+- 新增 Vue3 update 功能测试
+- 总测试数从 229 增加到 250
 
 ---
 
-**报告生成时间**: 2026-02-01
-**测试执行环境**: Deno 2.6.4 (stable, aarch64-apple-darwin)
+**报告生成时间**: 2026-02-02
+**测试执行环境**: Deno 2.6.4 / Bun 1.3.5
 **测试框架**: @dreamer/test@1.0.0-beta.40
-**库版本**: @dreamer/render@1.0.0-beta.2
+**库版本**: @dreamer/render@1.0.0-beta.3

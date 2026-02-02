@@ -1,10 +1,10 @@
 # @dreamer/render
 
-> 一个专注于渲染逻辑的库，提供 SSR、CSR、Hydration 和 SSG 功能，支持 React、Preact 和 Vue3 三个模板引擎
+> 一个专注于渲染逻辑的库，提供 SSR、CSR、Hydration 和 SSG 功能，支持 React、Preact、Vue2（2.7+）和 Vue3 四个模板引擎
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
-[![Tests](https://img.shields.io/badge/tests-229%20passed-brightgreen)](./TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-250%20passed-brightgreen)](./TEST_REPORT.md)
 
 ---
 
@@ -39,8 +39,9 @@ bunx jsr add @dreamer/render
 | **浏览器** | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration） |
 | **React** | 18+ | ✅ 完全支持 |
 | **Preact** | 10+ | ✅ 完全支持 |
+| **Vue2** | 2.7+ | ✅ 完全支持（需提供 Vue 构造函数） |
 | **Vue3** | 3.4+ | ✅ 完全支持 |
-| **依赖** | - | 📦 需要对应的模板引擎包（React、Preact、Vue3） |
+| **依赖** | - | 📦 需要对应的模板引擎包（React、Preact、Vue2、Vue3） |
 
 ---
 
@@ -49,6 +50,7 @@ bunx jsr add @dreamer/render
 - **多模板引擎支持**：
   - React 18+ 支持
   - Preact 10+ 支持
+  - Vue2 2.7+ 支持（需提供 Vue 构造函数和渲染器）
   - Vue3 3.4+ 支持
   - 统一的渲染接口
 - **服务端渲染（SSR）**：
@@ -209,6 +211,36 @@ const result = hydrate({
 // 后续可以更新或卸载
 // result.update({ name: "Deno" });
 // result.unmount();
+```
+
+### Vue2 服务端渲染（SSR）
+
+```typescript
+import { renderSSR } from "jsr:@dreamer/render";
+// Vue 2.7+ 需要手动提供 Vue 构造函数和渲染器
+import Vue from "vue";
+import { createRenderer } from "vue-server-renderer";
+
+// 创建渲染器
+const renderer = createRenderer();
+
+// 定义组件
+const App = {
+  props: ["name"],
+  template: `<div>Hello, {{ name }}!</div>`,
+};
+
+// 渲染为 HTML
+const result = await renderSSR({
+  engine: "vue2",
+  component: App,
+  props: { name: "World" },
+  Vue, // 必须提供 Vue 构造函数
+  renderer, // 必须提供渲染器
+  template: "<html><body><!--ssr-outlet--></body></html>",
+});
+
+console.log(result.html);
 ```
 
 ### 静态站点生成（SSG）
@@ -395,7 +427,7 @@ const result = await renderSSR({
 
 | 参数 | 类型 | 必需 | 说明 |
 |------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型（"react" \| "preact" \| "vue3"） |
+| `engine` | `Engine` | ✅ | 模板引擎类型（"react" \| "preact" \| "vue2" \| "vue3"） |
 | `component` | `unknown` | ✅ | 组件（React/Preact 组件或 Vue3 组件） |
 | `props` | `Record<string, unknown>` | ❌ | 组件属性 |
 | `layouts` | `LayoutComponent[]` | ❌ | 布局组件列表（从外到内） |
@@ -507,8 +539,10 @@ const routes = expandDynamicRoute("/user/[id]", ["1", "2", "3"]);
 支持的模板引擎类型：
 
 ```typescript
-type Engine = "react" | "preact" | "vue3";
+type Engine = "react" | "preact" | "vue2" | "vue3";
 ```
+
+> **注意**：使用 `vue2` 引擎时，SSR 需要额外提供 `Vue` 构造函数和 `renderer`（通过 `vue-server-renderer` 创建）。
 
 #### `Metadata`
 
@@ -658,11 +692,16 @@ interface PerformanceMetrics {
 
 | 指标 | 数值 |
 |------|------|
-| 测试时间 | 2026-02-01 |
-| 总测试数 | 229 |
-| 通过 | 229 ✅ |
+| 测试时间 | 2026-02-02 |
+| 总测试数 | 250 |
+| 通过 | 250 ✅ |
 | 失败 | 0 ❌ |
 | 通过率 | 100% |
+
+| 运行时 | 版本 | 测试结果 |
+|--------|------|----------|
+| Deno | 2.6.4 | ✅ 250 passed |
+| Bun | 1.3.5 | ✅ 250 passed |
 
 详细测试报告请查看 [TEST_REPORT.md](./TEST_REPORT.md)
 
@@ -672,7 +711,8 @@ interface PerformanceMetrics {
 
 - **服务端和客户端分离**：通过 `/client` 子路径明确区分服务端和客户端代码
 - **统一接口**：服务端和客户端使用相同的 API 接口，降低学习成本
-- **多模板引擎支持**：支持 React、Preact 和 Vue3，根据项目需求选择
+- **多模板引擎支持**：支持 React、Preact、Vue2（2.7+）和 Vue3，根据项目需求选择
+- **Vue2 特殊要求**：Vue2 SSR 需要额外提供 `Vue` 构造函数和 `renderer`（通过 `vue-server-renderer` 创建）
 - **类型安全**：完整的 TypeScript 类型支持
 - **组件导出约定**：组件可以导出 `metadata`、`load`、`scripts`、`inheritLayout` 等属性
 - **元数据合并策略**：采用深度合并策略，页面的元数据会覆盖布局的元数据

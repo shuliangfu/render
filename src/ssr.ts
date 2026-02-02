@@ -4,6 +4,7 @@
 
 import * as preactAdapter from "./adapters/preact.ts";
 import * as reactAdapter from "./adapters/react.ts";
+import * as vue2Adapter from "./adapters/vue2.ts";
 import * as vue3Adapter from "./adapters/vue3.ts";
 import type {
   LoadContext,
@@ -201,6 +202,19 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         result = await preactAdapter.renderSSR(options);
         break;
       }
+      case "vue2": {
+        // Vue 2 SSR 需要额外的参数，检查是否提供
+        const vue2Options = options as vue2Adapter.Vue2SSROptions;
+        if (!vue2Options.Vue || !vue2Options.renderer) {
+          throw new Error(
+            "Vue 2 SSR 需要提供 Vue 构造函数和 renderer。" +
+              "请在 options 中添加 Vue 和 renderer 参数，" +
+              "或直接使用 vue2.renderSSR() 适配器。",
+          );
+        }
+        result = await vue2Adapter.renderSSR(vue2Options);
+        break;
+      }
       case "vue3": {
         result = await vue3Adapter.renderSSR(options);
         // 调试：检查 Vue3 返回的 result.html
@@ -245,6 +259,11 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
           }
           case "preact": {
             result = await preactAdapter.renderSSR(fallbackOptions);
+            break;
+          }
+          case "vue2": {
+            const vue2Options = fallbackOptions as vue2Adapter.Vue2SSROptions;
+            result = await vue2Adapter.renderSSR(vue2Options);
             break;
           }
           case "vue3": {

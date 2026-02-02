@@ -16,12 +16,19 @@ describe("renderSSG", () => {
   const reactOutputDir = "./tests/data/test-ssg-react-output";
   const preactOutputDir = "./tests/data/test-ssg-preact-output";
   const vue3OutputDir = "./tests/data/test-ssg-vue3-output";
+  const vue2OutputDir = "./tests/data/test-ssg-vue2-output";
 
   // 清理测试输出目录（测试前清理，测试后保留输出文件供查看）
   const cleanup = async (dir?: string) => {
     const dirs = dir
       ? [dir]
-      : [testOutputDir, reactOutputDir, preactOutputDir, vue3OutputDir];
+      : [
+        testOutputDir,
+        reactOutputDir,
+        preactOutputDir,
+        vue3OutputDir,
+        vue2OutputDir,
+      ];
     for (const d of dirs) {
       try {
         await remove(d, { recursive: true });
@@ -128,6 +135,125 @@ describe("renderSSG", () => {
       expect(indexContent).toContain("Hello, Vue3 SSG!");
 
       // 测试结束后保留输出文件供查看，不清理
+    });
+  });
+
+  describe("Vue2 SSG", () => {
+    /**
+     * 创建模拟的 Vue 2 构造函数
+     */
+    function createMockVue() {
+      // deno-lint-ignore no-explicit-any
+      return class MockVue {
+        $mount() {
+          return this;
+        }
+        $destroy() {}
+        // deno-lint-ignore no-explicit-any
+        constructor(_options: any) {}
+      } as any;
+    }
+
+    /**
+     * 创建模拟的 Vue 2 渲染器
+     */
+    function createMockRenderer(html: string) {
+      return {
+        renderToString: async () => html,
+      };
+    }
+
+    it("应该能够生成静态 HTML 文件", async () => {
+      await cleanup(vue2OutputDir);
+
+      const Component = {
+        props: ["route"],
+        template: "<div>Hello, Vue2 SSG!</div>",
+      };
+
+      const MockVue = createMockVue();
+      const mockRenderer = createMockRenderer("<div>Hello, Vue2 SSG!</div>");
+
+      const files = await renderSSG({
+        engine: "vue2",
+        routes: ["/", "/about"],
+        outputDir: vue2OutputDir,
+        loadRouteComponent: async (_route) => {
+          return Component;
+        },
+        Vue: MockVue,
+        renderer: mockRenderer,
+      });
+
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.some((f) => f.includes("index.html"))).toBe(true);
+      expect(files.some((f) => f.includes("about.html"))).toBe(true);
+
+      // 验证文件内容
+      const indexContent = await readTextFile(
+        join(vue2OutputDir, "index.html"),
+      );
+      expect(indexContent).toContain("Hello, Vue2 SSG!");
+
+      // 测试结束后保留输出文件供查看，不清理
+    });
+
+    it("应该能够生成 sitemap.xml 和 robots.txt", async () => {
+      await cleanup(vue2OutputDir);
+
+      const Component = { template: "<div>Content</div>" };
+      const MockVue = createMockVue();
+      const mockRenderer = createMockRenderer("<div>Content</div>");
+
+      const files = await renderSSG({
+        engine: "vue2",
+        routes: ["/", "/about"],
+        outputDir: vue2OutputDir,
+        loadRouteComponent: async () => Component,
+        Vue: MockVue,
+        renderer: mockRenderer,
+        generateSitemap: true,
+        generateRobots: true,
+      });
+
+      expect(files.some((f) => f.includes("sitemap.xml"))).toBe(true);
+      expect(files.some((f) => f.includes("robots.txt"))).toBe(true);
+
+      const sitemapContent = await readTextFile(
+        join(vue2OutputDir, "sitemap.xml"),
+      );
+      expect(sitemapContent).toContain("<?xml");
+
+      const robotsContent = await readTextFile(
+        join(vue2OutputDir, "robots.txt"),
+      );
+      expect(robotsContent).toContain("User-agent");
+    });
+
+    it("应该能够处理路由数据", async () => {
+      await cleanup(vue2OutputDir);
+
+      const Component = {
+        props: ["route", "data"],
+        template: "<div>Title: {{ data?.title || 'Default' }}</div>",
+      };
+      const MockVue = createMockVue();
+      const mockRenderer = createMockRenderer("<div>Title: Vue2 Title</div>");
+
+      const files = await renderSSG({
+        engine: "vue2",
+        routes: ["/"],
+        outputDir: vue2OutputDir,
+        loadRouteComponent: async () => Component,
+        loadRouteData: async (_route) => {
+          return { data: { title: "Vue2 Title" } };
+        },
+        Vue: MockVue,
+        renderer: mockRenderer,
+      });
+
+      const content = await readTextFile(join(vue2OutputDir, "index.html"));
+      expect(content).toContain("Vue2 Title");
     });
   });
 
