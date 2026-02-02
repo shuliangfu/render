@@ -1,10 +1,14 @@
 {
   "name": "@dreamer/render",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-beta.7",
   "license": "MIT",
   "exports": {
     ".": "./src/mod.ts",
-    "./client": "./src/client/mod.ts"
+    "./client": "./src/client/mod.ts",
+    "./client/adapters/preact": "./src/client/adapters/preact.ts",
+    "./client/adapters/react": "./src/client/adapters/react.ts",
+    "./client/adapters/vue3": "./src/client/adapters/vue3.ts",
+    "./client/adapters/vue2": "./src/client/adapters/vue2.ts"
   },
   "publish": {
     "include": [
