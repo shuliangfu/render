@@ -24,6 +24,44 @@ import {
 } from "../utils/performance.ts";
 
 /**
+ * 容器到 Vue 2 实例的缓存映射
+ * 使用 WeakMap 避免内存泄漏（当容器被移除时，缓存自动清理）
+ */
+const vmCache = new WeakMap<HTMLElement, Vue2Instance>();
+
+/**
+ * 清理容器中缓存的 Vue 2 实例
+ * 如果容器已有缓存的实例，先销毁避免内存泄漏
+ *
+ * @param container 容器元素
+ */
+function cleanupCachedVm(container: HTMLElement): void {
+  const cachedVm = vmCache.get(container);
+  if (cachedVm) {
+    try {
+      cachedVm.$destroy();
+      // 清空 DOM
+      if (cachedVm.$el && cachedVm.$el.parentNode) {
+        cachedVm.$el.parentNode.removeChild(cachedVm.$el);
+      }
+    } catch {
+      // 忽略销毁错误
+    }
+    vmCache.delete(container);
+  }
+}
+
+/**
+ * 缓存 Vue 2 实例
+ *
+ * @param container 容器元素
+ * @param vm Vue 2 实例
+ */
+function cacheVm(container: HTMLElement, vm: Vue2Instance): void {
+  vmCache.set(container, vm);
+}
+
+/**
  * Vue 2 组件类型
  * Vue 2 的组件定义格式
  */
@@ -79,7 +117,10 @@ type Vue2VNode = any;
  */
 function getVue(): Vue2Constructor | null {
   // 检查全局 Vue 变量（通过 script 标签引入）
-  if (typeof globalThis !== "undefined" && (globalThis as unknown as { Vue?: Vue2Constructor }).Vue) {
+  if (
+    typeof globalThis !== "undefined" &&
+    (globalThis as unknown as { Vue?: Vue2Constructor }).Vue
+  ) {
     return (globalThis as unknown as { Vue: Vue2Constructor }).Vue;
   }
   return null;
@@ -144,8 +185,8 @@ export function renderCSR(
   let vm: Vue2Instance;
 
   try {
-    // 清空容器（如果已有内容）
-    containerElement.innerHTML = "";
+    // 清理旧的 Vue 实例（如果有），避免内存泄漏
+    cleanupCachedVm(containerElement);
 
     // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
@@ -175,6 +216,9 @@ export function renderCSR(
     // 挂载到容器
     vm.$mount(containerElement);
 
+    // 缓存实例
+    cacheVm(containerElement, vm);
+
     // 结束性能监控
     let performanceMetrics;
     if (perfMonitor) {
@@ -190,6 +234,8 @@ export function renderCSR(
         if (vm.$el && vm.$el.parentNode) {
           vm.$el.parentNode.removeChild(vm.$el);
         }
+        // 从缓存中移除
+        vmCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
         // Vue 2 不支持直接更新根组件 props
@@ -212,6 +258,8 @@ export function renderCSR(
         });
         newVm.$mount(containerElement);
         vm = newVm;
+        // 更新缓存
+        cacheVm(containerElement, newVm);
       },
       instance: vm,
       performance: performanceMetrics,
@@ -226,7 +274,7 @@ export function renderCSR(
       if (shouldUseFallback && errorHandler?.fallbackComponent) {
         // 使用降级组件
         try {
-          containerElement.innerHTML = "";
+          cleanupCachedVm(containerElement);
           const fallbackVm = new VueConstructor({
             render(h: Vue2H) {
               return h(errorHandler.fallbackComponent as Vue2Component, {
@@ -235,6 +283,7 @@ export function renderCSR(
             },
           });
           fallbackVm.$mount(containerElement);
+          cacheVm(containerElement, fallbackVm);
         } catch {
           // 降级组件也失败，显示默认错误 UI
           renderErrorFallback(
@@ -256,7 +305,8 @@ export function renderCSR(
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        // 正确清理缓存的 vm，避免内存泄漏
+        cleanupCachedVm(containerElement);
       },
       instance: containerElement,
     };
@@ -325,6 +375,9 @@ export function hydrate(
   let vm: Vue2Instance;
 
   try {
+    // 清理旧的 Vue 实例（如果有），避免内存泄漏
+    cleanupCachedVm(containerElement);
+
     // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
@@ -355,6 +408,9 @@ export function hydrate(
     // 注意：Vue 2 需要容器内的第一个元素作为挂载点
     vm.$mount(containerElement);
 
+    // 缓存实例
+    cacheVm(containerElement, vm);
+
     // 结束性能监控
     let performanceMetrics;
     if (perfMonitor) {
@@ -369,6 +425,8 @@ export function hydrate(
         if (vm.$el && vm.$el.parentNode) {
           vm.$el.parentNode.removeChild(vm.$el);
         }
+        // 从缓存中移除
+        vmCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
         // Vue 2 不支持直接更新根组件 props
@@ -391,6 +449,8 @@ export function hydrate(
         });
         newVm.$mount(containerElement);
         vm = newVm;
+        // 更新缓存
+        cacheVm(containerElement, newVm);
       },
       instance: vm,
       performance: performanceMetrics,
@@ -405,7 +465,7 @@ export function hydrate(
       if (shouldUseFallback && errorHandler?.fallbackComponent) {
         // 使用降级组件
         try {
-          containerElement.innerHTML = "";
+          cleanupCachedVm(containerElement);
           const fallbackVm = new VueConstructor({
             render(h: Vue2H) {
               return h(errorHandler.fallbackComponent as Vue2Component, {
@@ -414,6 +474,7 @@ export function hydrate(
             },
           });
           fallbackVm.$mount(containerElement);
+          cacheVm(containerElement, fallbackVm);
         } catch {
           // 降级组件也失败，显示默认错误 UI
           renderErrorFallback(
@@ -435,7 +496,7 @@ export function hydrate(
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        cleanupCachedVm(containerElement);
       },
       instance: containerElement,
     };

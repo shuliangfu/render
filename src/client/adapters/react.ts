@@ -27,6 +27,61 @@ import {
 } from "../utils/performance.ts";
 
 /**
+ * 容器到 React Root 的缓存映射
+ * 使用 WeakMap 避免内存泄漏（当容器被移除时，缓存自动清理）
+ */
+/**
+ * 容器到 React Root 的缓存映射
+ * 使用 WeakMap 避免内存泄漏（当容器被移除时，缓存自动清理）
+ */
+const rootCache = new WeakMap<HTMLElement, Root>();
+
+/**
+ * 清理容器中缓存的 React Root
+ * 如果容器已有缓存的 root，先卸载避免内存泄漏
+ *
+ * @param container 容器元素
+ */
+function cleanupCachedRoot(container: HTMLElement): void {
+  const cachedRoot = rootCache.get(container);
+  if (cachedRoot) {
+    try {
+      cachedRoot.unmount();
+    } catch {
+      // 忽略卸载错误
+    }
+    rootCache.delete(container);
+  }
+}
+
+/**
+ * 获取或创建容器的 React Root
+ * 如果容器已有缓存的 root，先卸载再创建新的
+ *
+ * @param container 容器元素
+ * @returns React Root 实例
+ */
+function getOrCreateRoot(container: HTMLElement): Root {
+  // 先清理旧的 root
+  cleanupCachedRoot(container);
+
+  // 创建新的 root
+  const newRoot = createRoot(container);
+  rootCache.set(container, newRoot);
+  return newRoot;
+}
+
+/**
+ * 缓存 React Root
+ *
+ * @param container 容器元素
+ * @param root React Root 实例
+ */
+function cacheRoot(container: HTMLElement, root: Root): void {
+  rootCache.set(container, root);
+}
+
+/**
  * React 客户端渲染
  *
  * @param options CSR 选项
@@ -62,9 +117,6 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
   let root: Root;
 
   try {
-    // 清空容器（如果已有内容）
-    containerElement.innerHTML = "";
-
     // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
@@ -80,8 +132,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as React.ReactNode;
 
-    // 使用 React 18 的 createRoot API
-    root = createRoot(containerElement);
+    // 使用缓存的 root 或创建新的（会自动清理旧 root）
+    root = getOrCreateRoot(containerElement);
     root.render(element);
 
     // 结束性能监控
@@ -95,6 +147,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     return {
       unmount: () => {
         root.unmount();
+        // 从缓存中移除
+        rootCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
         const newElement = React.createElement(component as any, newProps);
@@ -113,8 +167,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       if (shouldUseFallback && errorHandler?.fallbackComponent) {
         // 使用降级组件
         try {
-          containerElement.innerHTML = "";
-          const fallbackRoot = createRoot(containerElement);
+          const fallbackRoot = getOrCreateRoot(containerElement);
           const fallbackElement = React.createElement(
             errorHandler.fallbackComponent as any,
             { error },
@@ -141,7 +194,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        // 正确清理缓存的 root，避免内存泄漏
+        cleanupCachedRoot(containerElement);
       },
       instance: containerElement,
     };
@@ -184,6 +238,9 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
   let root: Root;
 
   try {
+    // 清理旧的 root（如果有），避免内存泄漏
+    cleanupCachedRoot(containerElement);
+
     // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
@@ -202,6 +259,9 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     // 使用 React 18 的 hydrateRoot API
     root = hydrateRoot(containerElement, element);
 
+    // 缓存 root
+    cacheRoot(containerElement, root);
+
     // 结束性能监控
     let performanceMetrics;
     if (perfMonitor) {
@@ -213,6 +273,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     return {
       unmount: () => {
         root.unmount();
+        // 从缓存中移除
+        rootCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
         const newElement = React.createElement(component as any, newProps);
@@ -231,8 +293,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       if (shouldUseFallback && errorHandler?.fallbackComponent) {
         // 使用降级组件
         try {
-          containerElement.innerHTML = "";
-          const fallbackRoot = createRoot(containerElement);
+          // 使用缓存机制创建 fallback root
+          const fallbackRoot = getOrCreateRoot(containerElement);
           const fallbackElement = React.createElement(
             errorHandler.fallbackComponent as any,
             { error },
@@ -259,7 +321,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        // 正确清理缓存的 root，避免内存泄漏
+        cleanupCachedRoot(containerElement);
       },
       instance: containerElement,
     };

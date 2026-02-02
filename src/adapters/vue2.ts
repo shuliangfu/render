@@ -162,24 +162,34 @@ export async function renderSSR(
   }
 
   // 渲染为字符串
-  let html = await renderer.renderToString(vm);
+  let html: string;
+  try {
+    html = await renderer.renderToString(vm);
 
-  // 验证渲染结果
-  if (typeof html !== "string") {
-    console.error(
-      `Vue2 渲染错误: renderToString 返回的不是字符串，类型: ${typeof html}，值:`,
-      html,
-    );
-    html = String(html);
-  }
+    // 验证渲染结果
+    if (typeof html !== "string") {
+      console.error(
+        `Vue2 渲染错误: renderToString 返回的不是字符串，类型: ${typeof html}，值:`,
+        html,
+      );
+      html = String(html);
+    }
 
-  if (html === "[object Object]") {
-    console.error(
-      `Vue2 渲染错误: renderToString 返回的字符串是 "[object Object]"`,
-    );
-    throw new Error(
-      "Vue2 渲染错误: 无法将渲染结果转换为有效的 HTML 字符串",
-    );
+    if (html === "[object Object]") {
+      console.error(
+        `Vue2 渲染错误: renderToString 返回的字符串是 "[object Object]"`,
+      );
+      throw new Error(
+        "Vue2 渲染错误: 无法将渲染结果转换为有效的 HTML 字符串",
+      );
+    }
+  } finally {
+    // 无论成功还是失败，都要销毁 vm 释放资源，避免内存泄漏
+    try {
+      vm.$destroy();
+    } catch {
+      // 忽略销毁错误
+    }
   }
 
   // 如果有模板，自动注入组件 HTML

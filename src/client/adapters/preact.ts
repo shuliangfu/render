@@ -58,8 +58,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
   }
 
   try {
-    // 清空容器（如果已有内容）
-    containerElement.innerHTML = "";
+    // 注意：不要使用 innerHTML = "" 清空容器，这会破坏 Preact 的内部状态
+    // Preact 的 render 函数会自动处理 DOM 更新
 
     // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
@@ -133,7 +133,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        // 使用 Preact 的 render(null) 正确卸载，避免内存泄漏
+        render(null, containerElement);
       },
       instance: containerElement,
     };
@@ -220,7 +221,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       if (shouldUseFallback && errorHandler?.fallbackComponent) {
         // 使用降级组件
         try {
-          containerElement.innerHTML = "";
+          // 先卸载旧内容，再渲染 fallback
+          render(null, containerElement);
           const fallbackElement = createElement(
             errorHandler.fallbackComponent as any,
             { error },
@@ -247,7 +249,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        // 使用 Preact 的 render(null) 正确卸载，避免内存泄漏
+        render(null, containerElement);
       },
       instance: containerElement,
     };

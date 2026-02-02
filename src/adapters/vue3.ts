@@ -80,7 +80,17 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   }
 
   // 渲染为字符串
-  const html = await renderToString(app);
+  let html: string;
+  try {
+    html = await renderToString(app);
+  } finally {
+    // 无论成功还是失败，都要销毁 app 释放资源，避免内存泄漏
+    try {
+      app.unmount();
+    } catch {
+      // 忽略卸载错误
+    }
+  }
 
   // 调试：检查 renderToString 的返回值
   if (typeof html !== "string") {

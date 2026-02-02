@@ -22,6 +22,40 @@ import {
 } from "../utils/performance.ts";
 
 /**
+ * 容器到 Vue App 的缓存映射
+ * 使用 WeakMap 避免内存泄漏（当容器被移除时，缓存自动清理）
+ */
+const appCache = new WeakMap<HTMLElement, App>();
+
+/**
+ * 清理容器中缓存的 Vue App
+ * 如果容器已有缓存的 app，先卸载避免内存泄漏
+ *
+ * @param container 容器元素
+ */
+function cleanupCachedApp(container: HTMLElement): void {
+  const cachedApp = appCache.get(container);
+  if (cachedApp) {
+    try {
+      cachedApp.unmount();
+    } catch {
+      // 忽略卸载错误
+    }
+    appCache.delete(container);
+  }
+}
+
+/**
+ * 缓存 Vue App 实例
+ *
+ * @param container 容器元素
+ * @param app Vue App 实例
+ */
+function cacheApp(container: HTMLElement, app: App): void {
+  appCache.set(container, app);
+}
+
+/**
  * Vue3 客户端渲染
  *
  * @param options CSR 选项
@@ -57,8 +91,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
   let app: App;
 
   try {
-    // 清空容器（如果已有内容）
-    containerElement.innerHTML = "";
+    // 清理旧的 Vue App（如果有），避免内存泄漏
+    cleanupCachedApp(containerElement);
 
     // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
@@ -86,6 +120,9 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     // 挂载到容器
     app.mount(containerElement);
 
+    // 缓存 app 实例
+    cacheApp(containerElement, app);
+
     // 结束性能监控
     let performanceMetrics;
     if (perfMonitor) {
@@ -97,6 +134,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     return {
       unmount: () => {
         app.unmount();
+        // 从缓存中移除
+        appCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
         // Vue 3 不支持直接更新根组件 props
@@ -110,6 +149,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
         );
         const newApp = createApp(newWrapper);
         newApp.mount(containerElement);
+        // 更新缓存
+        cacheApp(containerElement, newApp);
       },
       instance: app,
       performance: performanceMetrics,
@@ -124,12 +165,13 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       if (shouldUseFallback && errorHandler?.fallbackComponent) {
         // 使用降级组件
         try {
-          containerElement.innerHTML = "";
+          cleanupCachedApp(containerElement);
           const fallbackApp = createApp(
             errorHandler.fallbackComponent as Component,
             { error },
           );
           fallbackApp.mount(containerElement);
+          cacheApp(containerElement, fallbackApp);
         } catch {
           // 降级组件也失败，显示默认错误 UI
           renderErrorFallback(
@@ -151,7 +193,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        // 正确清理缓存的 app，避免内存泄漏
+        cleanupCachedApp(containerElement);
       },
       instance: containerElement,
     };
@@ -194,6 +237,9 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
   let app: App;
 
   try {
+    // 清理旧的 Vue App（如果有），避免内存泄漏
+    cleanupCachedApp(containerElement);
+
     // 检查组件是否导出了 inheritLayout = false
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
@@ -220,6 +266,9 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     // 挂载到容器（Vue 会自动进行 hydration）
     app.mount(containerElement);
 
+    // 缓存 app 实例
+    cacheApp(containerElement, app);
+
     // 结束性能监控
     let performanceMetrics;
     if (perfMonitor) {
@@ -231,6 +280,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     return {
       unmount: () => {
         app.unmount();
+        // 从缓存中移除
+        appCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
         // Vue 3 不支持直接更新根组件 props
@@ -244,6 +295,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
         );
         const newApp = createSSRApp(newWrapper);
         newApp.mount(containerElement);
+        // 更新缓存
+        cacheApp(containerElement, newApp);
       },
       instance: app,
       performance: performanceMetrics,
@@ -258,12 +311,13 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       if (shouldUseFallback && errorHandler?.fallbackComponent) {
         // 使用降级组件
         try {
-          containerElement.innerHTML = "";
+          cleanupCachedApp(containerElement);
           const fallbackApp = createSSRApp(
             errorHandler.fallbackComponent as Component,
             { error },
           );
           fallbackApp.mount(containerElement);
+          cacheApp(containerElement, fallbackApp);
         } catch {
           // 降级组件也失败，显示默认错误 UI
           renderErrorFallback(
@@ -285,7 +339,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     // 返回空的结果
     return {
       unmount: () => {
-        containerElement.innerHTML = "";
+        cleanupCachedApp(containerElement);
       },
       instance: containerElement,
     };
