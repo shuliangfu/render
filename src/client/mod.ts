@@ -10,7 +10,7 @@
  * - 客户端渲染（CSR）：将组件渲染到 DOM
  * - Hydration：激活服务端渲染的 HTML
  * - 布局组合：支持嵌套布局
- * - 多引擎支持：React、Preact、Vue2（2.7+）、Vue3
+ * - 多引擎支持：React、Preact、Vue3
  *
  * @example
  * ```typescript
@@ -58,7 +58,6 @@ export {
 // 导入适配器
 import * as preactAdapter from "./adapters/preact.ts";
 import * as reactAdapter from "./adapters/react.ts";
-import * as vue2Adapter from "./adapters/vue2.ts";
 import * as vue3Adapter from "./adapters/vue3.ts";
 
 import type { CSROptions, CSRRenderResult, HydrationOptions } from "./types.ts";
@@ -104,9 +103,6 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     case "react": {
       return reactAdapter.renderCSR(options);
     }
-    case "vue2": {
-      return vue2Adapter.renderCSR(options);
-    }
     case "vue3": {
       return vue3Adapter.renderCSR(options);
     }
@@ -151,9 +147,6 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     }
     case "react": {
       return reactAdapter.hydrate(options);
-    }
-    case "vue2": {
-      return vue2Adapter.hydrate(options);
     }
     case "vue3": {
       return vue3Adapter.hydrate(options);

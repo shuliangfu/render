@@ -1,7 +1,7 @@
 /**
  * @dreamer/render 主入口（服务端）
  *
- * 提供 SSR 和 SSG 功能，支持 React、Preact、Vue2（2.7+）和 Vue3 四个模板引擎。
+ * 提供 SSR 和 SSG 功能，支持 React、Preact、Vue3 三个模板引擎。
  *
  * 注意：客户端渲染（CSR）和 Hydration 功能请使用 @dreamer/render/client
  *

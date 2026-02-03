@@ -6,7 +6,7 @@
 import { assertRejects, describe, expect, it } from "@dreamer/test";
 import React from "react";
 import { renderSSR } from "../src/ssr.ts";
-import type { LoadContext, Metadata } from "../src/types.ts";
+import type { LoadContext, Metadata, SSROptions } from "../src/types.ts";
 
 describe("SSR 全面测试", () => {
   describe("元数据管理", () => {
@@ -624,58 +624,15 @@ describe("SSR 全面测试", () => {
       expect(result.renderInfo?.engine).toBe("vue3");
     });
 
-    it("应该支持 Vue2（通过适配器）", async () => {
-      // 动态导入 Vue2 适配器
-      const vue2Adapter = await import("../src/adapters/vue2.ts");
-
-      /**
-       * 创建模拟的 Vue 2 构造函数
-       */
-      // deno-lint-ignore no-explicit-any
-      const MockVue = class {
-        $mount() {
-          return this;
-        }
-        $destroy() {}
-        // deno-lint-ignore no-explicit-any
-        constructor(_options: any) {}
-      } as any;
-
-      /**
-       * 创建模拟的 Vue 2 渲染器
-       */
-      const mockRenderer = {
-        renderToString: async () => "<div>Vue2</div>",
-      };
-
-      const result = await vue2Adapter.renderSSR({
-        engine: "vue2",
-        component: {
-          template: "<div>Vue2</div>",
-        },
-        Vue: MockVue,
-        renderer: mockRenderer,
-      });
-
-      expect(result.html).toContain("Vue2");
-      expect(result.renderInfo?.engine).toBe("vue2");
-    });
-
-    it("Vue2 应该在缺少 Vue 构造函数时抛出错误", async () => {
-      // 动态导入 Vue2 适配器
-      const vue2Adapter = await import("../src/adapters/vue2.ts");
-
+    it("不支持的引擎应抛出错误", async () => {
       try {
-        await vue2Adapter.renderSSR({
+        await renderSSR({
           engine: "vue2",
           component: { template: "<div>Test</div>" },
-          // 故意不传 Vue 和 renderer
-          Vue: undefined as any,
-          renderer: { renderToString: async () => "" },
-        });
-        expect(true).toBe(false); // 不应该到达这里
+        } as unknown as SSROptions);
+        expect(true).toBe(false);
       } catch (error) {
-        expect((error as Error).message).toContain("Vue 构造函数未提供");
+        expect((error as Error).message).toContain("不支持的模板引擎");
       }
     });
   });

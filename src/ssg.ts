@@ -102,8 +102,6 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     generateRobots: shouldGenerateRobots = false,
     onFileGenerated,
     options: customOptions = {},
-    Vue,
-    renderer,
   } = options;
 
   // 确保输出目录存在
@@ -143,12 +141,6 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
           params: {},
         },
       };
-
-      // Vue 2 SSR 需要额外的参数
-      if (engine === "vue2") {
-        ssrOptions.Vue = Vue;
-        ssrOptions.renderer = renderer;
-      }
 
       const result = await renderSSR(ssrOptions);
 
