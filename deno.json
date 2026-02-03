@@ -6,8 +6,7 @@
     ".": "./src/mod.ts",
     "./client": "./src/client/mod.ts",
     "./client/preact": "./src/client/adapters/preact.ts",
-    "./client/react": "./src/client/adapters/react.ts",
-    "./client/vue3": "./src/client/adapters/vue3.ts"
+    "./client/react": "./src/client/adapters/react.ts"
   },
   "publish": {
     "include": [
@@ -43,9 +42,7 @@
     "react-dom/server": "npm:react-dom@^18.3.1/server",
     "react-dom/client": "npm:react-dom@^18.3.1/client",
     "preact": "npm:preact@^10.28.1",
-    "preact-render-to-string": "npm:preact-render-to-string@^6.2.0",
-    "@vue/server-renderer": "npm:@vue/server-renderer@^3.5.27",
-    "vue": "npm:vue@3.5.27"
+    "preact-render-to-string": "npm:preact-render-to-string@^6.2.0"
   },
   "nodeModulesDir": "auto",
   "compilerOptions": {
