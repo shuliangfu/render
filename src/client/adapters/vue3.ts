@@ -109,7 +109,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     app = createApp(wrapperComponent);
 
     // 配置全局错误处理
-    app.config.errorHandler = (err) => {
+    app.config.errorHandler = (err: unknown) => {
       handleRenderError(
         err,
         { engine: "vue3", component, phase: "csr" },
@@ -255,7 +255,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     app = createSSRApp(wrapperComponent);
 
     // 配置全局错误处理
-    app.config.errorHandler = (err) => {
+    app.config.errorHandler = (err: unknown) => {
       handleRenderError(
         err,
         { engine: "vue3", component, phase: "hydrate" },
