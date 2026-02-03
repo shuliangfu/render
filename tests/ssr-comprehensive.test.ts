@@ -615,8 +615,8 @@ describe("SSR 全面测试", () => {
     it("不支持的引擎应抛出错误", async () => {
       try {
         await renderSSR({
-          engine: "vue2",
-          component: { template: "<div>Test</div>" },
+          engine: "svelte",
+          component: () => "Test",
         } as unknown as SSROptions);
         expect(true).toBe(false);
       } catch (error) {
