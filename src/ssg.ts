@@ -94,6 +94,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     routes,
     outputDir,
     loadRouteComponent,
+    loadRouteLayouts,
     loadRouteData,
     template,
     pureHTML = false,
@@ -115,26 +116,25 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       // 加载路由组件
       const routeComponent = await loadRouteComponent(route);
 
+      // 加载布局组件（如果有，从外到内：_app -> _layout）
+      const layouts = loadRouteLayouts ? await loadRouteLayouts(route) : [];
+
       // 加载路由数据（如果有）
       const routeData = loadRouteData ? await loadRouteData(route) : {};
 
-      // 构建组件树（如果有布局组件）
-      // 注意：Vue3 组件不需要在这里包装，应该直接传递 routeComponent
-      // 布局组合应该在 renderSSR 中通过 layouts 选项处理
-      const componentToRender = routeComponent;
-
-      // 使用 SSR 渲染
+      // 使用 SSR 渲染（支持 layouts 选项，布局组合在 renderSSR 中处理）
       // 如果 enableDataInjection 为 true，则注入数据（用于 Hydration）
       // 否则跳过数据注入（纯静态页面）
       // deno-lint-ignore no-explicit-any
       const ssrOptions: any = {
         engine,
-        component: componentToRender,
+        component: routeComponent,
         props: {
           route,
           ...routeData,
           ...customOptions,
         },
+        layouts: layouts.length > 0 ? layouts : undefined,
         template,
         skipDataInjection: !options.enableDataInjection, // 根据配置决定是否注入数据
         loadContext: {

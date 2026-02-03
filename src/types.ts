@@ -249,6 +249,10 @@ export interface SSGOptions {
   outputDir: string;
   /** 路由组件加载函数 */
   loadRouteComponent: (route: string) => Promise<unknown>;
+  /** 路由布局加载函数（可选，用于加载 _app、_layout 等，从外到内） */
+  loadRouteLayouts?: (
+    route: string,
+  ) => Promise<Array<{ component: unknown; props?: Record<string, unknown> }>>;
   /** 路由数据加载函数（可选，用于预取数据） */
   loadRouteData?: (route: string) => Promise<Record<string, unknown>>;
   /** HTML 模板 */
