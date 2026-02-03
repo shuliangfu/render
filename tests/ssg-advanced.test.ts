@@ -117,31 +117,6 @@ describe("SSG 高级功能", () => {
       await cleanup();
     });
 
-    it("应该支持 Vue3 引擎生成 SSG", async () => {
-      await cleanup();
-
-      const { h } = await import("vue");
-      const Component = {
-        // 声明 props 以接收 route 等属性
-        props: ["route"],
-        setup(_props: any) {
-          return () => h("div", null, "Vue3 SSG");
-        },
-      };
-
-      const files = await renderSSG({
-        engine: "vue3",
-        routes: ["/"],
-        outputDir: testOutputDir,
-        loadRouteComponent: async () => Component,
-      });
-
-      expect(files.length).toBeGreaterThan(0);
-      const content = await readTextFile(join(testOutputDir, "index.html"));
-      expect(content).toContain("Vue3 SSG");
-
-      await cleanup();
-    });
   });
 
   describe("模板处理", () => {

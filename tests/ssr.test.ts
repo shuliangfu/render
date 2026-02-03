@@ -86,64 +86,6 @@ describe("renderSSR", () => {
     });
   });
 
-  describe("Vue3 SSR", () => {
-    it("应该能够渲染简单的 Vue3 组件", async () => {
-      const { h } = await import("vue");
-      const Component = {
-        setup() {
-          return () => h("div", null, "Hello, Vue3!");
-        },
-      };
-
-      const result = await renderSSR({
-        engine: "vue3",
-        component: Component,
-      });
-
-      expect(result.html).toContain("Hello, Vue3!");
-      expect(result.renderInfo?.engine).toBe("vue3");
-    });
-
-    it("应该能够渲染带属性的 Vue3 组件", async () => {
-      const { h } = await import("vue");
-      const Component = {
-        props: ["name"],
-        setup(props: { name: string }) {
-          return () => h("div", null, `Hello, ${props.name}!`);
-        },
-      };
-
-      const result = await renderSSR({
-        engine: "vue3",
-        component: Component,
-        props: { name: "World" },
-      });
-
-      expect(result.html).toContain("Hello, World!");
-    });
-
-    it("应该支持 HTML 模板", async () => {
-      const { h } = await import("vue");
-      const Component = {
-        setup() {
-          return () => h("div", null, "Content");
-        },
-      };
-
-      const template = "<html><body><!--ssr-outlet--></body></html>";
-
-      const result = await renderSSR({
-        engine: "vue3",
-        component: Component,
-        template,
-      });
-
-      expect(result.html).toContain("<html>");
-      expect(result.html).toContain("<body>");
-      expect(result.html).toContain("Content");
-    });
-  });
-
   describe("错误处理", () => {
     it("应该拒绝不支持的模板引擎", async () => {
       await assertRejects(

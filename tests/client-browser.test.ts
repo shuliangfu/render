@@ -404,131 +404,6 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.message).toContain("容器元素未找到");
   }, browserConfig);
 
-  // ==================== Vue3 适配器测试 ====================
-
-  it("Vue3: 应该在容器不存在时抛出错误", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const TestComponent = () => null;
-
-      try {
-        RenderClient.renderCSR({
-          engine: "vue3",
-          component: TestComponent,
-          container: "#non-existent-container",
-        });
-        return { threw: false };
-      } catch (error) {
-        return {
-          threw: true,
-          message: (error as Error).message,
-        };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.threw).toBe(true);
-    expect(result.message).toContain("容器元素未找到");
-  }, browserConfig);
-
-  it("Vue3: 应该支持性能监控", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      // 创建性能监控器并测试 Vue3 引擎
-      const monitor = RenderClient.createPerformanceMonitor({
-        enabled: true,
-        slowThreshold: 100,
-      });
-
-      if (!monitor) return { created: false };
-
-      monitor.start("vue3", "hydrate");
-      const metrics = monitor.end();
-
-      return {
-        created: true,
-        hasMetrics: !!metrics,
-        engine: metrics.engine,
-        phase: metrics.phase,
-        hasDuration: typeof metrics.duration === "number",
-      };
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.created).toBe(true);
-    expect(result.hasMetrics).toBe(true);
-    expect(result.engine).toBe("vue3");
-    expect(result.phase).toBe("hydrate");
-    expect(result.hasDuration).toBe(true);
-  }, browserConfig);
-
-  it("Vue3: Hydration 应该在容器不存在时抛出错误", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const TestComponent = () => null;
-
-      try {
-        RenderClient.hydrate({
-          engine: "vue3",
-          component: TestComponent,
-          container: "#non-existent-container",
-        });
-        return { threw: false };
-      } catch (error) {
-        return {
-          threw: true,
-          message: (error as Error).message,
-        };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.threw).toBe(true);
-    expect(result.message).toContain("容器元素未找到");
-  }, browserConfig);
-
   // ==================== 错误处理测试（所有引擎） ====================
 
   it("所有引擎: 应该显示 Hydration 错误降级 UI", async (ctx) => {
@@ -591,26 +466,6 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(() => {
       hydrate({
         engine: "react",
-        component: () => null,
-        container: "#app",
-      });
-    }).toThrow("Hydration 只能在浏览器环境中运行");
-  });
-
-  it("服务端: Vue3 引擎应该检测非浏览器环境", async () => {
-    const { renderCSR, hydrate } = await import("../src/client/mod.ts");
-
-    expect(() => {
-      renderCSR({
-        engine: "vue3",
-        component: () => null,
-        container: "#app",
-      });
-    }).toThrow("CSR 渲染只能在浏览器环境中运行");
-
-    expect(() => {
-      hydrate({
-        engine: "vue3",
         component: () => null,
         container: "#app",
       });
@@ -719,54 +574,6 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.unmounted).toBe(true);
   }, browserConfig);
 
-  it("Vue3: 应该支持卸载组件", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      // 清空容器
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = RenderClient.renderCSR({
-          engine: "vue3",
-          component: TestComponent,
-          container: "#app",
-        });
-
-        const hasUnmount = typeof renderResult.unmount === "function";
-        renderResult.unmount();
-
-        return {
-          hasUnmount,
-          unmounted: true,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasUnmount).toBe(true);
-    expect(result.unmounted).toBe(true);
-  }, browserConfig);
-
   // ==================== 更新功能测试 ====================
 
   it("Preact: 应该支持 update 函数", async (ctx) => {
@@ -835,50 +642,6 @@ describe("客户端渲染 - 浏览器测试", () => {
       try {
         const renderResult = RenderClient.renderCSR({
           engine: "react",
-          component: TestComponent,
-          container: "#app",
-        });
-
-        return {
-          hasUpdate: typeof renderResult.update === "function",
-          hasInstance: renderResult.instance !== undefined,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasUpdate).toBe(true);
-    expect(result.hasInstance).toBe(true);
-  }, browserConfig);
-
-  it("Vue3: 应该支持 update 函数", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = RenderClient.renderCSR({
-          engine: "vue3",
           component: TestComponent,
           container: "#app",
         });
@@ -1012,58 +775,6 @@ describe("客户端渲染 - 浏览器测试", () => {
 
     expect(result.hasPerformance).toBe(true);
     expect(result.engine).toBe("react");
-    expect(result.phase).toBe("csr");
-  }, browserConfig);
-
-  it("Vue3: CSR 应该返回性能指标", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = RenderClient.renderCSR({
-          engine: "vue3",
-          component: TestComponent,
-          container: "#app",
-          performance: {
-            enabled: true,
-            slowThreshold: 1000,
-          },
-        });
-
-        const perf = renderResult.performance;
-
-        return {
-          hasPerformance: !!perf,
-          engine: perf?.engine,
-          phase: perf?.phase,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasPerformance).toBe(true);
-    expect(result.engine).toBe("vue3");
     expect(result.phase).toBe("csr");
   }, browserConfig);
 

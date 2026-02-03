@@ -15,18 +15,12 @@ describe("renderSSG", () => {
   const testOutputDir = "./tests/data/test-ssg-output";
   const reactOutputDir = "./tests/data/test-ssg-react-output";
   const preactOutputDir = "./tests/data/test-ssg-preact-output";
-  const vue3OutputDir = "./tests/data/test-ssg-vue3-output";
 
   // 清理测试输出目录（测试前清理，测试后保留输出文件供查看）
   const cleanup = async (dir?: string) => {
     const dirs = dir
       ? [dir]
-      : [
-        testOutputDir,
-        reactOutputDir,
-        preactOutputDir,
-        vue3OutputDir,
-      ];
+      : [testOutputDir, reactOutputDir, preactOutputDir];
     for (const d of dirs) {
       try {
         await remove(d, { recursive: true });
@@ -101,41 +95,6 @@ describe("renderSSG", () => {
     });
   });
 
-  describe("Vue3 SSG", () => {
-    it("应该能够生成静态 HTML 文件", async () => {
-      await cleanup(vue3OutputDir);
-
-      const { h } = await import("vue");
-      const Component = {
-        props: ["route"],
-        setup(_props: any) {
-          return () => h("div", null, "Hello, Vue3 SSG!");
-        },
-      };
-
-      const files = await renderSSG({
-        engine: "vue3",
-        routes: ["/", "/about"],
-        outputDir: vue3OutputDir,
-        loadRouteComponent: async (route) => {
-          return Component;
-        },
-      });
-
-      expect(files.length).toBeGreaterThan(0);
-      expect(files.some((f) => f.includes("index.html"))).toBe(true);
-      expect(files.some((f) => f.includes("about.html"))).toBe(true);
-
-      // 验证文件内容
-      const indexContent = await readTextFile(
-        join(vue3OutputDir, "index.html"),
-      );
-      expect(indexContent).toContain("Hello, Vue3 SSG!");
-
-      // 测试结束后保留输出文件供查看，不清理
-    });
-  });
-
   describe("Sitemap 和 Robots", () => {
     it("React 应该能够生成 sitemap.xml", async () => {
       await cleanup(reactOutputDir);
@@ -182,36 +141,6 @@ describe("renderSSG", () => {
 
       const sitemapContent = await readTextFile(
         join(preactOutputDir, "sitemap.xml"),
-      );
-      expect(sitemapContent).toContain("<?xml");
-      expect(sitemapContent).toContain("<urlset");
-
-      // 测试结束后保留输出文件供查看，不清理
-    });
-
-    it("Vue3 应该能够生成 sitemap.xml", async () => {
-      await cleanup(vue3OutputDir);
-
-      const { h } = await import("vue");
-      const Component = {
-        props: ["route"],
-        setup(_props: any) {
-          return () => h("div", null, "Content");
-        },
-      };
-
-      const files = await renderSSG({
-        engine: "vue3",
-        routes: ["/", "/about"],
-        outputDir: vue3OutputDir,
-        loadRouteComponent: async () => Component,
-        generateSitemap: true,
-      });
-
-      expect(files.some((f) => f.includes("sitemap.xml"))).toBe(true);
-
-      const sitemapContent = await readTextFile(
-        join(vue3OutputDir, "sitemap.xml"),
       );
       expect(sitemapContent).toContain("<?xml");
       expect(sitemapContent).toContain("<urlset");
@@ -269,34 +198,6 @@ describe("renderSSG", () => {
       // 测试结束后保留输出文件供查看，不清理
     });
 
-    it("Vue3 应该能够生成 robots.txt", async () => {
-      await cleanup(vue3OutputDir);
-
-      const { h } = await import("vue");
-      const Component = {
-        props: ["route"],
-        setup(_props: any) {
-          return () => h("div", null, "Content");
-        },
-      };
-
-      const files = await renderSSG({
-        engine: "vue3",
-        routes: ["/"],
-        outputDir: vue3OutputDir,
-        loadRouteComponent: async () => Component,
-        generateRobots: true,
-      });
-
-      expect(files.some((f) => f.includes("robots.txt"))).toBe(true);
-
-      const robotsContent = await readTextFile(
-        join(vue3OutputDir, "robots.txt"),
-      );
-      expect(robotsContent).toContain("User-agent");
-
-      // 测试结束后保留输出文件供查看，不清理
-    });
   });
 
   describe("路由数据", () => {
@@ -351,33 +252,6 @@ describe("renderSSG", () => {
       // 测试结束后保留输出文件供查看，不清理
     });
 
-    it("Vue3 应该能够处理路由数据", async () => {
-      await cleanup(vue3OutputDir);
-
-      const { h } = await import("vue");
-      const Component = {
-        props: ["route", "data"],
-        setup(props: { data?: { title: string } }) {
-          return () =>
-            h("div", null, `Title: ${props.data?.title || "Default"}`);
-        },
-      };
-
-      const files = await renderSSG({
-        engine: "vue3",
-        routes: ["/"],
-        outputDir: vue3OutputDir,
-        loadRouteComponent: async () => Component,
-        loadRouteData: async (route) => {
-          return { data: { title: "Vue3 Title" } };
-        },
-      });
-
-      const content = await readTextFile(join(vue3OutputDir, "index.html"));
-      expect(content).toContain("Vue3 Title");
-
-      // 测试结束后保留输出文件供查看，不清理
-    });
   });
 });
 

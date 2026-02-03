@@ -15,8 +15,8 @@ describe("@dreamer/render（服务端）", () => {
     });
 
     it("应该支持所有模板引擎类型", () => {
-      const engines: Engine[] = ["react", "preact", "vue3"];
-      expect(engines.length).toBe(3);
+      const engines: Engine[] = ["react", "preact"];
+      expect(engines.length).toBe(2);
     });
   });
 

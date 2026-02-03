@@ -5,7 +5,7 @@
 /**
  * 支持的模板引擎类型
  */
-export type Engine = "react" | "preact" | "vue3";
+export type Engine = "react" | "preact";
 
 /**
  * 元数据
@@ -196,7 +196,7 @@ export interface ContextData {
 export interface SSROptions {
   /** 模板引擎类型 */
   engine: Engine;
-  /** 组件（React/Preact 组件或 Vue3 组件） */
+  /** 组件（React/Preact 组件） */
   component: unknown;
   /** 组件属性 */
   props?: Record<string, unknown>;

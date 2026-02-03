@@ -612,18 +612,6 @@ describe("SSR 全面测试", () => {
       expect(result.renderInfo?.engine).toBe("preact");
     });
 
-    it("应该支持 Vue3", async () => {
-      const result = await renderSSR({
-        engine: "vue3",
-        component: {
-          template: "<div>Vue3</div>",
-        },
-      });
-
-      expect(result.html).toContain("Vue3");
-      expect(result.renderInfo?.engine).toBe("vue3");
-    });
-
     it("不支持的引擎应抛出错误", async () => {
       try {
         await renderSSR({

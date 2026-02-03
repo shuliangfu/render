@@ -234,7 +234,7 @@ describe("客户端工具函数测试", () => {
           slowThreshold: 1000, // 很高的阈值
         });
 
-        monitor.start("vue3", "csr");
+        monitor.start("preact", "csr");
         const metrics = monitor.end();
 
         expect(metrics.isSlow).toBe(false);
@@ -334,7 +334,7 @@ describe("客户端工具函数测试", () => {
 
         await handleRenderError(
           new Error("Test error message"),
-          { engine: "vue3", component: {}, phase: "csr" },
+          { engine: "react", component: {}, phase: "csr" },
           {
             onError: (err, ctx) => {
               captured.error = err;
@@ -346,7 +346,7 @@ describe("客户端工具函数测试", () => {
 
         expect(captured.error).not.toBeNull();
         expect(captured.error?.message).toBe("Test error message");
-        expect(captured.context.engine).toBe("vue3");
+        expect(captured.context.engine).toBe("react");
         expect(captured.context.phase).toBe("csr");
       });
 

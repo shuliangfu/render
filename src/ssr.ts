@@ -4,7 +4,6 @@
 
 import * as preactAdapter from "./adapters/preact.ts";
 import * as reactAdapter from "./adapters/react.ts";
-import * as vue3Adapter from "./adapters/vue3.ts";
 import type {
   LoadContext,
   Metadata,
@@ -201,22 +200,6 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         result = await preactAdapter.renderSSR(options);
         break;
       }
-      case "vue3": {
-        result = await vue3Adapter.renderSSR(options);
-        // 调试：检查 Vue3 返回的 result.html
-        if (typeof result.html !== "string") {
-          console.error(
-            `Vue3 适配器错误: result.html 不是字符串类型，类型: ${typeof result
-              .html}，值:`,
-            result.html,
-          );
-        } else if (result.html === "[object Object]") {
-          console.error(
-            `Vue3 适配器错误: result.html 是字符串 "[object Object]"，说明原始值不是字符串`,
-          );
-        }
-        break;
-      }
       default: {
         // TypeScript 会确保所有情况都被处理
         const _exhaustive: never = engine;
@@ -245,10 +228,6 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
           }
           case "preact": {
             result = await preactAdapter.renderSSR(fallbackOptions);
-            break;
-          }
-          case "vue3": {
-            result = await vue3Adapter.renderSSR(fallbackOptions);
             break;
           }
         }

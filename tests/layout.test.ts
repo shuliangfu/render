@@ -13,7 +13,6 @@ import { describe, expect, it } from "@dreamer/test";
 // 服务端布局工具
 import {
   composeLayouts as serverComposeLayouts,
-  composeVue3Layouts,
   createComponentTree as serverCreateComponentTree,
   filterLayouts,
   shouldSkipLayouts as serverShouldSkipLayouts,
@@ -453,44 +452,6 @@ describe("布局继承测试", () => {
 
       expect(result.type).toBe("Layout");
       expect(result.props.children.type).toBe("Page");
-    });
-  });
-
-  // ==================== Vue3 布局组合测试 ====================
-
-  describe("服务端 composeVue3Layouts", () => {
-    it("无布局时应该返回原组件", () => {
-      const component = { name: "Page" };
-      const props = { title: "Hello" };
-
-      const result = composeVue3Layouts(component, props, []);
-
-      expect(result.component).toBe(component);
-      expect(result.props).toEqual(props);
-    });
-
-    it("skipLayouts = true 时应该跳过所有布局", () => {
-      const component = { name: "Page" };
-      const props = { title: "Hello" };
-      const layouts = [{ component: { name: "Layout" } }];
-
-      const result = composeVue3Layouts(component, props, layouts, true);
-
-      expect(result.component).toBe(component);
-      expect(result.props).toEqual(props);
-    });
-
-    it("有布局时应该创建包装组件", () => {
-      const component = { name: "Page" };
-      const props = { title: "Hello" };
-      const layouts = [{ component: { name: "Layout" } }];
-
-      const result = composeVue3Layouts(component, props, layouts);
-
-      // 应该返回一个包装组件
-      expect(result.component).toBeDefined();
-      expect((result.component as any).components).toBeDefined();
-      expect((result.component as any).components.Page).toBe(component);
     });
   });
 

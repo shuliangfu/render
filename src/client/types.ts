@@ -7,7 +7,7 @@
 /**
  * 模板引擎类型
  */
-export type Engine = "react" | "preact" | "vue3";
+export type Engine = "react" | "preact";
 
 /**
  * 布局组件配置
