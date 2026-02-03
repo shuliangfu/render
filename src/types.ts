@@ -265,6 +265,8 @@ export interface SSGOptions {
   generateSitemap?: boolean;
   /** 是否生成 robots.txt */
   generateRobots?: boolean;
+  /** 每生成一个文件时回调（用于构建时实时输出进度，避免大量路由时长时间无输出） */
+  onFileGenerated?: (filePath: string) => void;
   /** 自定义选项 */
   options?: Record<string, unknown>;
   /**

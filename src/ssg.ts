@@ -100,6 +100,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     pureHTML = false,
     generateSitemap: shouldGenerateSitemap = false,
     generateRobots: shouldGenerateRobots = false,
+    onFileGenerated,
     options: customOptions = {},
     Vue,
     renderer,
@@ -216,6 +217,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
 
       await writeTextFile(fullPath, html);
       generatedFiles.push(fullPath);
+      onFileGenerated?.(fullPath);
     } catch (error) {
       throw new Error(
         `SSG 生成失败 (路由: ${route}): ${
