@@ -29,17 +29,22 @@ const appCache = new WeakMap<HTMLElement, App>();
 
 /**
  * 清理容器中缓存的 Vue App
- * 如果容器已有缓存的 app，先卸载避免内存泄漏
+ * 如果容器已有缓存的 app，先卸载避免内存泄漏。
+ * 仅当 app 仍处于挂载状态时才调用 unmount()，避免 "Cannot unmount an app that is not mounted" 警告。
  *
  * @param container 容器元素
  */
 function cleanupCachedApp(container: HTMLElement): void {
   const cachedApp = appCache.get(container);
   if (cachedApp) {
-    try {
-      cachedApp.unmount();
-    } catch {
-      // 忽略卸载错误
+    // Vue 3 内部：挂载后 _container 有值，unmount 后清空；仅对仍挂载的 app 调用 unmount
+    const appWithContainer = cachedApp as App & { _container?: unknown };
+    if (appWithContainer._container != null) {
+      try {
+        cachedApp.unmount();
+      } catch {
+        // 忽略卸载错误
+      }
     }
     appCache.delete(container);
   }
