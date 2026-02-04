@@ -6,11 +6,21 @@
 
 import type { CacheOptions, LoadContext, Metadata } from "../types.ts";
 
+/** 默认最大缓存条目数，防止无界增长导致内存泄漏 */
+const DEFAULT_MAX_CACHE_SIZE = 1000;
+
 /**
  * 默认缓存存储（内存缓存）
+ *
+ * 限制：超过 maxSize 时移除最旧条目；get 时 lazy 删除过期项
  */
 class MemoryCache {
   private cache = new Map<string, { value: unknown; expires: number }>();
+  private readonly maxSize: number;
+
+  constructor(maxSize = DEFAULT_MAX_CACHE_SIZE) {
+    this.maxSize = maxSize;
+  }
 
   get(key: string): unknown | null {
     const item = this.cache.get(key);
@@ -29,6 +39,12 @@ class MemoryCache {
   set(key: string, value: unknown, ttl?: number): void {
     const expires = ttl ? Date.now() + ttl : 0;
     this.cache.set(key, { value, expires });
+
+    // 超过上限时移除最旧条目，防止内存泄漏
+    if (this.cache.size > this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey !== undefined) this.cache.delete(firstKey);
+    }
   }
 
   delete(key: string): void {
