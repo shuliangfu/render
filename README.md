@@ -1,6 +1,8 @@
 # @dreamer/render
 
-> 一个专注于渲染逻辑的库，提供 SSR、CSR、Hydration 和 SSG 功能，支持 React、Preact 两个模板引擎
+> A rendering library for SSR, CSR, Hydration, and SSG, supporting React and Preact
+
+English | [中文 (Chinese)](./README-zh.md)
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
@@ -8,13 +10,13 @@
 
 ---
 
-## 🎯 功能
+## 🎯 Features
 
-渲染库，提供统一的渲染抽象层，支持多种模板引擎，用于服务端渲染、客户端渲染、水合和静态站点生成等场景。
+Rendering library with a unified abstraction layer, supporting multiple template engines for SSR, CSR, Hydration, and SSG.
 
 ---
 
-## 📦 安装
+## 📦 Installation
 
 ### Deno
 
@@ -30,97 +32,85 @@ bunx jsr add @dreamer/render
 
 ---
 
-## 🌍 环境兼容性
+## 🌍 Environment Compatibility
 
-| 环境 | 版本要求 | 状态 |
-|------|---------|------|
-| **Deno** | 2.5+ | ✅ 完全支持 |
-| **Bun** | 1.0+ | ✅ 完全支持 |
-| **浏览器** | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration） |
-| **React** | 18+ | ✅ 完全支持 |
-| **Preact** | 10+ | ✅ 完全支持 |
-| **依赖** | - | 📦 需要对应的模板引擎包（React、Preact） |
-
----
-
-## ✨ 特性
-
-- **多模板引擎支持**：
-  - React 18+ 支持
-  - Preact 10+ 支持
-  - 统一的渲染接口
-- **服务端渲染（SSR）**：
-  - 在服务端将组件渲染为 HTML 字符串
-  - 支持流式渲染（React、Preact）
-  - 支持 HTML 模板包装
-  - 支持元数据管理
-  - 支持服务端数据注入
-  - 支持布局系统
-  - 支持脚本提取和注入
-- **客户端渲染（CSR）**：
-  - 在浏览器中将组件渲染到 DOM
-  - 返回卸载函数和更新函数
-  - 支持性能监控
-  - 支持错误处理
-  - 支持布局系统
-- **水合（Hydration）**：
-  - 将 SSR 生成的 HTML 与客户端 JS 连接
-  - 恢复交互性
-  - React 支持严格模式
-  - 支持性能监控
-  - 支持错误处理
-- **静态站点生成（SSG）**：
-  - 构建时预渲染所有路由为静态 HTML 文件
-  - 支持多路由生成
-  - 支持动态路由展开
-  - 自动生成 sitemap.xml
-  - 自动生成 robots.txt
-- **高级功能**：
-  - 元数据管理（静态、同步、异步）
-  - 数据注入（通过 `load` 方法）
-  - 布局系统（单层和多层嵌套，支持 `inheritLayout = false` 跳过）
-  - 脚本管理（自动提取和注入）
-  - 错误处理（错误捕获和降级）
-  - 性能监控（渲染时间统计）
-  - 元数据缓存（可选缓存机制）
-  - 数据压缩（减少 HTML 体积）
-  - 数据懒加载（优化首屏性能）
-  - Context API（动态设置元数据和数据）
-
-**设计原则**：
-
-- **主包（@dreamer/render）**：用于服务端（兼容 Deno 和 Bun 运行时）
-- **客户端子包（@dreamer/render/client）**：用于客户端（浏览器环境）
+| Environment | Version | Status |
+|-------------|---------|--------|
+| **Deno** | 2.5+ | ✅ Full support |
+| **Bun** | 1.0+ | ✅ Full support |
+| **Browser** | Modern (ES2020+) | ✅ CSR, Hydration |
+| **React** | 18+ | ✅ Full support |
+| **Preact** | 10+ | ✅ Full support |
+| **Dependencies** | - | 📦 Requires template engine (React/Preact) |
 
 ---
 
-## 🎯 使用场景
+## ✨ Characteristics
 
-- **服务端渲染（SSR）**：需要 SEO 优化的应用，首屏性能优化
-- **客户端渲染（CSR）**：交互性强的单页应用
-- **水合（Hydration）**：SSR + CSR 混合应用，提升用户体验
-- **静态站点生成（SSG）**：博客、文档站点、营销页面
-- **多模板引擎支持**：根据项目需求选择 React 或 Preact
-- **元数据管理**：SEO 优化，社交分享（OG、Twitter Card）
-- **数据注入**：服务端数据传递到客户端
-- **布局系统**：统一的页面布局管理
+- **Multi-engine**:
+  - React 18+
+  - Preact 10+
+  - Unified render API
+- **SSR**:
+  - Render components to HTML on server
+  - Streaming (React, Preact)
+  - HTML template wrapping
+  - Metadata, server data injection, layout system
+  - Script extraction and injection
+- **CSR**:
+  - Render to DOM in browser
+  - Unmount and update functions
+  - Performance monitoring, error handling, layouts
+- **Hydration**:
+  - Connect SSR HTML with client JS
+  - Restore interactivity
+  - React strict mode, performance, error handling
+- **SSG**:
+  - Pre-render routes to static HTML at build time
+  - Multi-route, dynamic route expansion
+  - Auto sitemap.xml, robots.txt
+- **Advanced**:
+  - Metadata (static, sync, async)
+  - Data injection via `load`
+  - Layout system (nested, `inheritLayout = false`)
+  - Script management, error handling, performance monitoring
+  - Metadata cache, compression, lazy-loading
+  - Context API
+
+**Design**:
+
+- **Main package (@dreamer/render)**: Server (Deno/Bun)
+- **Client subpath (@dreamer/render/client)**: Browser
 
 ---
 
-## 🚀 快速开始
+## 🎯 Use Cases
 
-### 服务端渲染（SSR）
+- **SSR**: SEO, first-screen performance
+- **CSR**: Interactive SPAs
+- **Hydration**: SSR + CSR hybrid
+- **SSG**: Blogs, docs, marketing pages
+- **Multi-engine**: Choose React or Preact
+- **Metadata**: SEO, OG, Twitter Card
+- **Data injection**: Server → client
+- **Layout system**: Unified page layouts
+
+---
+
+## 🚀 Quick Start
+
+### Server-Side Rendering (SSR)
 
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
 import React from "react";
 
-// 定义组件
+// Define component
 function App({ name }: { name: string }) {
   return React.createElement("div", null, `Hello, ${name}!`);
 }
 
-// 渲染为 HTML（自动注入，无需手动添加插入点标签）
+// Render to HTML (auto-injected, no manual insertion points)
 const result = await renderSSR({
   engine: "react",
   component: App,
@@ -131,120 +121,120 @@ const result = await renderSSR({
 console.log(result.html);
 ```
 
-### 客户端渲染（CSR）
+### Client-Side Rendering (CSR)
 
 ```typescript
-// 客户端代码使用 /client 子路径
+// Client code uses /client subpath
 import { renderCSR } from "jsr:@dreamer/render/client";
 import React from "react";
 
-// 定义组件
+// Define component
 function App({ name }: { name: string }) {
   return React.createElement("div", null, `Hello, ${name}!`);
 }
 
-// 在浏览器中渲染（必须在浏览器环境）
+// Render in browser (must run in browser)
 const result = renderCSR({
   engine: "react",
   component: App,
   props: { name: "World" },
   container: "#app",
-  // 可选：错误处理
+  // Optional: error handling
   errorHandler: {
     onError: (error, context) => {
-      console.error(`渲染错误 [${context.phase}]:`, error);
+      console.error(`Render error [${context.phase}]:`, error);
     },
     logError: true,
   },
-  // 可选：性能监控
+  // Optional: performance monitoring
   performance: {
     enabled: true,
     onMetrics: (metrics) => {
-      console.log(`渲染耗时: ${metrics.duration}ms`);
+      console.log(`Render duration: ${metrics.duration}ms`);
     },
-    slowThreshold: 100, // 超过 100ms 标记为慢渲染
+    slowThreshold: 100, // Mark as slow if > 100ms
   },
 });
 
-// 后续可以更新或卸载
+// Can update or unmount later
 // result.update({ name: "Deno" });
 // result.unmount();
 ```
 
-### 水合（Hydration）
+### Hydration
 
 ```typescript
-// 客户端代码使用 /client 子路径
+// Client code uses /client subpath
 import { hydrate } from "jsr:@dreamer/render/client";
 import React from "react";
 
-// 定义组件（必须与 SSR 使用的组件相同）
+// Define component (must match SSR component)
 function App({ name }: { name: string }) {
   return React.createElement("div", null, `Hello, ${name}!`);
 }
 
-// 水合 SSR 生成的 HTML（必须在浏览器环境）
+// Hydrate SSR HTML (must run in browser)
 const result = hydrate({
   engine: "react",
   component: App,
   props: { name: "World" },
   container: "#app",
-  strictMode: true, // 仅 React 支持
-  // 可选：错误处理和性能监控（与 CSR 相同）
+  strictMode: true, // React only
+  // Optional: error handling and performance (same as CSR)
   errorHandler: {
     onError: (error, context) => {
-      console.error(`水合错误:`, error);
+      console.error(`Hydration error:`, error);
     },
   },
   performance: {
     enabled: true,
     onMetrics: (metrics) => {
-      console.log(`水合耗时: ${metrics.duration}ms`);
+      console.log(`Hydration duration: ${metrics.duration}ms`);
     },
   },
 });
 
-// 后续可以更新或卸载
+// Can update or unmount later
 // result.update({ name: "Deno" });
 // result.unmount();
 ```
 
-### 静态站点生成（SSG）
+### Static Site Generation (SSG)
 
 ```typescript
 import { renderSSG } from "jsr:@dreamer/render";
 import React from "react";
 
-// 定义应用组件
+// Define app component
 function App() {
   return React.createElement("div", null, "Hello, SSG!");
 }
 
-// 生成静态 HTML 文件
+// Generate static HTML files
 const files = await renderSSG({
   engine: "react",
   routes: ["/", "/about"],
   outputDir: "./dist",
   loadRouteComponent: async (route) => {
-    // 动态加载路由组件
+    // Dynamically load route component
     if (route === "/") {
       return App;
     }
-    // ... 其他路由
+    // ... other routes
     return App;
   },
   generateSitemap: true,
   generateRobots: true,
 });
 
-console.log(`生成了 ${files.length} 个文件`);
+console.log(`Generated ${files.length} files`);
 ```
 
 ---
 
-## 🎨 使用示例
+## 🎨 Examples
 
-### 元数据管理
+### Metadata Management
 
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
@@ -255,17 +245,17 @@ function Page() {
   return React.createElement("div", null, "Content");
 }
 
-// 静态元数据
+// Static metadata
 (Page as any).metadata = {
-  title: "页面标题",
-  description: "页面描述",
+  title: "Page Title",
+  description: "Page description",
   og: {
-    title: "OG 标题",
+    title: "OG Title",
     image: "https://example.com/image.jpg",
   },
 } as Metadata;
 
-// 或者使用函数（同步或异步）
+// Or use function (sync or async)
 (Page as any).metadata = async (context: LoadContext) => {
   const data = await fetchData(context.url);
   return {
@@ -278,11 +268,11 @@ const result = await renderSSR({
   engine: "react",
   component: Page,
   template: "<html><head></head><body></body></html>",
-  // 元数据、数据脚本、脚本标签会自动注入到合适位置
+  // Metadata, data script, script tags auto-injected
 });
 ```
 
-### 服务端数据注入
+### Server Data Injection
 
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
@@ -293,7 +283,7 @@ function Page({ user }: { user: { name: string } }) {
   return React.createElement("div", null, `Hello, ${user.name}!`);
 }
 
-// 定义 load 方法
+// Define load method
 (Page as any).load = async (context: LoadContext): Promise<ServerData> => {
   const userId = context.params.id;
   const user = await fetchUser(userId);
@@ -308,20 +298,20 @@ const result = await renderSSR({
     params: { id: "123" },
   },
   template: "<html><body></body></html>",
-  // 数据会自动注入到 </head> 之前
+  // Data auto-injected before </head>
 });
 
-// 数据会自动注入到 window.__DATA__.page
+// Data auto-injected to window.__DATA__.page
 ```
 
-### 布局系统
+### Layout System
 
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
 import React from "react";
 import type { LayoutComponent } from "jsr:@dreamer/render";
 
-// 定义布局组件
+// Define layout components
 function OuterLayout({ children }: { children: React.ReactNode }) {
   return React.createElement("div", { className: "outer" }, children);
 }
@@ -330,24 +320,24 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   return React.createElement("div", { className: "inner" }, children);
 }
 
-// 定义布局配置（从外到内）
+// Define layouts (outer to inner)
 const layouts: LayoutComponent[] = [
   { component: OuterLayout, props: {} },
   { component: InnerLayout, props: {} },
 ];
 
-// 使用布局
+// Use layouts
 const result = await renderSSR({
   engine: "react",
   component: Page,
   layouts,
 });
 
-// 跳过布局：在组件上导出 inheritLayout = false
+// Skip layout: export inheritLayout = false on component
 (Page as any).inheritLayout = false;
 ```
 
-### 脚本提取和注入
+### Script Extraction and Injection
 
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
@@ -358,7 +348,7 @@ function Page() {
   return React.createElement("div", null, "Content");
 }
 
-// 定义脚本
+// Define scripts
 (Page as any).scripts = [
   {
     src: "/js/main.js",
@@ -366,7 +356,7 @@ function Page() {
     priority: 1,
   },
   {
-    content: "console.log('内联脚本');",
+    content: "console.log('inline script');",
     priority: 2,
   },
 ] as ScriptDefinition[];
@@ -375,134 +365,131 @@ const result = await renderSSR({
   engine: "react",
   component: Page,
   template: "<html><body></body></html>",
-  // 脚本会自动注入到 </body> 之前
+  // Scripts auto-injected before </body>
 });
 ```
 
 ---
 
-## 📚 API 文档
+## 📚 API Reference
 
-### 核心函数
+### Core Functions
 
 #### `renderSSR(options: SSROptions): Promise<RenderResult>`
 
-服务端渲染函数，根据指定的模板引擎类型，调用对应的适配器进行服务端渲染。
+Server-side render function. Uses the adapter for the specified engine.
 
-**选项**：
+**Options**:
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型（"react" \| "preact"） |
-| `component` | `unknown` | ✅ | 组件（React/Preact 组件） |
-| `props` | `Record<string, unknown>` | ❌ | 组件属性 |
-| `layouts` | `LayoutComponent[]` | ❌ | 布局组件列表（从外到内） |
-| `template` | `string` | ❌ | HTML 模板（用于包装渲染结果） |
-| `stream` | `boolean` | ❌ | 是否启用流式渲染（仅 React、Preact） |
-| `loadContext` | `LoadContext` | ❌ | Load Context（传递给 load 方法和 metadata 函数） |
-| `errorHandler` | `ErrorHandler` | ❌ | 错误处理选项 |
-| `performance` | `PerformanceOptions` | ❌ | 性能监控选项 |
-| `metadataCache` | `CacheOptions` | ❌ | 元数据缓存选项 |
-| `compression` | `CompressionOptions` | ❌ | 数据压缩选项 |
-| `contextData` | `ContextData` | ❌ | Context API 数据 |
-| `lazyData` | `boolean` | ❌ | 是否启用数据懒加载 |
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `engine` | `Engine` | ✅ | Engine ("react" \| "preact") |
+| `component` | `unknown` | ✅ | Component |
+| `props` | `Record<string, unknown>` | ❌ | Component props |
+| `layouts` | `LayoutComponent[]` | ❌ | Layouts (outer to inner) |
+| `template` | `string` | ❌ | HTML template |
+| `stream` | `boolean` | ❌ | Enable streaming (React, Preact) |
+| `loadContext` | `LoadContext` | ❌ | Context for load and metadata |
+| `errorHandler` | `ErrorHandler` | ❌ | Error handling |
+| `performance` | `PerformanceOptions` | ❌ | Performance monitoring |
+| `metadataCache` | `CacheOptions` | ❌ | Metadata cache |
+| `compression` | `CompressionOptions` | ❌ | Data compression |
+| `contextData` | `ContextData` | ❌ | Context API data |
+| `lazyData` | `boolean` | ❌ | Enable lazy data loading |
 
-**返回**：渲染结果，包含 HTML、元数据、数据等
+**Returns**: Render result (HTML, metadata, data)
 
 #### `renderCSR(options: CSROptions): CSRRenderResult`
 
-> **导入路径**: `@dreamer/render/client`
+> **Import**: `@dreamer/render/client`
 
-客户端渲染函数，根据指定的模板引擎类型，调用对应的适配器进行客户端渲染。
+Client-side render function.
 
-**选项**：
+**Options**:
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型 |
-| `component` | `unknown` | ✅ | 组件 |
-| `props` | `Record<string, unknown>` | ❌ | 组件属性 |
-| `container` | `string \| HTMLElement` | ✅ | 挂载容器（DOM 元素或选择器） |
-| `layouts` | `unknown[]` | ❌ | 布局组件列表（从外到内） |
-| `errorHandler` | `ErrorHandler` | ❌ | 错误处理选项 |
-| `performance` | `PerformanceOptions` | ❌ | 性能监控选项 |
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `engine` | `Engine` | ✅ | Engine type |
+| `component` | `unknown` | ✅ | Component |
+| `props` | `Record<string, unknown>` | ❌ | Props |
+| `container` | `string \| HTMLElement` | ✅ | Mount container |
+| `layouts` | `unknown[]` | ❌ | Layouts (outer to inner) |
+| `errorHandler` | `ErrorHandler` | ❌ | Error handling |
+| `performance` | `PerformanceOptions` | ❌ | Performance monitoring |
 
-**返回**：`CSRRenderResult`
-- `unmount(): void`: 卸载组件
-- `update(props: Record<string, unknown>): void`: 更新组件属性
-- `metrics?: PerformanceMetrics`: 性能指标（如果启用性能监控）
+**Returns**: `CSRRenderResult`
+- `unmount(): void`: Unmount component
+- `update(props): void`: Update props
+- `metrics?: PerformanceMetrics`: Metrics (if enabled)
 
-**注意**：此函数只能在浏览器环境中运行。
+**Note**: Browser only.
 
 #### `hydrate(options: HydrationOptions): HydrationResult`
 
-> **导入路径**: `@dreamer/render/client`
+> **Import**: `@dreamer/render/client`
 
-水合函数，将 SSR 生成的 HTML 与客户端 JS 连接，恢复交互性。
+Hydrate SSR HTML with client JS.
 
-**选项**：
+**Options**:
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型 |
-| `component` | `unknown` | ✅ | 组件（必须与 SSR 使用的组件相同） |
-| `props` | `Record<string, unknown>` | ❌ | 组件属性 |
-| `container` | `string \| HTMLElement` | ✅ | 挂载容器 |
-| `layouts` | `unknown[]` | ❌ | 布局组件列表 |
-| `strictMode` | `boolean` | ❌ | 是否启用严格模式（仅 React） |
-| `errorHandler` | `ErrorHandler` | ❌ | 错误处理选项 |
-| `performance` | `PerformanceOptions` | ❌ | 性能监控选项 |
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `engine` | `Engine` | ✅ | Engine type |
+| `component` | `unknown` | ✅ | Component (must match SSR) |
+| `props` | `Record<string, unknown>` | ❌ | Props |
+| `container` | `string \| HTMLElement` | ✅ | Mount container |
+| `layouts` | `unknown[]` | ❌ | Layouts |
+| `strictMode` | `boolean` | ❌ | Strict mode (React only) |
+| `errorHandler` | `ErrorHandler` | ❌ | Error handling |
+| `performance` | `PerformanceOptions` | ❌ | Performance monitoring |
 
-**返回**：`HydrationResult`
-- `unmount(): void`: 卸载组件
-- `update(props: Record<string, unknown>): void`: 更新组件属性
-- `metrics?: PerformanceMetrics`: 性能指标（如果启用性能监控）
+**Returns**: `HydrationResult` (unmount, update, metrics)
 
-**注意**：此函数只能在浏览器环境中运行。
+**Note**: Browser only.
 
 #### `renderSSG(options: SSGOptions): Promise<string[]>`
 
-静态站点生成函数，预渲染所有路由为静态 HTML 文件。
+Static site generation. Pre-render routes to static HTML.
 
-**选项**：
+**Options**:
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型 |
-| `routes` | `string[]` | ✅ | 路由列表 |
-| `outputDir` | `string` | ✅ | 输出目录 |
-| `loadRouteComponent` | `(route: string) => Promise<unknown>` | ✅ | 路由组件加载函数 |
-| `loadRouteData` | `(route: string) => Promise<Record<string, unknown>>` | ❌ | 路由数据加载函数 |
-| `template` | `string` | ❌ | HTML 模板 |
-| `generateSitemap` | `boolean` | ❌ | 是否生成 sitemap.xml |
-| `generateRobots` | `boolean` | ❌ | 是否生成 robots.txt |
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `engine` | `Engine` | ✅ | Engine type |
+| `routes` | `string[]` | ✅ | Route list |
+| `outputDir` | `string` | ✅ | Output directory |
+| `loadRouteComponent` | `(route) => Promise<unknown>` | ✅ | Route component loader |
+| `loadRouteData` | `(route) => Promise<Record<string, unknown>>` | ❌ | Route data loader |
+| `template` | `string` | ❌ | HTML template |
+| `generateSitemap` | `boolean` | ❌ | Generate sitemap.xml |
+| `generateRobots` | `boolean` | ❌ | Generate robots.txt |
 
-**返回**：生成的文件路径列表
+**Returns**: Generated file paths
 
-### 辅助函数
+### Helper Functions
 
 #### `generateSitemap(routes: string[], baseUrl?: string): string`
 
-生成 sitemap.xml 内容。
+Generate sitemap.xml content.
 
 #### `generateRobots(allowAll?: boolean, disallowPaths?: string[]): string`
 
-生成 robots.txt 内容。
+Generate robots.txt content.
 
 #### `expandDynamicRoute(route: string, params: string[]): string[]`
 
-展开动态路由。
+Expand dynamic routes.
 
 ```typescript
 const routes = expandDynamicRoute("/user/[id]", ["1", "2", "3"]);
 // => ["/user/1", "/user/2", "/user/3"]
 ```
 
-### 类型定义
+### Type Definitions
 
 #### `Engine`
 
-支持的模板引擎类型：
+Supported engines:
 
 ```typescript
 type Engine = "react" | "preact";
@@ -510,7 +497,7 @@ type Engine = "react" | "preact";
 
 #### `Metadata`
 
-元数据定义：
+Metadata definition:
 
 ```typescript
 interface Metadata {
@@ -537,7 +524,7 @@ interface Metadata {
 
 #### `LoadContext`
 
-Load 方法的上下文：
+Context for load method:
 
 ```typescript
 interface LoadContext {
@@ -550,7 +537,7 @@ interface LoadContext {
 
 #### `LayoutComponent`
 
-布局组件定义：
+Layout component:
 
 ```typescript
 interface LayoutComponent {
@@ -562,7 +549,7 @@ interface LayoutComponent {
 
 #### `ScriptDefinition`
 
-脚本定义：
+Script definition:
 
 ```typescript
 interface ScriptDefinition {
@@ -576,17 +563,17 @@ interface ScriptDefinition {
 }
 ```
 
-### 客户端类型定义
+### Client Type Definitions
 
-> **导入路径**: `@dreamer/render/client`
+> **Import**: `@dreamer/render/client`
 
-#### `ErrorHandler`（客户端）
+#### `ErrorHandler` (client)
 
-客户端错误处理选项：
+Client error handling:
 
 ```typescript
 interface ErrorHandler {
-  // 错误回调函数
+  // Error callback
   onError?: (
     error: Error,
     context: {
@@ -595,105 +582,105 @@ interface ErrorHandler {
       phase: "csr" | "hydrate";
     }
   ) => void | Promise<void>;
-  // 降级组件
+  // Fallback component
   fallbackComponent?: unknown;
-  // 是否记录错误到控制台（默认 true）
+  // Log error to console (default true)
   logError?: boolean;
 }
 ```
 
-#### `PerformanceOptions`（客户端）
+#### `PerformanceOptions` (client)
 
-客户端性能监控选项：
+Client performance options:
 
 ```typescript
 interface PerformanceOptions {
-  // 是否启用性能监控
+  // Enable performance monitoring
   enabled?: boolean;
-  // 性能指标回调
+  // Metrics callback
   onMetrics?: (metrics: PerformanceMetrics) => void;
-  // 慢渲染阈值（毫秒，默认 100）
+  // Slow render threshold in ms (default 100)
   slowThreshold?: number;
 }
 ```
 
-#### `PerformanceMetrics`（客户端）
+#### `PerformanceMetrics` (client)
 
-客户端性能指标：
+Client performance metrics:
 
 ```typescript
 interface PerformanceMetrics {
-  // 渲染开始时间
+  // Render start time
   startTime: number;
-  // 渲染结束时间
+  // Render end time
   endTime: number;
-  // 渲染耗时（毫秒）
+  // Duration in ms
   duration: number;
-  // 使用的模板引擎
+  // Engine used
   engine: Engine;
-  // 渲染阶段
+  // Phase
   phase: "csr" | "hydrate";
-  // 是否为慢渲染
+  // Is slow render
   isSlow?: boolean;
 }
 ```
 
 ---
 
-## ⚡ 性能优化
+## ⚡ Performance
 
-- **流式渲染**：React 和 Preact 支持流式渲染，提高首屏性能
-- **元数据缓存**：可选的元数据缓存机制，减少重复计算
-- **数据压缩**：支持大数据压缩，减少 HTML 体积
-- **数据懒加载**：支持大数据懒加载，优化首屏性能
-- **脚本优先级**：支持脚本优先级排序，优化加载顺序
-- **性能监控**：内置性能监控，记录渲染时间
-- **错误处理**：完善的错误捕获和降级机制
-
----
-
-## 📊 测试报告
-
-| 指标 | 数值 |
-|------|------|
-| 测试时间 | 2026-02-03 |
-| 总测试数 | 231 |
-| 通过 | 231 ✅ |
-| 失败 | 0 |
-| 通过率 | 100% |
-| 执行时间 | ~32s（`deno test -A`） |
-
-| 运行时 | 版本 | 测试结果 |
-|--------|------|----------|
-| Deno | 2.6.4 | ✅ 231 passed |
-| Bun | 1.3.5 | ✅ 231 passed |
-
-详细测试报告请查看 [TEST_REPORT.md](./TEST_REPORT.md)
+- **Streaming**: React and Preact support streaming for faster first paint
+- **Metadata cache**: Optional cache to reduce repeated computation
+- **Data compression**: Reduce HTML size
+- **Lazy data loading**: Optimize first-screen performance
+- **Script priority**: Scripts sorted by priority
+- **Performance monitoring**: Built-in render timing
+- **Error handling**: Error capture and fallback
 
 ---
 
-## 📝 注意事项
+## 📊 Test Report
 
-- **服务端和客户端分离**：通过 `/client` 子路径明确区分服务端和客户端代码
-- **统一接口**：服务端和客户端使用相同的 API 接口，降低学习成本
-- **多模板引擎支持**：支持 React、Preact，根据项目需求选择
-- **类型安全**：完整的 TypeScript 类型支持
-- **组件导出约定**：组件可以导出 `metadata`、`load`、`scripts`、`inheritLayout` 等属性
-- **元数据合并策略**：采用深度合并策略，页面的元数据会覆盖布局的元数据
-- **数据注入**：数据自动注入到 `window.__DATA__` 中，客户端可以通过 `globalThis.__DATA__` 访问
-- **布局系统**：支持单层和多层嵌套布局，可以通过 `inheritLayout = false` 跳过布局
+| Metric | Value |
+|--------|-------|
+| Test date | 2026-02-03 |
+| Total tests | 203 |
+| Passed | 203 ✅ |
+| Failed | 0 |
+| Pass rate | 100% |
+| Duration | ~25s (`deno test -A`) |
+
+| Runtime | Version | Result |
+|---------|---------|--------|
+| Deno | 2.6.4 | ✅ 203 passed |
+| Bun | 1.3.5 | ✅ 203 passed |
+
+See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ---
 
-## 🤝 贡献
+## 📝 Notes
 
-欢迎提交 Issue 和 Pull Request！
+- **Server/client separation**: Use `/client` subpath for client code
+- **Unified API**: Same API for server and client
+- **Multi-engine**: React or Preact
+- **Type safety**: Full TypeScript support
+- **Component exports**: `metadata`, `load`, `scripts`, `inheritLayout`
+- **Metadata merge**: Deep merge; page metadata overrides layout
+- **Data injection**: Auto-injected to `window.__DATA__`; access via `globalThis.__DATA__`
+- **Layout system**: Single or nested layouts; `inheritLayout = false` to skip
 
 ---
 
-## 📄 许可证
+## 🤝 Contributing
 
-MIT License - 详见 [LICENSE.md](./LICENSE.md)
+Issues and Pull Requests are welcome!
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE.md](./LICENSE.md)
 
 ---
 
