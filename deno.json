@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/render",
-  "version": "1.0.0-beta.18",
+  "version": "1.0.0",
   "license": "MIT",
   "exports": {
     ".": "./src/mod.ts",
@@ -36,13 +36,14 @@
     }
   },
   "imports": {
-    "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@^1.0.0-beta.22",
-    "@dreamer/test": "jsr:@dreamer/test@^1.0.0-beta.40",
+    "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@^1.0.0",
+    "@dreamer/test": "jsr:@dreamer/test@^1.0.0",
+
     "react": "npm:react@18.3.1",
     "react-dom/server": "npm:react-dom@18.3.1/server",
     "react-dom/client": "npm:react-dom@18.3.1/client",
     "preact": "npm:preact@10.28.0",
-    "preact-render-to-string": "npm:preact-render-to-string@^6.2.0"
+    "preact-render-to-string": "npm:preact-render-to-string@6.2.0"
   },
   "nodeModulesDir": "auto",
   "compilerOptions": {
