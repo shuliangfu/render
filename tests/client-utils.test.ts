@@ -183,6 +183,23 @@ describe("客户端工具函数测试", () => {
         expect(result.props.children.type).toBe("span");
         expect(result.props.children.props.className).toBe("inner");
       });
+
+      it("component 为 undefined 时应抛出包含 invalid component 的错误", () => {
+        const mockCreateElement = (
+          _type: unknown,
+          _props: unknown,
+          ..._children: unknown[]
+        ) => ({});
+
+        const config = {
+          component: undefined,
+          props: {},
+        };
+
+        expect(() =>
+          createComponentTree(mockCreateElement, config)
+        ).toThrow(/invalid component.*expected function, object or string.*actual: undefined/);
+      });
     });
   });
 

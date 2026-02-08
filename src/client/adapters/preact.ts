@@ -42,6 +42,14 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     performance: perfOptions,
   } = options;
 
+  // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"）
+  if (component == null || typeof component !== "function" && typeof component !== "object") {
+    const actual = component === undefined ? "undefined" : typeof component;
+    throw new Error(
+      `Invalid component: expected function or object, got ${actual}`,
+    );
+  }
+
   // 性能监控
   const perfMonitor = createPerformanceMonitor(perfOptions);
   if (perfMonitor) {
@@ -54,7 +62,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     : container;
 
   if (!containerElement) {
-    throw new Error(`容器元素未找到: ${container}`);
+    throw new Error(`Container element not found: ${container}`);
   }
 
   try {
@@ -158,6 +166,13 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     performance: perfOptions,
   } = options;
 
+  // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"，常见于 Windows 路径匹配失败）
+  if (component == null || typeof component !== "function" && typeof component !== "object") {
+    throw new Error(
+      `Hydration 组件无效: 期望函数或对象，实际为 ${component === undefined ? "undefined" : typeof component}`,
+    );
+  }
+
   // 性能监控
   const perfMonitor = createPerformanceMonitor(perfOptions);
   if (perfMonitor) {
@@ -170,7 +185,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     : container;
 
   if (!containerElement) {
-    throw new Error(`容器元素未找到: ${container}`);
+    throw new Error(`Container element not found: ${container}`);
   }
 
   try {

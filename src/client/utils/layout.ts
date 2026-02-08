@@ -72,15 +72,24 @@ export function composeLayouts(
     return { component, props };
   }
 
-  // 从内到外包装组件
+  // 从内到外包装组件，过滤掉 component 为 undefined 的布局（避免 "undefined is not a function"）
+  // 允许：function（组件）、object（如 forwardRef）、string（组件标识符，如 "OuterLayout"）
+  const validLayouts = layouts.filter(
+    (l) =>
+      l.component != null &&
+      (typeof l.component === "function" ||
+        typeof l.component === "object" ||
+        typeof l.component === "string"),
+  );
+
   let wrapped: { component: unknown; props: Record<string, unknown> } = {
     component,
     props,
   };
 
   // 从最内层布局开始包装
-  for (let i = layouts.length - 1; i >= 0; i--) {
-    const layout = layouts[i];
+  for (let i = validLayouts.length - 1; i >= 0; i--) {
+    const layout = validLayouts[i];
     wrapped = {
       component: layout.component,
       props: {
@@ -109,6 +118,18 @@ export function createComponentTree(
   config: { component: unknown; props: Record<string, unknown> },
 ): unknown {
   const { component, props } = config;
+
+  // 防御：component 为 undefined 时 Preact/React 会报 "(void 0) is not a function"
+  // 允许：function（组件）、object（如 forwardRef）、string（原生元素如 "div"）
+  if (
+    component == null ||
+    (typeof component !== "function" && typeof component !== "object" && typeof component !== "string")
+  ) {
+    const actual = component === undefined ? "undefined" : typeof component;
+    throw new Error(
+      `createComponentTree: invalid component (expected function, object or string, actual: ${actual})`,
+    );
+  }
 
   // 处理嵌套的 children
   if (props.children && typeof props.children === "object") {
