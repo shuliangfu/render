@@ -676,9 +676,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.3**（2026-02-08）
+**v1.0.5**（2026-02-08）
 
-- **修复**：childConfig.component 为 falsy 时不再传给 createElement，修复 Windows 下 `(void 0) is not a function` 报错
+- **修复**：React 客户端适配器改用具名导入 `createElement` 替代默认导入 `React`，修复浏览器打包时的 `_.default.createElement is not a function` 报错
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 

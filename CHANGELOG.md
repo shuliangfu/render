@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.5] - 2026-02-08
+
+### Fixed
+
+- **React client adapter**: Use named import `createElement` instead of default import `React` to fix `_.default.createElement is not a function` interop issue when bundling for browser (e.g. dweb CSR/SSR client builds).
+
+---
+
 ## [1.0.4] - 2026-02-08
 
 ### Fixed

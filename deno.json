@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/render",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "exports": {
     ".": "./src/mod.ts",
