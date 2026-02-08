@@ -255,8 +255,10 @@ export interface SSGOptions {
   ) => Promise<Array<{ component: unknown; props?: Record<string, unknown> }>>;
   /** 路由数据加载函数（可选，用于预取数据） */
   loadRouteData?: (route: string) => Promise<Record<string, unknown>>;
-  /** HTML 模板 */
+  /** HTML 模板（不传则直接使用 _app 等布局的输出） */
   template?: string;
+  /** 注入到 </head> 前的内容（如 link 标签），用于在 _app 输出的 head 中插入 */
+  headInject?: string;
   /** 是否生成纯静态 HTML（无 JavaScript） */
   pureHTML?: boolean;
   /** 是否注入数据到 HTML（用于 Hydration，默认 false） */

@@ -190,6 +190,35 @@ describe("SSG 高级功能", () => {
 
       await cleanup();
     });
+
+    it("应该支持 headInject 在 </head> 前注入内容", async () => {
+      await cleanup();
+
+      const Component = () => React.createElement("div", null, "Content");
+      const template = "<html><head><title>Test</title></head><body><!--ssr-outlet--></body></html>";
+      const headInject = '<link rel="stylesheet" href="/style.css">\n<link rel="preload" href="/font.woff2">';
+
+      const files = await renderSSG({
+        engine: "react",
+        routes: ["/"],
+        outputDir: testOutputDir,
+        loadRouteComponent: async () => Component,
+        template,
+        headInject,
+      });
+
+      const content = await readTextFile(join(testOutputDir, "index.html"));
+      expect(content).toContain("Content");
+      // headInject 应出现在 </head> 前
+      expect(content).toContain('<link rel="stylesheet" href="/style.css">');
+      expect(content).toContain('<link rel="preload" href="/font.woff2">');
+      // 验证顺序：headInject 在 </head> 之前
+      const headCloseIndex = content.indexOf("</head>");
+      const linkIndex = content.indexOf('<link rel="stylesheet"');
+      expect(linkIndex).toBeLessThan(headCloseIndex);
+
+      await cleanup();
+    });
   });
 
   describe("自定义选项", () => {
