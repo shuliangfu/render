@@ -659,6 +659,19 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ---
 
+## 📋 Changelog
+
+**v1.0.1** (2026-02-08)
+
+- **Added**: `headInject` option in `SSGOptions` for injecting content before `</head>`
+- **Added**: `scheduler` dependency to fix browser bundle
+- **Fixed**: Skip 4 browser tests on Windows CI
+- **Changed**: `template` is optional in SSG
+
+See [CHANGELOG.md](./CHANGELOG.md) for full history.
+
+---
+
 ## 📝 Notes
 
 - **Server/client separation**: Use `/client` subpath for client code

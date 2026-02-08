@@ -674,6 +674,19 @@ interface PerformanceMetrics {
 
 ---
 
+## 📋 变更日志
+
+**v1.0.1**（2026-02-08）
+
+- **新增**：`SSGOptions.headInject` 在 `</head>` 前注入内容
+- **新增**：`scheduler` 依赖以修复浏览器 bundle
+- **修复**：Windows CI 上跳过 4 个浏览器测试
+- **变更**：SSG 的 `template` 可选
+
+完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
+
+---
+
 ## 📝 注意事项
 
 - **服务端和客户端分离**：通过 `/client` 子路径明确区分服务端和客户端代码
