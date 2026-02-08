@@ -38,7 +38,7 @@ export async function handleRenderError(
 
   if (shouldLog) {
     console.error(
-      `[Render Error] ${context.phase.toUpperCase()} 渲染失败 (${context.engine}):`,
+      `[Render Error] ${context.phase.toUpperCase()} render failed (${context.engine}):`,
       err,
     );
   }
@@ -48,7 +48,7 @@ export async function handleRenderError(
     try {
       await handler.onError(err, context);
     } catch (handlerError) {
-      console.error("[Render Error] 错误处理函数执行失败:", handlerError);
+      console.error("[Render Error] Error handler failed:", handlerError);
     }
   }
 
@@ -70,7 +70,7 @@ export function renderErrorFallback(
   error: Error,
   phase: "csr" | "hydrate",
 ): void {
-  const phaseText = phase === "csr" ? "渲染" : "水合";
+  const phaseText = phase === "csr" ? "Render" : "Hydrate";
   container.innerHTML = `
     <div style="
       display: flex;
@@ -88,7 +88,7 @@ export function renderErrorFallback(
     ">
       <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
       <h3 style="margin: 0 0 8px; font-size: 16px; color: #dc2626;">
-        ${phaseText}出错
+        ${phaseText} error
       </h3>
       <p style="margin: 0; font-size: 14px; color: #666; text-align: center; max-width: 400px;">
         ${escapeHtml(error.message)}
@@ -107,7 +107,7 @@ export function renderErrorFallback(
           font-size: 14px;
         "
       >
-        重新加载
+        Reload
       </button>
     </div>
   `;

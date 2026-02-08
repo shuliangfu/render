@@ -203,7 +203,7 @@ describe("客户端渲染 - 浏览器测试", () => {
       return {
         hasContent: errorApp.innerHTML.length > 0,
         containsErrorMessage: errorApp.innerHTML.includes("测试错误信息"),
-        containsReloadButton: errorApp.innerHTML.includes("重新加载"),
+        containsReloadButton: errorApp.innerHTML.includes("Reload"),
       };
     });
 
@@ -254,7 +254,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     }
 
     expect(result.threw).toBe(true);
-    expect(result.message).toContain("容器元素未找到");
+    expect(result.message).toContain("Container element not found");
   }, browserConfig);
 
   it("应该在非浏览器环境检测失败", async () => {
@@ -324,7 +324,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     }
 
     expect(result.threw).toBe(true);
-    expect(result.message).toContain("容器元素未找到");
+    expect(result.message).toContain("Container element not found");
   }, browserConfig);
 
   it("React: 应该支持性能监控", async (ctx) => {
@@ -408,7 +408,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     }
 
     expect(result.threw).toBe(true);
-    expect(result.message).toContain("容器元素未找到");
+    expect(result.message).toContain("Container element not found");
   }, browserConfig);
 
   // ==================== 错误处理测试（所有引擎） ====================
@@ -441,8 +441,8 @@ describe("客户端渲染 - 浏览器测试", () => {
       return {
         hasContent: errorApp.innerHTML.length > 0,
         containsErrorMessage: errorApp.innerHTML.includes("Hydration 错误测试"),
-        containsPhaseText: errorApp.innerHTML.includes("水合出错"),
-        containsReloadButton: errorApp.innerHTML.includes("重新加载"),
+        containsPhaseText: errorApp.innerHTML.includes("Hydrate error"),
+        containsReloadButton: errorApp.innerHTML.includes("Reload"),
       };
     });
 
