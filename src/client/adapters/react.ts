@@ -3,9 +3,11 @@
  *
  * 仅包含浏览器端渲染功能（CSR、Hydration）
  * 支持错误处理、性能监控、布局组合
+ *
+ * 使用具名导入 createElement，避免 default 互操作导致的 "_.default.createElement is not a function"
  */
 
-import React from "react";
+import { createElement, type ReactNode } from "react";
 import { createRoot, hydrateRoot, type Root } from "react-dom/client";
 import type {
   CSROptions,
@@ -133,12 +135,12 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       ? composeLayouts("react", component, props, layouts, shouldSkip)
       : { component, props };
 
-    // 创建 React 元素树
+    // 创建 React 元素树（使用具名导入 createElement，避免 default 互操作问题）
     const element = createComponentTree(
       (comp: unknown, props: unknown, ...children: unknown[]) =>
-        React.createElement(comp as any, props as any, ...(children as any[])),
+        createElement(comp as any, props as any, ...(children as any[])),
       componentConfig as { component: unknown; props: Record<string, unknown> },
-    ) as React.ReactNode;
+    ) as ReactNode;
 
     // 使用缓存的 root 或创建新的（会自动清理旧 root）
     root = getOrCreateRoot(containerElement);
@@ -159,7 +161,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
         rootCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
-        const newElement = React.createElement(component as any, newProps);
+        const newElement = createElement(component as any, newProps);
         root.render(newElement);
       },
       instance: root,
@@ -176,7 +178,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
         // 使用降级组件
         try {
           const fallbackRoot = getOrCreateRoot(containerElement);
-          const fallbackElement = React.createElement(
+          const fallbackElement = createElement(
             errorHandler.fallbackComponent as any,
             { error },
           );
@@ -264,12 +266,12 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       ? composeLayouts("react", component, props, layouts, shouldSkip)
       : { component, props };
 
-    // 创建 React 元素树
+    // 创建 React 元素树（使用具名导入 createElement，避免 default 互操作问题）
     const element = createComponentTree(
       (comp: unknown, props: unknown, ...children: unknown[]) =>
-        React.createElement(comp as any, props as any, ...(children as any[])),
+        createElement(comp as any, props as any, ...(children as any[])),
       componentConfig as { component: unknown; props: Record<string, unknown> },
-    ) as React.ReactNode;
+    ) as ReactNode;
 
     // 使用 React 18 的 hydrateRoot API
     root = hydrateRoot(containerElement, element);
@@ -292,7 +294,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
         rootCache.delete(containerElement);
       },
       update: (newProps: Record<string, unknown>) => {
-        const newElement = React.createElement(component as any, newProps);
+        const newElement = createElement(component as any, newProps);
         root.render(newElement);
       },
       instance: root,
@@ -310,7 +312,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
         try {
           // 使用缓存机制创建 fallback root
           const fallbackRoot = getOrCreateRoot(containerElement);
-          const fallbackElement = React.createElement(
+          const fallbackElement = createElement(
             errorHandler.fallbackComponent as any,
             { error },
           );

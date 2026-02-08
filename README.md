@@ -661,9 +661,9 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.3** (2026-02-08)
+**v1.0.5** (2026-02-08)
 
-- **Fixed**: Avoid passing invalid childConfig to createElement when component is falsy, fixing `(void 0) is not a function` on Windows
+- **Fixed**: React client adapter: use named import `createElement` instead of default import `React` to fix `_.default.createElement is not a function` when bundling for browser
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 

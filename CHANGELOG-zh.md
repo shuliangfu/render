@@ -7,6 +7,14 @@
 
 ---
 
+## [1.0.5] - 2026-02-08
+
+### 修复
+
+- **React 客户端适配器**：改用具名导入 `createElement` 替代默认导入 `React`，修复浏览器打包时的 `_.default.createElement is not a function` 互操作问题（如 dweb CSR/SSR 客户端构建）。
+
+---
+
 ## [1.0.4] - 2026-02-08
 
 ### 修复
