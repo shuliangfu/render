@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.3] - 2026-02-08
+
+### Fixed
+
+- **Client layout**: When `childConfig.component` is falsy in `createComponentTree`, do not pass raw childConfig to `createElement` as children. Prevents Preact from attempting to render undefined, fixing `(void 0) is not a function` on Windows (e.g. path resolution or module load failure).
+
+---
+
 ## [1.0.2] - 2026-02-08
 
 ### Fixed

@@ -7,6 +7,14 @@
 
 ---
 
+## [1.0.3] - 2026-02-08
+
+### 修复
+
+- **客户端布局**：`createComponentTree` 中当 `childConfig.component` 为 falsy 时，不再将原始 childConfig 作为 children 传给 `createElement`，避免 Preact 尝试渲染 undefined，修复 Windows 下的 `(void 0) is not a function` 报错（如路径解析或模块加载失败）。
+
+---
+
 ## [1.0.2] - 2026-02-08
 
 ### 修复

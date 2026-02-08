@@ -661,11 +661,9 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.2** (2026-02-08)
+**v1.0.3** (2026-02-08)
 
-- **Fixed**: English error messages in client adapters (preact, react, error-handler)
-- **Fixed**: Allow string layout components in composeLayouts
-- **Fixed**: Allow string component in createComponentTree for native elements
+- **Fixed**: Avoid passing invalid childConfig to createElement when component is falsy, fixing `(void 0) is not a function` on Windows
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 

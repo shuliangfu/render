@@ -676,11 +676,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.2**（2026-02-08）
+**v1.0.3**（2026-02-08）
 
-- **修复**：客户端适配器错误信息改为英文（preact、react、error-handler）
-- **修复**：composeLayouts 支持 string 布局组件
-- **修复**：createComponentTree 支持 string 原生元素
+- **修复**：childConfig.component 为 falsy 时不再传给 createElement，修复 Windows 下 `(void 0) is not a function` 报错
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 
