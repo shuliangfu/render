@@ -97,6 +97,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     loadRouteLayouts,
     loadRouteData,
     template,
+    headInject,
     pureHTML = false,
     generateSitemap: shouldGenerateSitemap = false,
     generateRobots: shouldGenerateRobots = false,
@@ -191,6 +192,11 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
             }`,
           );
         }
+      }
+
+      // 若提供 headInject，在 </head> 前注入（用于在 _app 输出的 head 中插入 link 等）
+      if (headInject && html.includes("</head>")) {
+        html = html.replace(/<\/head>/i, `${headInject}\n</head>`);
       }
 
       // 如果是纯静态 HTML，移除所有脚本标签
