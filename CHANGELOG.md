@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.1] - 2026-02-08
+
+### Added
+
+- **SSG**: `headInject` option in `SSGOptions` to inject content (e.g. link tags) before `</head>` in generated HTML. Enables using `_app` output directly without wrapping template.
+- **Dependencies**: Added `scheduler` to `deno.json` imports to fix browser "Dynamic require of scheduler is not supported" when bundling React client.
+
+### Fixed
+
+- **Tests**: Skip 4 browser tests (Preact/React update, performance metrics) on Windows CI where Preact/React npm modules fail to load in browser bundle.
+
+### Changed
+
+- **SSG**: `template` is now optional; when omitted, `_app` output is used directly. Use `headInject` for link tags.
+
+---
+
 ## [1.0.0] - 2026-02-06
 
 ### Added
