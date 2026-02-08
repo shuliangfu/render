@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.2] - 2026-02-08
+
+### Fixed
+
+- **Client**: Replace Chinese error messages with English in preact, react, error-handler adapters.
+- **Layout**: Allow string type in `composeLayouts` validLayouts filter (e.g. `"OuterLayout"`).
+- **Layout**: Allow string component in `createComponentTree` for native elements like `"div"`.
+- **Tests**: Update client-browser and client-utils tests to match new English messages.
+
+---
+
 ## [1.0.1] - 2026-02-08
 
 ### Added

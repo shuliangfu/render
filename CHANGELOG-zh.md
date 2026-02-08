@@ -7,6 +7,17 @@
 
 ---
 
+## [1.0.2] - 2026-02-08
+
+### 修复
+
+- **客户端**：preact、react、error-handler 适配器中的错误信息改为英文。
+- **布局**：`composeLayouts` 的 validLayouts 过滤支持 string 类型（如 `"OuterLayout"`）。
+- **布局**：`createComponentTree` 支持 string 组件（如原生元素 `"div"`）。
+- **测试**：更新 client-browser、client-utils 测试以匹配新的英文文案。
+
+---
+
 ## [1.0.1] - 2026-02-08
 
 ### 新增

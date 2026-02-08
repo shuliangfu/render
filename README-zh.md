@@ -676,12 +676,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.1**（2026-02-08）
+**v1.0.2**（2026-02-08）
 
-- **新增**：`SSGOptions.headInject` 在 `</head>` 前注入内容
-- **新增**：`scheduler` 依赖以修复浏览器 bundle
-- **修复**：Windows CI 上跳过 4 个浏览器测试
-- **变更**：SSG 的 `template` 可选
+- **修复**：客户端适配器错误信息改为英文（preact、react、error-handler）
+- **修复**：composeLayouts 支持 string 布局组件
+- **修复**：createComponentTree 支持 string 原生元素
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 
