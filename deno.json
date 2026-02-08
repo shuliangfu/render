@@ -42,6 +42,7 @@
     "react": "npm:react@18.3.1",
     "react-dom/server": "npm:react-dom@18.3.1/server",
     "react-dom/client": "npm:react-dom@18.3.1/client",
+    
     "preact": "npm:preact@10.28.0",
     "preact-render-to-string": "npm:preact-render-to-string@6.2.0"
   },
