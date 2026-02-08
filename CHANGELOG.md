@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.4] - 2026-02-08
+
+### Fixed
+
+- **Client error-handler**: Include `err.message` in `console.error` output so error text is visible in console and e2e test capture (e.g. dweb browser-render debugging).
+
+---
+
 ## [1.0.3] - 2026-02-08
 
 ### Fixed

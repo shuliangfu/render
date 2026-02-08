@@ -38,7 +38,7 @@ export async function handleRenderError(
 
   if (shouldLog) {
     console.error(
-      `[Render Error] ${context.phase.toUpperCase()} render failed (${context.engine}):`,
+      `[Render Error] ${context.phase.toUpperCase()} render failed (${context.engine}): ${err.message}`,
       err,
     );
   }
