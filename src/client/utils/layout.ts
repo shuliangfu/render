@@ -141,6 +141,9 @@ export function createComponentTree(
       const childElement = createComponentTree(createElement, childConfig);
       return createElement(component, { ...props, children: childElement });
     }
+    // 当 childConfig 存在但 component 为 falsy 时，不将 childConfig 传给 createElement
+    // 否则 Preact 会尝试渲染 children，导致 "(void 0) is not a function"（常见于 Windows 下路径匹配失败）
+    return createElement(component, { ...props, children: undefined });
   }
 
   return createElement(component, props);
