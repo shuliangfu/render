@@ -664,11 +664,12 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.8** (2026-02-09)
+**v1.0.9** (2026-02-09)
 
-- **Fixed**: Layout createComponentTree - add component validation; fix client
-  layout config detection to avoid misidentifying React/Preact elements
-- **Changed**: Bump @dreamer/test to ^1.0.2
+- **Added**: enhanceVoidError for Preact/React to improve "(void 0) is not a
+  function" diagnostics
+- **Changed**: All client thrown exceptions now use English messages
+- **Removed**: Redundant ensurePreactAPIs/ensureReactAPIs
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 

@@ -7,6 +7,27 @@
 
 ---
 
+## [1.0.9] - 2026-02-09
+
+### 新增
+
+- **Preact/React 适配器**：增加 `enhanceVoidError`，对 "(void 0) is not a
+  function" 错误包装诊断提示（路由/layout chunk 的 jsx-runtime 导入失败或组件
+  为 undefined）。
+
+### 变更
+
+- **客户端异常**：`render/src/client` 下所有抛出异常改为英文信息（如
+  "CSR render must run in browser environment"、"Invalid hydration
+  component"、"Unsupported template engine"）。
+
+### 移除
+
+- **Preact/React 适配器**：移除冗余的 `ensurePreactAPIs` / `ensureReactAPIs`
+  （多实例并非当前失败原因）。
+
+---
+
 ## [1.0.8] - 2026-02-09
 
 ### 修复

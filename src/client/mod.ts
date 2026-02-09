@@ -92,7 +92,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
 
   // 检查是否在浏览器环境
   if (typeof globalThis.document === "undefined") {
-    throw new Error("CSR 渲染只能在浏览器环境中运行");
+    throw new Error("CSR render must run in browser environment");
   }
 
   switch (engine) {
@@ -104,7 +104,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     }
     default: {
       const _exhaustive: never = engine;
-      throw new Error(`不支持的模板引擎: ${engine}`);
+      throw new Error(`Unsupported template engine: ${engine}`);
     }
   }
 }
@@ -134,7 +134,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
 
   // 检查是否在浏览器环境
   if (typeof globalThis.document === "undefined") {
-    throw new Error("Hydration 只能在浏览器环境中运行");
+    throw new Error("Hydration must run in browser environment");
   }
 
   switch (engine) {
@@ -146,7 +146,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     }
     default: {
       const _exhaustive: never = engine;
-      throw new Error(`不支持的模板引擎: ${engine}`);
+      throw new Error(`Unsupported template engine: ${engine}`);
     }
   }
 }

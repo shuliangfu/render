@@ -679,11 +679,12 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.8**（2026-02-09）
+**v1.0.9**（2026-02-09）
 
-- **修复**：布局 createComponentTree 增加 component
-  校验；修正客户端布局配置检测，避免误判 React/Preact 元素
-- **变更**：提升 @dreamer/test 至 ^1.0.2
+- **新增**：Preact/React 增加 enhanceVoidError 以增强 "(void 0) is not a
+  function" 的诊断信息
+- **变更**：客户端所有抛出异常改为英文
+- **移除**：冗余的 ensurePreactAPIs/ensureReactAPIs
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 
