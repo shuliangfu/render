@@ -7,6 +7,16 @@
 
 ---
 
+## [1.0.10] - 2026-02-09
+
+### 新增
+
+- **调试选项**：在 `CSROptions`、`HydrationOptions`、`SSROptions`、`SSGOptions`
+  中增加 `debug?: boolean`。传 `debug: true` 时输出详细日志（组件类型、布局组合、
+  渲染阶段等），便于诊断 Windows 路径问题及 "(void 0) is not a function" 错误。
+
+---
+
 ## [1.0.9] - 2026-02-09
 
 ### 新增

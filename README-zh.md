@@ -679,12 +679,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.9**（2026-02-09）
+**v1.0.10**（2026-02-09）
 
-- **新增**：Preact/React 增加 enhanceVoidError 以增强 "(void 0) is not a
-  function" 的诊断信息
-- **变更**：客户端所有抛出异常改为英文
-- **移除**：冗余的 ensurePreactAPIs/ensureReactAPIs
+- **新增**：`debug?: boolean` 选项，支持 CSROptions、HydrationOptions、
+  SSROptions、SSGOptions。传 `debug: true` 时输出 CSR、Hydration、SSR 的详细
+  调试日志，便于诊断 Windows 路径问题及 "(void 0) is not a function" 错误。
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 

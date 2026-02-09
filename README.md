@@ -664,12 +664,12 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.9** (2026-02-09)
+**v1.0.10** (2026-02-09)
 
-- **Added**: enhanceVoidError for Preact/React to improve "(void 0) is not a
-  function" diagnostics
-- **Changed**: All client thrown exceptions now use English messages
-- **Removed**: Redundant ensurePreactAPIs/ensureReactAPIs
+- **Added**: `debug?: boolean` option for CSROptions, HydrationOptions, SSROptions,
+  and SSGOptions. When `debug: true`, emits detailed logs for CSR, hydration, and
+  SSR to help diagnose Windows path issues and "(void 0) is not a function"
+  errors.
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 

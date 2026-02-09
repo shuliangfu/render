@@ -89,6 +89,8 @@ export interface CSROptions {
   errorHandler?: ErrorHandler;
   /** 性能监控选项 */
   performance?: PerformanceOptions;
+  /** 是否启用详细调试日志（默认：false） */
+  debug?: boolean;
 }
 
 /**
@@ -125,4 +127,6 @@ export interface HydrationOptions {
   errorHandler?: ErrorHandler;
   /** 性能监控选项 */
   performance?: PerformanceOptions;
+  /** 是否启用详细调试日志（默认：false） */
+  debug?: boolean;
 }
