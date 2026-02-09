@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.9] - 2026-02-09
+
+### Added
+
+- **Preact/React adapters**: Add `enhanceVoidError` to wrap "(void 0) is not a
+  function" with diagnostic hints (route/layout chunk jsx-runtime import or
+  component undefined).
+
+### Changed
+
+- **Client exceptions**: All thrown exceptions in `render/src/client` now use
+  English messages (e.g. "CSR render must run in browser environment",
+  "Invalid hydration component", "Unsupported template engine").
+
+### Removed
+
+- **Preact/React adapters**: Remove redundant `ensurePreactAPIs` / `ensureReactAPIs`
+  (multi-instance is not the cause of current failures).
+
+---
+
 ## [1.0.8] - 2026-02-09
 
 ### Fixed

@@ -275,7 +275,7 @@ describe("客户端渲染 - 浏览器测试", () => {
         component: () => null,
         container: "#app",
       });
-    }).toThrow("CSR 渲染只能在浏览器环境中运行");
+    }).toThrow("CSR render must run in browser environment");
 
     expect(() => {
       hydrate({
@@ -283,7 +283,7 @@ describe("客户端渲染 - 浏览器测试", () => {
         component: () => null,
         container: "#app",
       });
-    }).toThrow("Hydration 只能在浏览器环境中运行");
+    }).toThrow("Hydration must run in browser environment");
   });
 
   // ==================== React 适配器测试 ====================
@@ -468,7 +468,7 @@ describe("客户端渲染 - 浏览器测试", () => {
         component: () => null,
         container: "#app",
       });
-    }).toThrow("CSR 渲染只能在浏览器环境中运行");
+    }).toThrow("CSR render must run in browser environment");
 
     expect(() => {
       hydrate({
@@ -476,7 +476,7 @@ describe("客户端渲染 - 浏览器测试", () => {
         component: () => null,
         container: "#app",
       });
-    }).toThrow("Hydration 只能在浏览器环境中运行");
+    }).toThrow("Hydration must run in browser environment");
   });
 
   // ==================== 实际渲染测试 ====================

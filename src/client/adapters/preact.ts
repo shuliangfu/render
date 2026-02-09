@@ -26,6 +26,20 @@ import {
 } from "../utils/performance.ts";
 
 /**
+ * 若错误为 "(void 0) is not a function"，包装为带诊断提示的新错误
+ * 常见于：路由/layout 组件的 preact/jsx-runtime 导入失败，或组件为 undefined
+ */
+function enhanceVoidError(error: unknown, phase: string): Error {
+  const err = error instanceof Error ? error : new Error(String(error));
+  if (!/void 0.*is not a function/i.test(err.message)) return err;
+  return new Error(
+    `${err.message} [${phase}] ` +
+      `Hint: route/layout chunk may have failed to import preact/jsx-runtime, or component is undefined.`,
+    { cause: err },
+  );
+}
+
+/**
  * Preact 客户端渲染
  *
  * @param options CSR 选项
@@ -109,9 +123,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       performance: performanceMetrics,
     };
   } catch (error) {
-    // 处理错误
+    // 处理错误（增强 "(void 0) is not a function" 的诊断信息）
+    const enhanced = enhanceVoidError(error, "csr");
     handleRenderError(
-      error,
+      enhanced,
       { engine: "preact", component, phase: "csr" },
       errorHandler,
     ).then((shouldUseFallback) => {
@@ -175,7 +190,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     typeof component !== "function" && typeof component !== "object"
   ) {
     throw new Error(
-      `Hydration 组件无效: 期望函数或对象，实际为 ${
+      `Invalid hydration component: expected function or object, got ${
         component === undefined ? "undefined" : typeof component
       }`,
     );
@@ -235,9 +250,10 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       performance: performanceMetrics,
     };
   } catch (error) {
-    // 处理错误
+    // 处理错误（增强 "(void 0) is not a function" 的诊断信息）
+    const enhanced = enhanceVoidError(error, "hydrate");
     handleRenderError(
-      error,
+      enhanced,
       { engine: "preact", component, phase: "hydrate" },
       errorHandler,
     ).then((shouldUseFallback) => {
