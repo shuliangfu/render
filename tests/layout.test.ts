@@ -244,7 +244,13 @@ describe("布局继承测试", () => {
       const component = "Page";
       const props = { title: "Hello" };
 
-      const result = clientComposeLayouts("preact", component, props, [], false);
+      const result = clientComposeLayouts(
+        "preact",
+        component,
+        props,
+        [],
+        false,
+      );
 
       expect(result.component).toBe(component);
       expect(result.props).toEqual(props);

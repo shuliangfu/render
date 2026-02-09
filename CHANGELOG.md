@@ -7,11 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.8] - 2026-02-09
+
+### Fixed
+
+- **Layout (createComponentTree)**: Add component validation to prevent
+  "(void 0) is not a function" when component is undefined. When
+  childConfig.component is falsy, pass undefined instead of recursing to avoid
+  Preact/React trying to render undefined (common when path matching fails on
+  Windows).
+- **Client layout**: Fix incorrect detection of layout config. Previously it
+  treated any object as layout config, which could misidentify React/Preact
+  elements (with `{ type, props }`) as layout config and lose real children. Now
+  explicitly checks for `component` and `props` keys in the layout config
+  format.
+
+### Changed
+
+- **Dependencies**: Bump @dreamer/test to ^1.0.2 for latest compatible version.
+
+---
+
 ## [1.0.7] - 2026-02-08
 
 ### Changed
 
-- **Dependencies**: Bump @dreamer/runtime-adapter and @dreamer/test to ensure latest compatible versions are used.
+- **Dependencies**: Bump @dreamer/runtime-adapter and @dreamer/test to ensure
+  latest compatible versions are used.
 
 ---
 
@@ -19,7 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- **SSG**: Replace `substring` + `lastIndexOf` with `dirname()` for directory path extraction. Use `join()` from runtime-adapter for Windows path compatibility.
+- **SSG**: Replace `substring` + `lastIndexOf` with `dirname()` for directory
+  path extraction. Use `join()` from runtime-adapter for Windows path
+  compatibility.
 
 ---
 
@@ -27,7 +51,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- **React client adapter**: Use named import `createElement` instead of default import `React` to fix `_.default.createElement is not a function` interop issue when bundling for browser (e.g. dweb CSR/SSR client builds).
+- **React client adapter**: Use named import `createElement` instead of default
+  import `React` to fix `_.default.createElement is not a function` interop
+  issue when bundling for browser (e.g. dweb CSR/SSR client builds).
 
 ---
 
@@ -35,7 +61,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- **Client error-handler**: Include `err.message` in `console.error` output so error text is visible in console and e2e test capture (e.g. dweb browser-render debugging).
+- **Client error-handler**: Include `err.message` in `console.error` output so
+  error text is visible in console and e2e test capture (e.g. dweb
+  browser-render debugging).
 
 ---
 
@@ -43,7 +71,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- **Client layout**: When `childConfig.component` is falsy in `createComponentTree`, do not pass raw childConfig to `createElement` as children. Prevents Preact from attempting to render undefined, fixing `(void 0) is not a function` on Windows (e.g. path resolution or module load failure).
+- **Client layout**: When `childConfig.component` is falsy in
+  `createComponentTree`, do not pass raw childConfig to `createElement` as
+  children. Prevents Preact from attempting to render undefined, fixing
+  `(void 0) is not a function` on Windows (e.g. path resolution or module load
+  failure).
 
 ---
 
@@ -51,10 +83,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- **Client**: Replace Chinese error messages with English in preact, react, error-handler adapters.
-- **Layout**: Allow string type in `composeLayouts` validLayouts filter (e.g. `"OuterLayout"`).
-- **Layout**: Allow string component in `createComponentTree` for native elements like `"div"`.
-- **Tests**: Update client-browser and client-utils tests to match new English messages.
+- **Client**: Replace Chinese error messages with English in preact, react,
+  error-handler adapters.
+- **Layout**: Allow string type in `composeLayouts` validLayouts filter (e.g.
+  `"OuterLayout"`).
+- **Layout**: Allow string component in `createComponentTree` for native
+  elements like `"div"`.
+- **Tests**: Update client-browser and client-utils tests to match new English
+  messages.
 
 ---
 
@@ -62,16 +98,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- **SSG**: `headInject` option in `SSGOptions` to inject content (e.g. link tags) before `</head>` in generated HTML. Enables using `_app` output directly without wrapping template.
-- **Dependencies**: Added `scheduler` to `deno.json` imports to fix browser "Dynamic require of scheduler is not supported" when bundling React client.
+- **SSG**: `headInject` option in `SSGOptions` to inject content (e.g. link
+  tags) before `</head>` in generated HTML. Enables using `_app` output directly
+  without wrapping template.
+- **Dependencies**: Added `scheduler` to `deno.json` imports to fix browser
+  "Dynamic require of scheduler is not supported" when bundling React client.
 
 ### Fixed
 
-- **Tests**: Skip 4 browser tests (Preact/React update, performance metrics) on Windows CI where Preact/React npm modules fail to load in browser bundle.
+- **Tests**: Skip 4 browser tests (Preact/React update, performance metrics) on
+  Windows CI where Preact/React npm modules fail to load in browser bundle.
 
 ### Changed
 
-- **SSG**: `template` is now optional; when omitted, `_app` output is used directly. Use `headInject` for link tags.
+- **SSG**: `template` is now optional; when omitted, `_app` output is used
+  directly. Use `headInject` for link tags.
 
 ---
 
@@ -79,7 +120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-First stable release. Rendering library for SSR, CSR, Hydration, and SSG, compatible with Deno and Bun.
+First stable release. Rendering library for SSR, CSR, Hydration, and SSG,
+compatible with Deno and Bun.
 
 #### Server Rendering (@dreamer/render)
 

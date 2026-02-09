@@ -18,9 +18,7 @@ describe("renderSSG", () => {
 
   // 清理测试输出目录（测试前清理，测试后保留输出文件供查看）
   const cleanup = async (dir?: string) => {
-    const dirs = dir
-      ? [dir]
-      : [testOutputDir, reactOutputDir, preactOutputDir];
+    const dirs = dir ? [dir] : [testOutputDir, reactOutputDir, preactOutputDir];
     for (const d of dirs) {
       try {
         await remove(d, { recursive: true });
@@ -197,7 +195,6 @@ describe("renderSSG", () => {
 
       // 测试结束后保留输出文件供查看，不清理
     });
-
   });
 
   describe("路由数据", () => {
@@ -251,7 +248,6 @@ describe("renderSSG", () => {
 
       // 测试结束后保留输出文件供查看，不清理
     });
-
   });
 });
 

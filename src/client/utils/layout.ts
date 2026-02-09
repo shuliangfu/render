@@ -123,7 +123,8 @@ export function createComponentTree(
   // 允许：function（组件）、object（如 forwardRef）、string（原生元素如 "div"）
   if (
     component == null ||
-    (typeof component !== "function" && typeof component !== "object" && typeof component !== "string")
+    (typeof component !== "function" && typeof component !== "object" &&
+      typeof component !== "string")
   ) {
     const actual = component === undefined ? "undefined" : typeof component;
     throw new Error(
@@ -131,9 +132,14 @@ export function createComponentTree(
     );
   }
 
-  // 处理嵌套的 children
-  if (props.children && typeof props.children === "object") {
-    const childConfig = props.children as {
+  // 仅当符合 { component, props } 布局配置格式时才进入
+  // 否则会误判 React/Preact 元素（{ type, props }）为布局配置，导致丢失真实 children
+  const childObj = props.children as Record<string, unknown> | null;
+  const isLayoutConfig = childObj && typeof childObj === "object" &&
+    "component" in childObj && "props" in childObj;
+
+  if (isLayoutConfig) {
+    const childConfig = childObj as {
       component: unknown;
       props: Record<string, unknown>;
     };

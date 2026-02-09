@@ -101,7 +101,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
   } = options;
 
   // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"）
-  if (component == null || typeof component !== "function" && typeof component !== "object") {
+  if (
+    component == null ||
+    typeof component !== "function" && typeof component !== "object"
+  ) {
     const actual = component === undefined ? "undefined" : typeof component;
     throw new Error(
       `Invalid component: expected function or object, got ${actual}`,
@@ -230,9 +233,14 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
   } = options;
 
   // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"，常见于 Windows 路径匹配失败）
-  if (component == null || typeof component !== "function" && typeof component !== "object") {
+  if (
+    component == null ||
+    typeof component !== "function" && typeof component !== "object"
+  ) {
     throw new Error(
-      `Hydration 组件无效: 期望函数或对象，实际为 ${component === undefined ? "undefined" : typeof component}`,
+      `Hydration 组件无效: 期望函数或对象，实际为 ${
+        component === undefined ? "undefined" : typeof component
+      }`,
     );
   }
 

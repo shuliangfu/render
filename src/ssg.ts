@@ -2,12 +2,7 @@
  * 静态站点生成（SSG）核心函数
  */
 
-import {
-  dirname,
-  join,
-  mkdir,
-  writeTextFile,
-} from "@dreamer/runtime-adapter";
+import { dirname, join, mkdir, writeTextFile } from "@dreamer/runtime-adapter";
 import { renderSSR } from "./ssr.ts";
 import type { SSGOptions } from "./types.ts";
 
