@@ -676,9 +676,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.5**（2026-02-08）
+**v1.0.6**（2026-02-08）
 
-- **修复**：React 客户端适配器改用具名导入 `createElement` 替代默认导入 `React`，修复浏览器打包时的 `_.default.createElement is not a function` 报错
+- **修复**：SSG 使用 `dirname()` 和 `join()` 确保 Windows 路径兼容
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 

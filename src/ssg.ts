@@ -2,7 +2,12 @@
  * 静态站点生成（SSG）核心函数
  */
 
-import { join, mkdir, writeTextFile } from "@dreamer/runtime-adapter";
+import {
+  dirname,
+  join,
+  mkdir,
+  writeTextFile,
+} from "@dreamer/runtime-adapter";
 import { renderSSR } from "./ssr.ts";
 import type { SSGOptions } from "./types.ts";
 
@@ -156,9 +161,9 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       filePath = filePath.substring(1);
       const fullPath = join(outputDir, filePath);
 
-      // 确保目录存在
-      const dirPath = fullPath.substring(0, fullPath.lastIndexOf("/"));
-      if (dirPath) {
+      // 确保目录存在（使用 dirname 确保 Windows 兼容）
+      const dirPath = dirname(fullPath);
+      if (dirPath && dirPath !== ".") {
         await mkdir(dirPath, { recursive: true });
       }
 
