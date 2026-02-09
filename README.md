@@ -661,9 +661,9 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.6** (2026-02-08)
+**v1.0.7** (2026-02-08)
 
-- **Fixed**: SSG: use `dirname()` and `join()` for Windows path compatibility
+- **Changed**: Bump @dreamer/runtime-adapter and @dreamer/test to latest compatible versions
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 

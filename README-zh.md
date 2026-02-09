@@ -676,9 +676,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.6**（2026-02-08）
+**v1.0.7**（2026-02-08）
 
-- **修复**：SSG 使用 `dirname()` 和 `join()` 确保 Windows 路径兼容
+- **变更**：提升 @dreamer/runtime-adapter、@dreamer/test 至最新兼容版本
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 
