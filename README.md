@@ -1,6 +1,7 @@
 # @dreamer/render
 
-> A rendering library for SSR, CSR, Hydration, and SSG, supporting React and Preact
+> A rendering library for SSR, CSR, Hydration, and SSG, supporting React and
+> Preact
 
 English | [中文 (Chinese)](./README-zh.md)
 
@@ -12,7 +13,8 @@ English | [中文 (Chinese)](./README-zh.md)
 
 ## 🎯 Features
 
-Rendering library with a unified abstraction layer, supporting multiple template engines for SSR, CSR, Hydration, and SSG.
+Rendering library with a unified abstraction layer, supporting multiple template
+engines for SSR, CSR, Hydration, and SSG.
 
 ---
 
@@ -34,14 +36,14 @@ bunx jsr add @dreamer/render
 
 ## 🌍 Environment Compatibility
 
-| Environment | Version | Status |
-|-------------|---------|--------|
-| **Deno** | 2.5+ | ✅ Full support |
-| **Bun** | 1.0+ | ✅ Full support |
-| **Browser** | Modern (ES2020+) | ✅ CSR, Hydration |
-| **React** | 18+ | ✅ Full support |
-| **Preact** | 10+ | ✅ Full support |
-| **Dependencies** | - | 📦 Requires template engine (React/Preact) |
+| Environment      | Version          | Status                                     |
+| ---------------- | ---------------- | ------------------------------------------ |
+| **Deno**         | 2.5+             | ✅ Full support                            |
+| **Bun**          | 1.0+             | ✅ Full support                            |
+| **Browser**      | Modern (ES2020+) | ✅ CSR, Hydration                          |
+| **React**        | 18+              | ✅ Full support                            |
+| **Preact**       | 10+              | ✅ Full support                            |
+| **Dependencies** | -                | 📦 Requires template engine (React/Preact) |
 
 ---
 
@@ -239,7 +241,7 @@ console.log(`Generated ${files.length} files`);
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
 import React from "react";
-import type { Metadata, LoadContext } from "jsr:@dreamer/render";
+import type { LoadContext, Metadata } from "jsr:@dreamer/render";
 
 function Page() {
   return React.createElement("div", null, "Content");
@@ -381,21 +383,21 @@ Server-side render function. Uses the adapter for the specified engine.
 
 **Options**:
 
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `engine` | `Engine` | ✅ | Engine ("react" \| "preact") |
-| `component` | `unknown` | ✅ | Component |
-| `props` | `Record<string, unknown>` | ❌ | Component props |
-| `layouts` | `LayoutComponent[]` | ❌ | Layouts (outer to inner) |
-| `template` | `string` | ❌ | HTML template |
-| `stream` | `boolean` | ❌ | Enable streaming (React, Preact) |
-| `loadContext` | `LoadContext` | ❌ | Context for load and metadata |
-| `errorHandler` | `ErrorHandler` | ❌ | Error handling |
-| `performance` | `PerformanceOptions` | ❌ | Performance monitoring |
-| `metadataCache` | `CacheOptions` | ❌ | Metadata cache |
-| `compression` | `CompressionOptions` | ❌ | Data compression |
-| `contextData` | `ContextData` | ❌ | Context API data |
-| `lazyData` | `boolean` | ❌ | Enable lazy data loading |
+| Param           | Type                      | Required | Description                      |
+| --------------- | ------------------------- | -------- | -------------------------------- |
+| `engine`        | `Engine`                  | ✅       | Engine ("react" \| "preact")     |
+| `component`     | `unknown`                 | ✅       | Component                        |
+| `props`         | `Record<string, unknown>` | ❌       | Component props                  |
+| `layouts`       | `LayoutComponent[]`       | ❌       | Layouts (outer to inner)         |
+| `template`      | `string`                  | ❌       | HTML template                    |
+| `stream`        | `boolean`                 | ❌       | Enable streaming (React, Preact) |
+| `loadContext`   | `LoadContext`             | ❌       | Context for load and metadata    |
+| `errorHandler`  | `ErrorHandler`            | ❌       | Error handling                   |
+| `performance`   | `PerformanceOptions`      | ❌       | Performance monitoring           |
+| `metadataCache` | `CacheOptions`            | ❌       | Metadata cache                   |
+| `compression`   | `CompressionOptions`      | ❌       | Data compression                 |
+| `contextData`   | `ContextData`             | ❌       | Context API data                 |
+| `lazyData`      | `boolean`                 | ❌       | Enable lazy data loading         |
 
 **Returns**: Render result (HTML, metadata, data)
 
@@ -407,17 +409,18 @@ Client-side render function.
 
 **Options**:
 
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `engine` | `Engine` | ✅ | Engine type |
-| `component` | `unknown` | ✅ | Component |
-| `props` | `Record<string, unknown>` | ❌ | Props |
-| `container` | `string \| HTMLElement` | ✅ | Mount container |
-| `layouts` | `unknown[]` | ❌ | Layouts (outer to inner) |
-| `errorHandler` | `ErrorHandler` | ❌ | Error handling |
-| `performance` | `PerformanceOptions` | ❌ | Performance monitoring |
+| Param          | Type                      | Required | Description              |
+| -------------- | ------------------------- | -------- | ------------------------ |
+| `engine`       | `Engine`                  | ✅       | Engine type              |
+| `component`    | `unknown`                 | ✅       | Component                |
+| `props`        | `Record<string, unknown>` | ❌       | Props                    |
+| `container`    | `string \| HTMLElement`   | ✅       | Mount container          |
+| `layouts`      | `unknown[]`               | ❌       | Layouts (outer to inner) |
+| `errorHandler` | `ErrorHandler`            | ❌       | Error handling           |
+| `performance`  | `PerformanceOptions`      | ❌       | Performance monitoring   |
 
 **Returns**: `CSRRenderResult`
+
 - `unmount(): void`: Unmount component
 - `update(props): void`: Update props
 - `metrics?: PerformanceMetrics`: Metrics (if enabled)
@@ -432,16 +435,16 @@ Hydrate SSR HTML with client JS.
 
 **Options**:
 
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `engine` | `Engine` | ✅ | Engine type |
-| `component` | `unknown` | ✅ | Component (must match SSR) |
-| `props` | `Record<string, unknown>` | ❌ | Props |
-| `container` | `string \| HTMLElement` | ✅ | Mount container |
-| `layouts` | `unknown[]` | ❌ | Layouts |
-| `strictMode` | `boolean` | ❌ | Strict mode (React only) |
-| `errorHandler` | `ErrorHandler` | ❌ | Error handling |
-| `performance` | `PerformanceOptions` | ❌ | Performance monitoring |
+| Param          | Type                      | Required | Description                |
+| -------------- | ------------------------- | -------- | -------------------------- |
+| `engine`       | `Engine`                  | ✅       | Engine type                |
+| `component`    | `unknown`                 | ✅       | Component (must match SSR) |
+| `props`        | `Record<string, unknown>` | ❌       | Props                      |
+| `container`    | `string \| HTMLElement`   | ✅       | Mount container            |
+| `layouts`      | `unknown[]`               | ❌       | Layouts                    |
+| `strictMode`   | `boolean`                 | ❌       | Strict mode (React only)   |
+| `errorHandler` | `ErrorHandler`            | ❌       | Error handling             |
+| `performance`  | `PerformanceOptions`      | ❌       | Performance monitoring     |
 
 **Returns**: `HydrationResult` (unmount, update, metrics)
 
@@ -453,16 +456,16 @@ Static site generation. Pre-render routes to static HTML.
 
 **Options**:
 
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `engine` | `Engine` | ✅ | Engine type |
-| `routes` | `string[]` | ✅ | Route list |
-| `outputDir` | `string` | ✅ | Output directory |
-| `loadRouteComponent` | `(route) => Promise<unknown>` | ✅ | Route component loader |
-| `loadRouteData` | `(route) => Promise<Record<string, unknown>>` | ❌ | Route data loader |
-| `template` | `string` | ❌ | HTML template |
-| `generateSitemap` | `boolean` | ❌ | Generate sitemap.xml |
-| `generateRobots` | `boolean` | ❌ | Generate robots.txt |
+| Param                | Type                                          | Required | Description            |
+| -------------------- | --------------------------------------------- | -------- | ---------------------- |
+| `engine`             | `Engine`                                      | ✅       | Engine type            |
+| `routes`             | `string[]`                                    | ✅       | Route list             |
+| `outputDir`          | `string`                                      | ✅       | Output directory       |
+| `loadRouteComponent` | `(route) => Promise<unknown>`                 | ✅       | Route component loader |
+| `loadRouteData`      | `(route) => Promise<Record<string, unknown>>` | ❌       | Route data loader      |
+| `template`           | `string`                                      | ❌       | HTML template          |
+| `generateSitemap`    | `boolean`                                     | ❌       | Generate sitemap.xml   |
+| `generateRobots`     | `boolean`                                     | ❌       | Generate robots.txt    |
 
 **Returns**: Generated file paths
 
@@ -580,7 +583,7 @@ interface ErrorHandler {
       engine: Engine;
       component: unknown;
       phase: "csr" | "hydrate";
-    }
+    },
   ) => void | Promise<void>;
   // Fallback component
   fallbackComponent?: unknown;
@@ -641,19 +644,19 @@ interface PerformanceMetrics {
 
 ## 📊 Test Report
 
-| Metric | Value |
-|--------|-------|
-| Test date | 2026-02-03 |
-| Total tests | 203 |
-| Passed | 203 ✅ |
-| Failed | 0 |
-| Pass rate | 100% |
-| Duration | ~25s (`deno test -A`) |
+| Metric      | Value                 |
+| ----------- | --------------------- |
+| Test date   | 2026-02-03            |
+| Total tests | 203                   |
+| Passed      | 203 ✅                |
+| Failed      | 0                     |
+| Pass rate   | 100%                  |
+| Duration    | ~25s (`deno test -A`) |
 
-| Runtime | Version | Result |
-|---------|---------|--------|
-| Deno | 2.6.4 | ✅ 203 passed |
-| Bun | 1.3.5 | ✅ 203 passed |
+| Runtime | Version | Result        |
+| ------- | ------- | ------------- |
+| Deno    | 2.6.4   | ✅ 203 passed |
+| Bun     | 1.3.5   | ✅ 203 passed |
 
 See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
@@ -661,9 +664,11 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.7** (2026-02-08)
+**v1.0.8** (2026-02-09)
 
-- **Changed**: Bump @dreamer/runtime-adapter and @dreamer/test to latest compatible versions
+- **Fixed**: Layout createComponentTree - add component validation; fix client
+  layout config detection to avoid misidentifying React/Preact elements
+- **Changed**: Bump @dreamer/test to ^1.0.2
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 
@@ -677,7 +682,8 @@ See [CHANGELOG.md](./CHANGELOG.md) for full history.
 - **Type safety**: Full TypeScript support
 - **Component exports**: `metadata`, `load`, `scripts`, `inheritLayout`
 - **Metadata merge**: Deep merge; page metadata overrides layout
-- **Data injection**: Auto-injected to `window.__DATA__`; access via `globalThis.__DATA__`
+- **Data injection**: Auto-injected to `window.__DATA__`; access via
+  `globalThis.__DATA__`
 - **Layout system**: Single or nested layouts; `inheritLayout = false` to skip
 
 ---

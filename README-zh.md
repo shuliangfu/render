@@ -1,6 +1,7 @@
 # @dreamer/render
 
-> 一个专注于渲染逻辑的库，提供 SSR、CSR、Hydration 和 SSG 功能，支持 React、Preact 两个模板引擎
+> 一个专注于渲染逻辑的库，提供 SSR、CSR、Hydration 和 SSG 功能，支持
+> React、Preact 两个模板引擎
 
 [English](./README.md) | 中文 (Chinese)
 
@@ -34,14 +35,14 @@ bunx jsr add @dreamer/render
 
 ## 🌍 环境兼容性
 
-| 环境 | 版本要求 | 状态 |
-|------|---------|------|
-| **Deno** | 2.5+ | ✅ 完全支持 |
-| **Bun** | 1.0+ | ✅ 完全支持 |
-| **浏览器** | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration） |
-| **React** | 18+ | ✅ 完全支持 |
-| **Preact** | 10+ | ✅ 完全支持 |
-| **依赖** | - | 📦 需要对应的模板引擎包（React、Preact） |
+| 环境       | 版本要求              | 状态                                     |
+| ---------- | --------------------- | ---------------------------------------- |
+| **Deno**   | 2.5+                  | ✅ 完全支持                              |
+| **Bun**    | 1.0+                  | ✅ 完全支持                              |
+| **浏览器** | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration）                |
+| **React**  | 18+                   | ✅ 完全支持                              |
+| **Preact** | 10+                   | ✅ 完全支持                              |
+| **依赖**   | -                     | 📦 需要对应的模板引擎包（React、Preact） |
 
 ---
 
@@ -251,7 +252,7 @@ console.log(`生成了 ${files.length} 个文件`);
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
 import React from "react";
-import type { Metadata, LoadContext } from "jsr:@dreamer/render";
+import type { LoadContext, Metadata } from "jsr:@dreamer/render";
 
 function Page() {
   return React.createElement("div", null, "Content");
@@ -393,21 +394,21 @@ const result = await renderSSR({
 
 **选项**：
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型（"react" \| "preact"） |
-| `component` | `unknown` | ✅ | 组件（React/Preact 组件） |
-| `props` | `Record<string, unknown>` | ❌ | 组件属性 |
-| `layouts` | `LayoutComponent[]` | ❌ | 布局组件列表（从外到内） |
-| `template` | `string` | ❌ | HTML 模板（用于包装渲染结果） |
-| `stream` | `boolean` | ❌ | 是否启用流式渲染（仅 React、Preact） |
-| `loadContext` | `LoadContext` | ❌ | Load Context（传递给 load 方法和 metadata 函数） |
-| `errorHandler` | `ErrorHandler` | ❌ | 错误处理选项 |
-| `performance` | `PerformanceOptions` | ❌ | 性能监控选项 |
-| `metadataCache` | `CacheOptions` | ❌ | 元数据缓存选项 |
-| `compression` | `CompressionOptions` | ❌ | 数据压缩选项 |
-| `contextData` | `ContextData` | ❌ | Context API 数据 |
-| `lazyData` | `boolean` | ❌ | 是否启用数据懒加载 |
+| 参数            | 类型                      | 必需 | 说明                                             |
+| --------------- | ------------------------- | ---- | ------------------------------------------------ |
+| `engine`        | `Engine`                  | ✅   | 模板引擎类型（"react" \| "preact"）              |
+| `component`     | `unknown`                 | ✅   | 组件（React/Preact 组件）                        |
+| `props`         | `Record<string, unknown>` | ❌   | 组件属性                                         |
+| `layouts`       | `LayoutComponent[]`       | ❌   | 布局组件列表（从外到内）                         |
+| `template`      | `string`                  | ❌   | HTML 模板（用于包装渲染结果）                    |
+| `stream`        | `boolean`                 | ❌   | 是否启用流式渲染（仅 React、Preact）             |
+| `loadContext`   | `LoadContext`             | ❌   | Load Context（传递给 load 方法和 metadata 函数） |
+| `errorHandler`  | `ErrorHandler`            | ❌   | 错误处理选项                                     |
+| `performance`   | `PerformanceOptions`      | ❌   | 性能监控选项                                     |
+| `metadataCache` | `CacheOptions`            | ❌   | 元数据缓存选项                                   |
+| `compression`   | `CompressionOptions`      | ❌   | 数据压缩选项                                     |
+| `contextData`   | `ContextData`             | ❌   | Context API 数据                                 |
+| `lazyData`      | `boolean`                 | ❌   | 是否启用数据懒加载                               |
 
 **返回**：渲染结果，包含 HTML、元数据、数据等
 
@@ -419,17 +420,18 @@ const result = await renderSSR({
 
 **选项**：
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型 |
-| `component` | `unknown` | ✅ | 组件 |
-| `props` | `Record<string, unknown>` | ❌ | 组件属性 |
-| `container` | `string \| HTMLElement` | ✅ | 挂载容器（DOM 元素或选择器） |
-| `layouts` | `unknown[]` | ❌ | 布局组件列表（从外到内） |
-| `errorHandler` | `ErrorHandler` | ❌ | 错误处理选项 |
-| `performance` | `PerformanceOptions` | ❌ | 性能监控选项 |
+| 参数           | 类型                      | 必需 | 说明                         |
+| -------------- | ------------------------- | ---- | ---------------------------- |
+| `engine`       | `Engine`                  | ✅   | 模板引擎类型                 |
+| `component`    | `unknown`                 | ✅   | 组件                         |
+| `props`        | `Record<string, unknown>` | ❌   | 组件属性                     |
+| `container`    | `string \| HTMLElement`   | ✅   | 挂载容器（DOM 元素或选择器） |
+| `layouts`      | `unknown[]`               | ❌   | 布局组件列表（从外到内）     |
+| `errorHandler` | `ErrorHandler`            | ❌   | 错误处理选项                 |
+| `performance`  | `PerformanceOptions`      | ❌   | 性能监控选项                 |
 
 **返回**：`CSRRenderResult`
+
 - `unmount(): void`: 卸载组件
 - `update(props: Record<string, unknown>): void`: 更新组件属性
 - `metrics?: PerformanceMetrics`: 性能指标（如果启用性能监控）
@@ -444,18 +446,19 @@ const result = await renderSSR({
 
 **选项**：
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型 |
-| `component` | `unknown` | ✅ | 组件（必须与 SSR 使用的组件相同） |
-| `props` | `Record<string, unknown>` | ❌ | 组件属性 |
-| `container` | `string \| HTMLElement` | ✅ | 挂载容器 |
-| `layouts` | `unknown[]` | ❌ | 布局组件列表 |
-| `strictMode` | `boolean` | ❌ | 是否启用严格模式（仅 React） |
-| `errorHandler` | `ErrorHandler` | ❌ | 错误处理选项 |
-| `performance` | `PerformanceOptions` | ❌ | 性能监控选项 |
+| 参数           | 类型                      | 必需 | 说明                              |
+| -------------- | ------------------------- | ---- | --------------------------------- |
+| `engine`       | `Engine`                  | ✅   | 模板引擎类型                      |
+| `component`    | `unknown`                 | ✅   | 组件（必须与 SSR 使用的组件相同） |
+| `props`        | `Record<string, unknown>` | ❌   | 组件属性                          |
+| `container`    | `string \| HTMLElement`   | ✅   | 挂载容器                          |
+| `layouts`      | `unknown[]`               | ❌   | 布局组件列表                      |
+| `strictMode`   | `boolean`                 | ❌   | 是否启用严格模式（仅 React）      |
+| `errorHandler` | `ErrorHandler`            | ❌   | 错误处理选项                      |
+| `performance`  | `PerformanceOptions`      | ❌   | 性能监控选项                      |
 
 **返回**：`HydrationResult`
+
 - `unmount(): void`: 卸载组件
 - `update(props: Record<string, unknown>): void`: 更新组件属性
 - `metrics?: PerformanceMetrics`: 性能指标（如果启用性能监控）
@@ -468,16 +471,16 @@ const result = await renderSSR({
 
 **选项**：
 
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `engine` | `Engine` | ✅ | 模板引擎类型 |
-| `routes` | `string[]` | ✅ | 路由列表 |
-| `outputDir` | `string` | ✅ | 输出目录 |
-| `loadRouteComponent` | `(route: string) => Promise<unknown>` | ✅ | 路由组件加载函数 |
-| `loadRouteData` | `(route: string) => Promise<Record<string, unknown>>` | ❌ | 路由数据加载函数 |
-| `template` | `string` | ❌ | HTML 模板 |
-| `generateSitemap` | `boolean` | ❌ | 是否生成 sitemap.xml |
-| `generateRobots` | `boolean` | ❌ | 是否生成 robots.txt |
+| 参数                 | 类型                                                  | 必需 | 说明                 |
+| -------------------- | ----------------------------------------------------- | ---- | -------------------- |
+| `engine`             | `Engine`                                              | ✅   | 模板引擎类型         |
+| `routes`             | `string[]`                                            | ✅   | 路由列表             |
+| `outputDir`          | `string`                                              | ✅   | 输出目录             |
+| `loadRouteComponent` | `(route: string) => Promise<unknown>`                 | ✅   | 路由组件加载函数     |
+| `loadRouteData`      | `(route: string) => Promise<Record<string, unknown>>` | ❌   | 路由数据加载函数     |
+| `template`           | `string`                                              | ❌   | HTML 模板            |
+| `generateSitemap`    | `boolean`                                             | ❌   | 是否生成 sitemap.xml |
+| `generateRobots`     | `boolean`                                             | ❌   | 是否生成 robots.txt  |
 
 **返回**：生成的文件路径列表
 
@@ -595,7 +598,7 @@ interface ErrorHandler {
       engine: Engine;
       component: unknown;
       phase: "csr" | "hydrate";
-    }
+    },
   ) => void | Promise<void>;
   // 降级组件
   fallbackComponent?: unknown;
@@ -656,19 +659,19 @@ interface PerformanceMetrics {
 
 ## 📊 测试报告
 
-| 指标 | 数值 |
-|------|------|
-| 测试时间 | 2026-02-03 |
-| 总测试数 | 231 |
-| 通过 | 231 ✅ |
-| 失败 | 0 |
-| 通过率 | 100% |
+| 指标     | 数值                   |
+| -------- | ---------------------- |
+| 测试时间 | 2026-02-03             |
+| 总测试数 | 231                    |
+| 通过     | 231 ✅                 |
+| 失败     | 0                      |
+| 通过率   | 100%                   |
 | 执行时间 | ~32s（`deno test -A`） |
 
-| 运行时 | 版本 | 测试结果 |
-|--------|------|----------|
-| Deno | 2.6.4 | ✅ 231 passed |
-| Bun | 1.3.5 | ✅ 231 passed |
+| 运行时 | 版本  | 测试结果      |
+| ------ | ----- | ------------- |
+| Deno   | 2.6.4 | ✅ 231 passed |
+| Bun    | 1.3.5 | ✅ 231 passed |
 
 详细测试报告请查看 [TEST_REPORT.md](./TEST_REPORT.md)
 
@@ -676,9 +679,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.7**（2026-02-08）
+**v1.0.8**（2026-02-09）
 
-- **变更**：提升 @dreamer/runtime-adapter、@dreamer/test 至最新兼容版本
+- **修复**：布局 createComponentTree 增加 component
+  校验；修正客户端布局配置检测，避免误判 React/Preact 元素
+- **变更**：提升 @dreamer/test 至 ^1.0.2
 
 完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
 
@@ -690,10 +695,13 @@ interface PerformanceMetrics {
 - **统一接口**：服务端和客户端使用相同的 API 接口，降低学习成本
 - **多模板引擎支持**：支持 React、Preact，根据项目需求选择
 - **类型安全**：完整的 TypeScript 类型支持
-- **组件导出约定**：组件可以导出 `metadata`、`load`、`scripts`、`inheritLayout` 等属性
+- **组件导出约定**：组件可以导出 `metadata`、`load`、`scripts`、`inheritLayout`
+  等属性
 - **元数据合并策略**：采用深度合并策略，页面的元数据会覆盖布局的元数据
-- **数据注入**：数据自动注入到 `window.__DATA__` 中，客户端可以通过 `globalThis.__DATA__` 访问
-- **布局系统**：支持单层和多层嵌套布局，可以通过 `inheritLayout = false` 跳过布局
+- **数据注入**：数据自动注入到 `window.__DATA__` 中，客户端可以通过
+  `globalThis.__DATA__` 访问
+- **布局系统**：支持单层和多层嵌套布局，可以通过 `inheritLayout = false`
+  跳过布局
 
 ---
 

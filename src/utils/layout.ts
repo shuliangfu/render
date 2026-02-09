@@ -127,34 +127,59 @@ export function createComponentTree(
 ): unknown {
   const { component, props } = componentConfig;
 
+  // 防御：component 为 undefined 时 Preact/React 会报 "(void 0) is not a function"
+  // 允许：function（组件）、object（如 forwardRef）、string（原生元素如 "div"）
+  if (
+    component == null ||
+    (typeof component !== "function" && typeof component !== "object" &&
+      typeof component !== "string")
+  ) {
+    const actual = component === undefined ? "undefined" : typeof component;
+    throw new Error(
+      `createComponentTree: invalid component (expected function, object or string, actual: ${actual})`,
+    );
+  }
+
   // 提取 children（如果存在）
   const { children: childrenConfig, ...restProps } = props;
 
-  // 如果 props 中有 children 配置，递归处理
+  // 如果 props 中有 children 配置（布局格式 { component, props }），递归处理
+  // 当 childConfig.component 为 falsy 时，不将 childConfig 传给 createElement，
+  // 否则 Preact/React 会尝试渲染 undefined，导致 "(void 0) is not a function"（常见于 Windows 下路径匹配失败）
   if (
     childrenConfig && typeof childrenConfig === "object" &&
-    "component" in childrenConfig
+    "component" in childrenConfig && "props" in childrenConfig
   ) {
-    const childElement = createComponentTree(
-      createElement,
-      childrenConfig as { component: unknown; props: Record<string, unknown> },
-    );
-    // children 应该作为第三个参数传递，而不是 props 的一部分
-    return createElement(component, restProps, childElement);
+    const childConfig = childrenConfig as {
+      component: unknown;
+      props: Record<string, unknown>;
+    };
+    if (childConfig.component) {
+      const childElement = createComponentTree(
+        createElement,
+        childConfig,
+      );
+      return createElement(component, restProps, childElement);
+    }
+    return createElement(component, restProps, undefined);
   }
 
   // 如果有 children 数组，递归处理每个子组件
   if (Array.isArray(childrenConfig)) {
     const childElements = childrenConfig.map((child: unknown) => {
       if (typeof child === "object" && child !== null && "component" in child) {
-        return createComponentTree(
-          createElement,
-          child as { component: unknown; props: Record<string, unknown> },
-        );
+        const cfg = child as {
+          component: unknown;
+          props: Record<string, unknown>;
+        };
+        if (cfg.component) {
+          return createComponentTree(createElement, cfg);
+        }
+        // component 为 falsy 时跳过，避免 Preact/React 报 "(void 0) is not a function"
+        return null;
       }
       return child;
     });
-    // children 应该作为第三个参数传递
     return createElement(component, restProps, ...childElements);
   }
 

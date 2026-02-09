@@ -89,10 +89,11 @@ describe("renderSSR", () => {
   describe("错误处理", () => {
     it("应该拒绝不支持的模板引擎", async () => {
       await assertRejects(
-        () => renderSSR({
-          engine: "invalid" as any,
-          component: () => null,
-        }),
+        () =>
+          renderSSR({
+            engine: "invalid" as any,
+            component: () => null,
+          }),
         Error,
         "不支持的模板引擎",
       );
@@ -105,10 +106,11 @@ describe("renderSSR", () => {
       };
 
       await assertRejects(
-        () => renderSSR({
-          engine: "react",
-          component: Component,
-        }),
+        () =>
+          renderSSR({
+            engine: "react",
+            component: Component,
+          }),
         Error,
       );
     });

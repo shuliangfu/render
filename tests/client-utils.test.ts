@@ -196,9 +196,9 @@ describe("客户端工具函数测试", () => {
           props: {},
         };
 
-        expect(() =>
-          createComponentTree(mockCreateElement, config)
-        ).toThrow(/invalid component.*expected function, object or string.*actual: undefined/);
+        expect(() => createComponentTree(mockCreateElement, config)).toThrow(
+          /invalid component.*expected function, object or string.*actual: undefined/,
+        );
       });
     });
   });

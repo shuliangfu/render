@@ -7,8 +7,14 @@
 import { describe, expect, it } from "@dreamer/test";
 import React from "react";
 import { h } from "preact";
-import { renderSSG, expandDynamicRoute } from "../src/ssg.ts";
-import { mkdir, writeTextFile, remove, readTextFile, join } from "@dreamer/runtime-adapter";
+import { expandDynamicRoute, renderSSG } from "../src/ssg.ts";
+import {
+  join,
+  mkdir,
+  readTextFile,
+  remove,
+  writeTextFile,
+} from "@dreamer/runtime-adapter";
 
 describe("SSG 高级功能", () => {
   const testOutputDir = "./tests/data/test-ssg-advanced-output";
@@ -116,7 +122,6 @@ describe("SSG 高级功能", () => {
 
       await cleanup();
     });
-
   });
 
   describe("模板处理", () => {
@@ -156,7 +161,8 @@ describe("SSG 高级功能", () => {
       await cleanup();
 
       const Component = () => React.createElement("div", null, "Content");
-      const template = "<html><head><!--ssr-outlet--></head><body><!--ssr-outlet--></body></html>";
+      const template =
+        "<html><head><!--ssr-outlet--></head><body><!--ssr-outlet--></body></html>";
 
       const files = await renderSSG({
         engine: "react",
@@ -195,8 +201,10 @@ describe("SSG 高级功能", () => {
       await cleanup();
 
       const Component = () => React.createElement("div", null, "Content");
-      const template = "<html><head><title>Test</title></head><body><!--ssr-outlet--></body></html>";
-      const headInject = '<link rel="stylesheet" href="/style.css">\n<link rel="preload" href="/font.woff2">';
+      const template =
+        "<html><head><title>Test</title></head><body><!--ssr-outlet--></body></html>";
+      const headInject =
+        '<link rel="stylesheet" href="/style.css">\n<link rel="preload" href="/font.woff2">';
 
       const files = await renderSSG({
         engine: "react",

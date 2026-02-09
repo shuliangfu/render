@@ -150,8 +150,7 @@ describe("边界情况和错误场景", () => {
           engine: "react",
           component: Component,
           props: { id: i },
-        }),
-      );
+        }));
 
       const results = await Promise.all(promises);
 
@@ -282,8 +281,7 @@ describe("边界情况和错误场景", () => {
 
     it("应该能够处理超长字符串", async () => {
       const longString = "x".repeat(100000); // 100KB 字符串
-      const Component = () =>
-        React.createElement("div", null, longString);
+      const Component = () => React.createElement("div", null, longString);
 
       const result = await renderSSR({
         engine: "react",
