@@ -661,9 +661,9 @@ See [TEST_REPORT.md](./TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.5** (2026-02-08)
+**v1.0.6** (2026-02-08)
 
-- **Fixed**: React client adapter: use named import `createElement` instead of default import `React` to fix `_.default.createElement is not a function` when bundling for browser
+- **Fixed**: SSG: use `dirname()` and `join()` for Windows path compatibility
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 

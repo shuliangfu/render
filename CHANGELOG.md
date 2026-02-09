@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.6] - 2026-02-08
+
+### Fixed
+
+- **SSG**: Replace `substring` + `lastIndexOf` with `dirname()` for directory path extraction. Use `join()` from runtime-adapter for Windows path compatibility.
+
+---
+
 ## [1.0.5] - 2026-02-08
 
 ### Fixed

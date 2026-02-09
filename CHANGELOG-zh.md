@@ -7,6 +7,14 @@
 
 ---
 
+## [1.0.6] - 2026-02-08
+
+### 修复
+
+- **SSG**：用 `dirname()` 替代 `substring` + `lastIndexOf` 提取目录路径，使用 runtime-adapter 的 `join()` 确保 Windows 路径兼容。
+
+---
+
 ## [1.0.5] - 2026-02-08
 
 ### 修复
