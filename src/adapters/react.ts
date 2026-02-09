@@ -17,6 +17,15 @@ import {
 } from "../utils/layout.ts";
 
 /**
+ * 调试日志：仅当 debug 为 true 时输出
+ */
+function debugLog(debug: boolean | undefined, prefix: string, ...args: unknown[]): void {
+  if (debug) {
+    console.log(`[@dreamer/render:SSR:${prefix}]`, ...args);
+  }
+}
+
+/**
  * React 服务端渲染
  *
  * @param options SSR 选项
@@ -30,7 +39,16 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     skipLayouts,
     template,
     stream = false,
+    debug,
   } = options;
+
+  debugLog(debug, "react", "start", {
+    stream,
+    layoutsCount: layouts?.length ?? 0,
+    skipLayouts,
+    hasTemplate: !!template,
+    componentType: component == null ? "null" : typeof component,
+  });
 
   // 检查组件是否导出了 inheritLayout = false
   const shouldSkip = skipLayouts || shouldSkipLayouts(component);
@@ -39,6 +57,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   const componentConfig = layouts && layouts.length > 0 && !shouldSkip
     ? composeLayouts("react", component, props, layouts, shouldSkip)
     : { component, props };
+
+  debugLog(debug, "react", "before renderToString", { shouldSkip, hasLayouts: !!(layouts?.length) });
 
   // 创建 React 元素树
   const element = createComponentTree(
@@ -83,6 +103,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     // 字符串渲染
     html = ReactDOMServer.renderToString(element);
   }
+
+  debugLog(debug, "react", "renderToString complete", { htmlLength: html?.length ?? 0 });
 
   // 如果有模板，自动注入组件 HTML
   if (template) {

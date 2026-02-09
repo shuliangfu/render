@@ -98,6 +98,15 @@ function cacheRoot(container: HTMLElement, root: Root): void {
 }
 
 /**
+ * 调试日志：仅当 debug 为 true 时输出
+ */
+function debugLog(debug: boolean | undefined, prefix: string, ...args: unknown[]): void {
+  if (debug) {
+    console.log(`[@dreamer/render:${prefix}]`, ...args);
+  }
+}
+
+/**
  * React 客户端渲染
  *
  * @param options CSR 选项
@@ -112,7 +121,15 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     container,
     errorHandler,
     performance: perfOptions,
+    debug,
   } = options;
+
+  debugLog(debug, "CSR", "react", {
+    container: typeof container === "string" ? container : "HTMLElement",
+    layoutsCount: layouts?.length ?? 0,
+    skipLayouts,
+    componentType: component == null ? "null" : typeof component,
+  });
 
   // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"）
   if (
@@ -152,6 +169,12 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       ? composeLayouts("react", component, props, layouts, shouldSkip)
       : { component, props };
 
+    debugLog(debug, "CSR", "before render", {
+      shouldSkip,
+      hasLayouts: !!(layouts?.length),
+      configKeys: Object.keys(componentConfig as object),
+    });
+
     // 创建 React 元素树（使用具名导入 createElement，避免 default 互操作问题）
     const element = createComponentTree(
       (comp: unknown, props: unknown, ...children: unknown[]) =>
@@ -162,6 +185,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     // 使用缓存的 root 或创建新的（会自动清理旧 root）
     root = getOrCreateRoot(containerElement);
     root.render(element);
+
+    debugLog(debug, "CSR", "react render complete");
 
     // 结束性能监控
     let performanceMetrics;
@@ -245,7 +270,15 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     container,
     errorHandler,
     performance: perfOptions,
+    debug,
   } = options;
+
+  debugLog(debug, "hydrate", "react", {
+    container: typeof container === "string" ? container : "HTMLElement",
+    layoutsCount: layouts?.length ?? 0,
+    skipLayouts,
+    componentType: component == null ? "null" : typeof component,
+  });
 
   // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"，常见于 Windows 路径匹配失败）
   if (
@@ -289,6 +322,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       ? composeLayouts("react", component, props, layouts, shouldSkip)
       : { component, props };
 
+    debugLog(debug, "hydrate", "before hydrateRoot", { shouldSkip, hasLayouts: !!(layouts?.length) });
+
     // 创建 React 元素树（使用具名导入 createElement，避免 default 互操作问题）
     const element = createComponentTree(
       (comp: unknown, props: unknown, ...children: unknown[]) =>
@@ -298,6 +333,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
 
     // 使用 React 18 的 hydrateRoot API
     root = hydrateRoot(containerElement, element);
+
+    debugLog(debug, "hydrate", "react hydrate complete");
 
     // 缓存 root
     cacheRoot(containerElement, root);

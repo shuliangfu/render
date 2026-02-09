@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.10] - 2026-02-09
+
+### Added
+
+- **Debug option**: Add `debug?: boolean` to `CSROptions`, `HydrationOptions`,
+  `SSROptions`, and `SSGOptions`. When `debug: true`, detailed logs are emitted
+  for CSR, hydration, and SSR (e.g. component type, layout composition, render
+  phases). Helps diagnose Windows path issues and "(void 0) is not a function"
+  errors.
+
+---
+
 ## [1.0.9] - 2026-02-09
 
 ### Added

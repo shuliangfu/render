@@ -45,6 +45,15 @@ function enhanceVoidError(error: unknown, phase: string): Error {
  * @param options CSR 选项
  * @returns 渲染结果，包含卸载函数
  */
+/**
+ * 调试日志：仅当 debug 为 true 时输出
+ */
+function debugLog(debug: boolean | undefined, prefix: string, ...args: unknown[]): void {
+  if (debug) {
+    console.log(`[@dreamer/render:${prefix}]`, ...args);
+  }
+}
+
 export function renderCSR(options: CSROptions): CSRRenderResult {
   const {
     component,
@@ -54,7 +63,15 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     container,
     errorHandler,
     performance: perfOptions,
+    debug,
   } = options;
+
+  debugLog(debug, "CSR", "preact", {
+    container: typeof container === "string" ? container : "HTMLElement",
+    layoutsCount: layouts?.length ?? 0,
+    skipLayouts,
+    componentType: component == null ? "null" : typeof component,
+  });
 
   // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"）
   if (
@@ -94,6 +111,12 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       ? composeLayouts("preact", component, props, layouts, shouldSkip)
       : { component, props };
 
+    debugLog(debug, "CSR", "before render", {
+      shouldSkip,
+      hasLayouts: !!(layouts?.length),
+      configKeys: Object.keys(componentConfig as object),
+    });
+
     // 创建 Preact 元素树
     const element = createComponentTree(
       (comp: unknown, props: unknown, ...children: unknown[]) =>
@@ -102,6 +125,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     ) as any;
 
     render(element, containerElement);
+
+    debugLog(debug, "CSR", "preact render complete");
 
     // 结束性能监控
     let performanceMetrics;
@@ -182,7 +207,15 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     container,
     errorHandler,
     performance: perfOptions,
+    debug,
   } = options;
+
+  debugLog(debug, "hydrate", "preact", {
+    container: typeof container === "string" ? container : "HTMLElement",
+    layoutsCount: layouts?.length ?? 0,
+    skipLayouts,
+    componentType: component == null ? "null" : typeof component,
+  });
 
   // 组件有效性检查（避免 undefined 传入导致 "(void 0) is not a function"，常见于 Windows 路径匹配失败）
   if (
@@ -220,6 +253,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       ? composeLayouts("preact", component, props, layouts, shouldSkip)
       : { component, props };
 
+    debugLog(debug, "hydrate", "before preactHydrate", { shouldSkip, hasLayouts: !!(layouts?.length) });
+
     // 创建 Preact 元素树
     const element = createComponentTree(
       (comp: unknown, props: unknown, ...children: unknown[]) =>
@@ -229,6 +264,8 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
 
     // 使用 Preact hydrate
     preactHydrate(element, containerElement);
+
+    debugLog(debug, "hydrate", "preact hydrate complete");
 
     // 结束性能监控
     let performanceMetrics;

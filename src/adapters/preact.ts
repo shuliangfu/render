@@ -73,6 +73,15 @@ async function renderToStream(element: any): Promise<string> {
 }
 
 /**
+ * 调试日志：仅当 debug 为 true 时输出
+ */
+function debugLog(debug: boolean | undefined, prefix: string, ...args: unknown[]): void {
+  if (debug) {
+    console.log(`[@dreamer/render:SSR:${prefix}]`, ...args);
+  }
+}
+
+/**
  * Preact 服务端渲染
  *
  * @param options SSR 选项
@@ -88,7 +97,16 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     stream = false,
     errorHandler,
     performance: perfOptions,
+    debug,
   } = options;
+
+  debugLog(debug, "preact", "start", {
+    stream,
+    layoutsCount: layouts?.length ?? 0,
+    skipLayouts,
+    hasTemplate: !!template,
+    componentType: component == null ? "null" : typeof component,
+  });
 
   // 性能监控
   const perfMonitor = createPerformanceMonitor(perfOptions);
@@ -105,6 +123,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       ? composeLayouts("preact", component, props, layouts, shouldSkip)
       : { component, props };
 
+    debugLog(debug, "preact", "before renderToString", { shouldSkip, hasLayouts: !!(layouts?.length) });
+
     // 创建 Preact 元素树
     const element = createComponentTree(
       (comp: unknown, props: unknown, ...children: unknown[]) =>
@@ -119,6 +139,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     } else {
       html = renderToString(element);
     }
+
+    debugLog(debug, "preact", "renderToString complete", { htmlLength: html?.length ?? 0 });
 
     // 如果有模板，自动注入组件 HTML
     let finalHtml = html;
