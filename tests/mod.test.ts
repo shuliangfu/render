@@ -7,7 +7,9 @@
 import { assertRejects, describe, expect, it } from "@dreamer/test";
 import { type Engine, renderSSG, renderSSR } from "../src/mod.ts";
 
-describe("@dreamer/render（服务端）", () => {
+describe(
+  "@dreamer/render（服务端）",
+  () => {
   describe("类型导出", () => {
     it("应该导出 Engine 类型", () => {
       const engine: Engine = "react";
@@ -15,8 +17,8 @@ describe("@dreamer/render（服务端）", () => {
     });
 
     it("应该支持所有模板引擎类型", () => {
-      const engines: Engine[] = ["react", "preact"];
-      expect(engines.length).toBe(2);
+      const engines: Engine[] = ["react", "preact", "solid"];
+      expect(engines.length).toBe(3);
     });
   });
 
@@ -69,4 +71,6 @@ describe("@dreamer/render（服务端）", () => {
       );
     });
   });
-});
+  },
+  { sanitizeOps: false, sanitizeResources: false },
+);

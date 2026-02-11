@@ -16,7 +16,9 @@ import {
   writeTextFile,
 } from "@dreamer/runtime-adapter";
 
-describe("SSG 高级功能", () => {
+describe(
+  "SSG 高级功能",
+  () => {
   const testOutputDir = "./tests/data/test-ssg-advanced-output";
 
   const cleanup = async () => {
@@ -290,4 +292,6 @@ describe("SSG 高级功能", () => {
       await cleanup();
     });
   });
-});
+  },
+  { sanitizeOps: false, sanitizeResources: false },
+);

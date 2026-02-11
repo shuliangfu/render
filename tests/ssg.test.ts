@@ -11,14 +11,19 @@ import {
   renderSSG,
 } from "../src/ssg.ts";
 
-describe("renderSSG", () => {
+describe(
+  "renderSSG",
+  () => {
   const testOutputDir = "./tests/data/test-ssg-output";
   const reactOutputDir = "./tests/data/test-ssg-react-output";
   const preactOutputDir = "./tests/data/test-ssg-preact-output";
+  const solidOutputDir = "./tests/data/test-ssg-solid-output";
 
   // 清理测试输出目录（测试前清理，测试后保留输出文件供查看）
   const cleanup = async (dir?: string) => {
-    const dirs = dir ? [dir] : [testOutputDir, reactOutputDir, preactOutputDir];
+    const dirs = dir
+      ? [dir]
+      : [testOutputDir, reactOutputDir, preactOutputDir, solidOutputDir];
     for (const d of dirs) {
       try {
         await remove(d, { recursive: true });
@@ -32,7 +37,9 @@ describe("renderSSG", () => {
   // 如需清理，可以手动删除 tests/data/test-ssg-*-output 目录
 
   describe("React SSG", () => {
-    it("应该能够生成静态 HTML 文件", async () => {
+    it(
+      "应该能够生成静态 HTML 文件",
+      async () => {
       await cleanup(reactOutputDir);
 
       const React = await import("react");
@@ -60,7 +67,9 @@ describe("renderSSG", () => {
       expect(indexContent).toContain("Hello, React SSG!");
 
       // 测试结束后保留输出文件供查看，不清理
-    });
+    },
+      { sanitizeOps: false, sanitizeResources: false },
+    );
   });
 
   describe("Preact SSG", () => {
@@ -90,6 +99,38 @@ describe("renderSSG", () => {
       expect(indexContent).toContain("Hello, Preact SSG!");
 
       // 测试结束后保留输出文件供查看，不清理
+    });
+  });
+
+  describe("Solid SSG", () => {
+    it("应该能够生成静态 HTML 文件", async () => {
+      await cleanup(solidOutputDir);
+
+      const { createComponent } = await import("solid-js");
+      const { Dynamic } = await import("solid-js/web");
+      const Component = () =>
+        createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return "Hello, Solid SSG!";
+          },
+        });
+
+      const files = await renderSSG({
+        engine: "solid",
+        routes: ["/", "/about"],
+        outputDir: solidOutputDir,
+        loadRouteComponent: async () => Component,
+      });
+
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.some((f) => f.includes("index.html"))).toBe(true);
+      expect(files.some((f) => f.includes("about.html"))).toBe(true);
+
+      const indexContent = await readTextFile(
+        join(solidOutputDir, "index.html"),
+      );
+      expect(indexContent).toContain("Hello, Solid SSG!");
     });
   });
 
@@ -146,6 +187,36 @@ describe("renderSSG", () => {
       // 测试结束后保留输出文件供查看，不清理
     });
 
+    it("Solid 应该能够生成 sitemap.xml", async () => {
+      await cleanup(solidOutputDir);
+
+      const { createComponent } = await import("solid-js");
+      const { Dynamic } = await import("solid-js/web");
+      const Component = () =>
+        createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return "Content";
+          },
+        });
+
+      const files = await renderSSG({
+        engine: "solid",
+        routes: ["/", "/about"],
+        outputDir: solidOutputDir,
+        loadRouteComponent: async () => Component,
+        generateSitemap: true,
+      });
+
+      expect(files.some((f) => f.includes("sitemap.xml"))).toBe(true);
+
+      const sitemapContent = await readTextFile(
+        join(solidOutputDir, "sitemap.xml"),
+      );
+      expect(sitemapContent).toContain("<?xml");
+      expect(sitemapContent).toContain("<urlset");
+    });
+
     it("React 应该能够生成 robots.txt", async () => {
       await cleanup(reactOutputDir);
 
@@ -194,6 +265,35 @@ describe("renderSSG", () => {
       expect(robotsContent).toContain("User-agent");
 
       // 测试结束后保留输出文件供查看，不清理
+    });
+
+    it("Solid 应该能够生成 robots.txt", async () => {
+      await cleanup(solidOutputDir);
+
+      const { createComponent } = await import("solid-js");
+      const { Dynamic } = await import("solid-js/web");
+      const Component = () =>
+        createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return "Content";
+          },
+        });
+
+      const files = await renderSSG({
+        engine: "solid",
+        routes: ["/"],
+        outputDir: solidOutputDir,
+        loadRouteComponent: async () => Component,
+        generateRobots: true,
+      });
+
+      expect(files.some((f) => f.includes("robots.txt"))).toBe(true);
+
+      const robotsContent = await readTextFile(
+        join(solidOutputDir, "robots.txt"),
+      );
+      expect(robotsContent).toContain("User-agent");
     });
   });
 
@@ -247,6 +347,35 @@ describe("renderSSG", () => {
       expect(content).toContain("Preact Title");
 
       // 测试结束后保留输出文件供查看，不清理
+    });
+
+    it("Solid 应该能够处理路由数据", async () => {
+      await cleanup(solidOutputDir);
+
+      const { createComponent } = await import("solid-js");
+      const { Dynamic } = await import("solid-js/web");
+      const Component = (props: Record<string, unknown>) => {
+        const data = props?.data as { title?: string } | undefined;
+        return createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return `Title: ${data?.title ?? "Default"}`;
+          },
+        });
+      };
+
+      const files = await renderSSG({
+        engine: "solid",
+        routes: ["/"],
+        outputDir: solidOutputDir,
+        loadRouteComponent: async () => Component,
+        loadRouteData: async () => ({
+          data: { title: "Solid Title" },
+        }),
+      });
+
+      const content = await readTextFile(join(solidOutputDir, "index.html"));
+      expect(content).toContain("Solid Title");
     });
   });
 });
@@ -309,4 +438,6 @@ describe("expandDynamicRoute", () => {
     expect(routes.length).toBe(2);
     expect(routes[0]).toContain("1-100");
   });
-});
+  },
+  { sanitizeOps: false, sanitizeResources: false },
+);

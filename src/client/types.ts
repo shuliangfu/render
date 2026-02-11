@@ -7,7 +7,7 @@
 /**
  * 模板引擎类型
  */
-export type Engine = "react" | "preact";
+export type Engine = "react" | "preact" | "solid";
 
 /**
  * 布局组件配置

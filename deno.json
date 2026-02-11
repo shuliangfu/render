@@ -1,12 +1,13 @@
 {
   "name": "@dreamer/render",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "license": "MIT",
   "exports": {
     ".": "./src/mod.ts",
     "./client": "./src/client/mod.ts",
     "./client/preact": "./src/client/adapters/preact.ts",
-    "./client/react": "./src/client/adapters/react.ts"
+    "./client/react": "./src/client/adapters/react.ts",
+    "./client/solid":"./src/client/adapters/solid.ts"
   },
   "publish": {
     "include": [
@@ -37,13 +38,14 @@
   },
   "imports": {
     "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@^1.0.4",
-    "@dreamer/test": "jsr:@dreamer/test@^1.0.2",
-    "react": "npm:react@18.3.1",
-    "react-dom/server": "npm:react-dom@18.3.1/server",
-    "react-dom/client": "npm:react-dom@18.3.1/client",
-    "preact": "npm:preact@10.28.0",
+    "@dreamer/test": "jsr:@dreamer/test@^1.0.5",
+    
+    "react": "npm:react@19.2.4",
+    "react-dom": "npm:react-dom@19.2.4",
+    "preact": "npm:preact@10.28.3",
     "preact-render-to-string": "npm:preact-render-to-string@6.2.0",
-    "scheduler": "npm:scheduler@0.27.0"
+    "scheduler": "npm:scheduler@0.27.0",
+    "solid-js": "npm:solid-js@1.9.11"
   },
   "nodeModulesDir": "auto",
   "compilerOptions": {

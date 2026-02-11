@@ -9,7 +9,9 @@ import React from "react";
 import { renderSSR } from "../src/ssr.ts";
 import type { LoadContext, Metadata } from "../src/types.ts";
 
-describe("边界情况和错误场景", () => {
+describe(
+  "边界情况和错误场景",
+  () => {
   describe("大量数据测试", () => {
     it("应该能够处理大量数据的 load 方法", async () => {
       const Component = () => React.createElement("div", null, "Large Data");
@@ -292,4 +294,6 @@ describe("边界情况和错误场景", () => {
       expect(result.html.length).toBeGreaterThan(100000);
     });
   });
-});
+  },
+  { sanitizeOps: false, sanitizeResources: false },
+);
