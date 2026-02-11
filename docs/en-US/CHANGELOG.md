@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.11] - 2026-02-10
+
+### Added
+
+- **Solid.js support**: Add Solid adapter for SSR and client subpath
+  `@dreamer/render/client/solid`. Engine option accepts `"solid"` alongside
+  `"react"` and `"preact"` for SSR, CSR, hydration, and SSG.
+
+### Changed
+
+- **Docs**: Restructure docs into `docs/en-US/` and `docs/zh-CN/`; root README
+  remains English entry; fix all doc reference links.
+
+---
+
 ## [1.0.10] - 2026-02-09
 
 ### Added
