@@ -7,6 +7,23 @@
 
 ---
 
+## [1.0.13] - 2026-02-11
+
+### 修复
+
+- **Solid SSR 适配器**：通过动态导入
+  `solid-js/web`（`getSolidWeb()`）避免服务端代码路径拉取客户端
+  API，消除在路由组件未使用 SSR 专用构建（如 dweb `generate: "ssr"`）时的
+  "Client-only API called on the server side" 报错。补充 SSR 编译要求说明。
+
+### 新增
+
+- **Preact 适配器**：在 `composeLayouts`
+  之后增加调试日志（根组件名、hasChildren、layoutsCount），便于排查布局/SSR
+  问题。
+
+---
+
 ## [1.0.12] - 2026-02-11
 
 ### 修复
@@ -32,7 +49,8 @@
 
 ### 变更
 
-- **文档**：文档结构调整为 `docs/en-US/` 与 `docs/zh-CN/`；根目录 README 保留为英文入口；修正所有文档引用链接。
+- **文档**：文档结构调整为 `docs/en-US/` 与 `docs/zh-CN/`；根目录 README
+  保留为英文入口；修正所有文档引用链接。
 
 ---
 
@@ -41,8 +59,9 @@
 ### 新增
 
 - **调试选项**：在 `CSROptions`、`HydrationOptions`、`SSROptions`、`SSGOptions`
-  中增加 `debug?: boolean`。传 `debug: true` 时输出详细日志（组件类型、布局组合、
-  渲染阶段等），便于诊断 Windows 路径问题及 "(void 0) is not a function" 错误。
+  中增加 `debug?: boolean`。传 `debug: true`
+  时输出详细日志（组件类型、布局组合、 渲染阶段等），便于诊断 Windows 路径问题及
+  "(void 0) is not a function" 错误。
 
 ---
 
@@ -51,14 +70,14 @@
 ### 新增
 
 - **Preact/React 适配器**：增加 `enhanceVoidError`，对 "(void 0) is not a
-  function" 错误包装诊断提示（路由/layout chunk 的 jsx-runtime 导入失败或组件
-  为 undefined）。
+  function" 错误包装诊断提示（路由/layout chunk 的 jsx-runtime 导入失败或组件 为
+  undefined）。
 
 ### 变更
 
-- **客户端异常**：`render/src/client` 下所有抛出异常改为英文信息（如
-  "CSR render must run in browser environment"、"Invalid hydration
-  component"、"Unsupported template engine"）。
+- **客户端异常**：`render/src/client` 下所有抛出异常改为英文信息（如 "CSR render
+  must run in browser environment"、"Invalid hydration component"、"Unsupported
+  template engine"）。
 
 ### 移除
 

@@ -664,11 +664,13 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.12** (2026-02-11)
+**v1.0.13** (2026-02-11)
 
-- **Fixed**: SSR adapters reverted to static imports to fix dweb preact-csr
-  module resolution; client keeps dynamic import to avoid solid-js/seroval
-  browser require error; browser test config and async handling fixes.
+- **Fixed**: Solid SSR adapter uses dynamic import for solid-js/web to avoid
+  client-only API on server; add SSR compile requirement note.
+- **Added**: Preact adapter extra debug log after composeLayouts.
+
+[Full changelog](./docs/en-US/CHANGELOG.md)
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

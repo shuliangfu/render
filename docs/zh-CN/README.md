@@ -679,11 +679,13 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.12**（2026-02-11）
+**v1.0.13**（2026-02-11）
 
-- **修复**：SSR 适配器恢复静态导入以修复 dweb preact-csr 模块解析；客户端保持
-  动态导入以避免 solid-js/seroval 浏览器 require 错误；浏览器测试配置与异步
-  处理修正。
+- **修复**：Solid SSR 适配器改为动态导入 solid-js/web，避免服务端调用客户端
+  API；补充 SSR 编译要求说明。
+- **新增**：Preact 适配器在 composeLayouts 后增加调试日志。
+
+[完整变更](./CHANGELOG.md)
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

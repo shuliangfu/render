@@ -19,7 +19,11 @@ import {
 /**
  * 调试日志：仅当 debug 为 true 时输出
  */
-function debugLog(debug: boolean | undefined, prefix: string, ...args: unknown[]): void {
+function debugLog(
+  debug: boolean | undefined,
+  prefix: string,
+  ...args: unknown[]
+): void {
   if (debug) {
     console.log(`[@dreamer/render:SSR:${prefix}]`, ...args);
   }
@@ -58,7 +62,10 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     ? composeLayouts("react", component, props, layouts, shouldSkip)
     : { component, props };
 
-  debugLog(debug, "react", "before renderToString", { shouldSkip, hasLayouts: !!(layouts?.length) });
+  debugLog(debug, "react", "before renderToString", {
+    shouldSkip,
+    hasLayouts: !!(layouts?.length),
+  });
 
   // 创建 React 元素树
   const element = createComponentTree(
@@ -104,7 +111,9 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     html = ReactDOMServer.renderToString(element);
   }
 
-  debugLog(debug, "react", "renderToString complete", { htmlLength: html?.length ?? 0 });
+  debugLog(debug, "react", "renderToString complete", {
+    htmlLength: html?.length ?? 0,
+  });
 
   // 如果有模板，自动注入组件 HTML
   if (template) {
