@@ -5,7 +5,7 @@
  * Solid 使用 render(fn, container) 与 hydrate(fn, container)，fn 为返回根组件的函数。
  */
 
-import { createComponent, type Component } from "solid-js";
+import { type Component, createComponent } from "solid-js";
 import type { JSX } from "solid-js";
 import { hydrate as solidHydrate, render as solidRender } from "solid-js/web";
 import type {
@@ -17,10 +17,7 @@ import {
   handleRenderError,
   renderErrorFallback,
 } from "../utils/error-handler.ts";
-import {
-  composeLayouts,
-  shouldSkipLayouts,
-} from "../utils/layout.ts";
+import { composeLayouts, shouldSkipLayouts } from "../utils/layout.ts";
 import {
   createPerformanceMonitor,
   recordPerformanceMetrics,
@@ -69,7 +66,10 @@ function buildSolidTree(componentConfig: {
     }
   }
 
-  return createComponent(component as Component<Record<string, unknown>>, restProps);
+  return createComponent(
+    component as Component<Record<string, unknown>>,
+    restProps,
+  );
 }
 
 /**
@@ -126,10 +126,9 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
     perfMonitor.start("solid", "csr");
   }
 
-  const containerElement =
-    typeof container === "string"
-      ? (document.querySelector(container) as HTMLElement)
-      : container;
+  const containerElement = typeof container === "string"
+    ? (document.querySelector(container) as HTMLElement)
+    : container;
 
   if (!containerElement) {
     throw new Error(`Container element not found: ${container}`);
@@ -138,10 +137,9 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
   try {
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
-    const componentConfig =
-      layouts && layouts.length > 0 && !shouldSkip
-        ? composeLayouts("solid", component, props, layouts, shouldSkip)
-        : { component, props };
+    const componentConfig = layouts && layouts.length > 0 && !shouldSkip
+      ? composeLayouts("solid", component, props, layouts, shouldSkip)
+      : { component, props };
 
     const config = componentConfig as {
       component: unknown;
@@ -162,7 +160,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       update: (newProps: Record<string, unknown>) => {
         dispose();
         const newConfig = { component, props: newProps };
-        solidRender((): JSX.Element => buildSolidTree(newConfig), containerElement);
+        solidRender(
+          (): JSX.Element => buildSolidTree(newConfig),
+          containerElement,
+        );
       },
       instance: containerElement,
       performance: performanceMetrics,
@@ -177,7 +178,9 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
         try {
           const fallbackFn = (): JSX.Element =>
             createComponent(
-              errorHandler.fallbackComponent as Component<Record<string, unknown>>,
+              errorHandler.fallbackComponent as Component<
+                Record<string, unknown>
+              >,
               { error },
             );
           solidRender(fallbackFn, containerElement);
@@ -245,10 +248,9 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     perfMonitor.start("solid", "hydrate");
   }
 
-  const containerElement =
-    typeof container === "string"
-      ? (document.querySelector(container) as HTMLElement)
-      : container;
+  const containerElement = typeof container === "string"
+    ? (document.querySelector(container) as HTMLElement)
+    : container;
 
   if (!containerElement) {
     throw new Error(`Container element not found: ${container}`);
@@ -257,10 +259,9 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
   try {
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
-    const componentConfig =
-      layouts && layouts.length > 0 && !shouldSkip
-        ? composeLayouts("solid", component, props, layouts, shouldSkip)
-        : { component, props };
+    const componentConfig = layouts && layouts.length > 0 && !shouldSkip
+      ? composeLayouts("solid", component, props, layouts, shouldSkip)
+      : { component, props };
 
     const config = componentConfig as {
       component: unknown;
@@ -281,7 +282,10 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       update: (newProps: Record<string, unknown>) => {
         dispose();
         const newConfig = { component, props: newProps };
-        solidRender((): JSX.Element => buildSolidTree(newConfig), containerElement);
+        solidRender(
+          (): JSX.Element => buildSolidTree(newConfig),
+          containerElement,
+        );
       },
       instance: containerElement,
       performance: performanceMetrics,
@@ -297,7 +301,9 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
           containerElement.innerHTML = "";
           const fallbackFn = (): JSX.Element =>
             createComponent(
-              errorHandler.fallbackComponent as Component<Record<string, unknown>>,
+              errorHandler.fallbackComponent as Component<
+                Record<string, unknown>
+              >,
               { error },
             );
           solidRender(fallbackFn, containerElement);
@@ -310,11 +316,11 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
         }
       } else {
         renderErrorFallback(
-            containerElement,
-            error instanceof Error ? error : new Error(String(error)),
-            "hydrate",
-          );
-        }
+          containerElement,
+          error instanceof Error ? error : new Error(String(error)),
+          "hydrate",
+        );
+      }
     });
 
     return {

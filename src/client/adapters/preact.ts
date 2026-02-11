@@ -48,7 +48,11 @@ function enhanceVoidError(error: unknown, phase: string): Error {
 /**
  * 调试日志：仅当 debug 为 true 时输出
  */
-function debugLog(debug: boolean | undefined, prefix: string, ...args: unknown[]): void {
+function debugLog(
+  debug: boolean | undefined,
+  prefix: string,
+  ...args: unknown[]
+): void {
   if (debug) {
     console.log(`[@dreamer/render:${prefix}]`, ...args);
   }
@@ -253,7 +257,10 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       ? composeLayouts("preact", component, props, layouts, shouldSkip)
       : { component, props };
 
-    debugLog(debug, "hydrate", "before preactHydrate", { shouldSkip, hasLayouts: !!(layouts?.length) });
+    debugLog(debug, "hydrate", "before preactHydrate", {
+      shouldSkip,
+      hasLayouts: !!(layouts?.length),
+    });
 
     // 创建 Preact 元素树
     const element = createComponentTree(

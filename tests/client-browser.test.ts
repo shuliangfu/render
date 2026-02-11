@@ -274,7 +274,9 @@ describe("客户端渲染 - 浏览器测试", () => {
       expect(false).toBe(true);
     } catch (e) {
       expect(e).toBeInstanceOf(Error);
-      expect((e as Error).message).toContain("CSR render must run in browser environment");
+      expect((e as Error).message).toContain(
+        "CSR render must run in browser environment",
+      );
     }
 
     try {
@@ -286,7 +288,9 @@ describe("客户端渲染 - 浏览器测试", () => {
       expect(false).toBe(true);
     } catch (e) {
       expect(e).toBeInstanceOf(Error);
-      expect((e as Error).message).toContain("Hydration must run in browser environment");
+      expect((e as Error).message).toContain(
+        "Hydration must run in browser environment",
+      );
     }
   });
 
@@ -475,7 +479,9 @@ describe("客户端渲染 - 浏览器测试", () => {
       expect(false).toBe(true);
     } catch (e) {
       expect(e).toBeInstanceOf(Error);
-      expect((e as Error).message).toContain("CSR render must run in browser environment");
+      expect((e as Error).message).toContain(
+        "CSR render must run in browser environment",
+      );
     }
 
     try {
@@ -487,7 +493,9 @@ describe("客户端渲染 - 浏览器测试", () => {
       expect(false).toBe(true);
     } catch (e) {
       expect(e).toBeInstanceOf(Error);
-      expect((e as Error).message).toContain("Hydration must run in browser environment");
+      expect((e as Error).message).toContain(
+        "Hydration must run in browser environment",
+      );
     }
   });
 

@@ -5,18 +5,30 @@
  * Solid 使用 renderToString(fn) 接口，fn 为返回根组件的函数。
  * 支持流式渲染（模拟分块）、错误处理、性能监控。
  *
- * 注意：客户端渲染（CSR）和 Hydration 在 @dreamer/render/client 的 solid 适配器中实现。
+ * 服务端使用的路由组件须经 SSR 专用编译（如 dweb 的 solid-ssr-compile，generate: "ssr"），
+ * 产出使用 escape/ssrElement 的代码；否则会触发 "Client-only API called on the server side"。
+ * 本适配器直接使用 solid-js/web 的 server 构建提供的 renderToString。
+ *
+ * 客户端渲染（CSR）和 Hydration 在 @dreamer/render/client 的 solid 适配器中实现。
  */
 
-import { createComponent, type Component } from "solid-js";
-import { renderToString } from "solid-js/web";
+import { type Component, createComponent } from "solid-js";
 import type { RenderResult, SSROptions } from "../types.ts";
+
+/** 缓存：动态加载的 solid-js/web（server 构建），避免重复加载 */
+let solidWebModule: { renderToString: (fn: () => unknown) => string } | null =
+  null;
+
+async function getSolidWeb(): Promise<
+  { renderToString: (fn: () => unknown) => string }
+> {
+  if (solidWebModule) return solidWebModule;
+  solidWebModule = await import("solid-js/web");
+  return solidWebModule;
+}
 import { handleRenderError } from "../utils/error-handler.ts";
 import { injectComponentHtml } from "../utils/html-inject.ts";
-import {
-  composeLayouts,
-  shouldSkipLayouts,
-} from "../utils/layout.ts";
+import { composeLayouts, shouldSkipLayouts } from "../utils/layout.ts";
 import {
   createPerformanceMonitor,
   recordPerformanceMetrics,
@@ -70,16 +82,20 @@ function buildSolidTree(componentConfig: {
     }
   }
 
-  return createComponent(component as Component<Record<string, unknown>>, restProps);
+  return createComponent(
+    component as Component<Record<string, unknown>>,
+    restProps,
+  );
 }
 
 /**
  * Solid 流式渲染（模拟）
  *
  * Solid 的 renderToStringAsync 为异步等待 Suspense，此处用分块输出模拟流式，
- * 与 Preact 适配器行为一致。
+ * 与 Preact 适配器行为一致。使用 getSolidWeb() 获取 solid-js/web 的 renderToString。
  */
 async function renderToStream(rootFn: () => unknown): Promise<string> {
+  const { renderToString } = await getSolidWeb();
   const fullHtml = renderToString(rootFn);
   const stream = new ReadableStream({
     start(controller) {
@@ -88,7 +104,9 @@ async function renderToStream(rootFn: () => unknown): Promise<string> {
       const pushChunk = () => {
         if (offset < fullHtml.length) {
           controller.enqueue(
-            new TextEncoder().encode(fullHtml.slice(offset, offset + chunkSize)),
+            new TextEncoder().encode(
+              fullHtml.slice(offset, offset + chunkSize),
+            ),
           );
           offset += chunkSize;
           Promise.resolve().then(pushChunk);
@@ -157,10 +175,9 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   try {
     const shouldSkip = skipLayouts || shouldSkipLayouts(component);
 
-    const componentConfig =
-      layouts && layouts.length > 0 && !shouldSkip
-        ? composeLayouts("solid", component, props, layouts, shouldSkip)
-        : { component, props };
+    const componentConfig = layouts && layouts.length > 0 && !shouldSkip
+      ? composeLayouts("solid", component, props, layouts, shouldSkip)
+      : { component, props };
 
     debugLog(debug, "solid", "before renderToString", {
       shouldSkip,
@@ -177,6 +194,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     if (stream) {
       html = await renderToStream(rootFn);
     } else {
+      const { renderToString } = await getSolidWeb();
       html = renderToString(rootFn);
     }
 

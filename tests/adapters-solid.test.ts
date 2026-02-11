@@ -6,7 +6,7 @@
  */
 
 import { assertRejects, describe, expect, it } from "@dreamer/test";
-import { createComponent, type Component } from "solid-js";
+import { type Component, createComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import * as solidAdapter from "../src/adapters/solid.ts";
 
@@ -195,7 +195,11 @@ describe("Solid 适配器", () => {
           get children() {
             return [
               createComponent(Header, {}),
-              createComponent(Main, { get children() { return "Content"; } }),
+              createComponent(Main, {
+                get children() {
+                  return "Content";
+                },
+              }),
               createComponent(Footer, {}),
             ];
           },
@@ -213,7 +217,12 @@ describe("Solid 适配器", () => {
 
     it("应该正确处理空组件", async () => {
       const Component: Component<Record<string, unknown>> = () =>
-        createComponent(Dynamic, { component: "div", get children() { return null; } });
+        createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return null;
+          },
+        });
 
       const result = await solidAdapter.renderSSR({
         engine: "solid",
@@ -276,7 +285,11 @@ describe("Solid 适配器", () => {
 
       expect(result.html).toContain("Content");
       expect(metrics).toBeDefined();
-      const m = metrics as { duration?: number; engine?: string; phase?: string } | null;
+      const m = metrics as {
+        duration?: number;
+        engine?: string;
+        phase?: string;
+      } | null;
       expect((m?.duration ?? 0) >= 0).toBe(true);
       expect(m?.engine).toBe("solid");
       expect(m?.phase).toBe("ssr");

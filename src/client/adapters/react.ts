@@ -100,7 +100,11 @@ function cacheRoot(container: HTMLElement, root: Root): void {
 /**
  * 调试日志：仅当 debug 为 true 时输出
  */
-function debugLog(debug: boolean | undefined, prefix: string, ...args: unknown[]): void {
+function debugLog(
+  debug: boolean | undefined,
+  prefix: string,
+  ...args: unknown[]
+): void {
   if (debug) {
     console.log(`[@dreamer/render:${prefix}]`, ...args);
   }
@@ -322,7 +326,10 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       ? composeLayouts("react", component, props, layouts, shouldSkip)
       : { component, props };
 
-    debugLog(debug, "hydrate", "before hydrateRoot", { shouldSkip, hasLayouts: !!(layouts?.length) });
+    debugLog(debug, "hydrate", "before hydrateRoot", {
+      shouldSkip,
+      hasLayouts: !!(layouts?.length),
+    });
 
     // 创建 React 元素树（使用具名导入 createElement，避免 default 互操作问题）
     const element = createComponentTree(

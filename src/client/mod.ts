@@ -126,7 +126,9 @@ export async function renderCSR(options: CSROptions): Promise<CSRRenderResult> {
  * });
  * ```
  */
-export async function hydrate(options: HydrationOptions): Promise<CSRRenderResult> {
+export async function hydrate(
+  options: HydrationOptions,
+): Promise<CSRRenderResult> {
   const { engine } = options;
 
   if (typeof globalThis.document === "undefined") {

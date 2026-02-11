@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.13] - 2026-02-11
+
+### Fixed
+
+- **Solid SSR adapter**: Use dynamic import for `solid-js/web` (via
+  `getSolidWeb()`) so that server-only code paths do not pull in client-only
+  APIs; avoids "Client-only API called on the server side" when route components
+  are not built with SSR-specific compile (e.g. dweb `generate: "ssr"`). Add
+  comment on SSR compile requirement.
+
+### Added
+
+- **Preact adapter**: Extra debug log after `composeLayouts` (root component
+  name, hasChildren, layoutsCount) for easier diagnosis of layout/SSR issues.
+
+---
+
 ## [1.0.12] - 2026-02-11
 
 ### Fixed
@@ -61,13 +78,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - **Client exceptions**: All thrown exceptions in `render/src/client` now use
-  English messages (e.g. "CSR render must run in browser environment",
-  "Invalid hydration component", "Unsupported template engine").
+  English messages (e.g. "CSR render must run in browser environment", "Invalid
+  hydration component", "Unsupported template engine").
 
 ### Removed
 
-- **Preact/React adapters**: Remove redundant `ensurePreactAPIs` / `ensureReactAPIs`
-  (multi-instance is not the cause of current failures).
+- **Preact/React adapters**: Remove redundant `ensurePreactAPIs` /
+  `ensureReactAPIs` (multi-instance is not the cause of current failures).
 
 ---
 
