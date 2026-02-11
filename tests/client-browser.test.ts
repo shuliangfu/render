@@ -3,23 +3,15 @@
  *
  * 使用 @dreamer/test 的浏览器测试功能测试 CSR 和 Hydration
  * 需要 Playwright Chromium（先执行 npx playwright install chromium）
- *
- * 注：Windows CI 下 Preact/React 的 npm 模块在浏览器 bundle 中加载异常，
- * 导致 update、performance 等测试失败，故在 Windows 上跳过相关用例
  */
 
-import { platform } from "@dreamer/runtime-adapter";
 import {
   afterAll,
   assertRejects,
-  cleanupAllBrowsers,
   describe,
   expect,
   it,
 } from "@dreamer/test";
-
-/** Windows 上跳过（浏览器测试中 Preact/React 模块加载异常） */
-const skipOnWindows = platform() === "windows";
 
 // 浏览器测试配置
 const browserConfig = {
@@ -54,7 +46,13 @@ const browserConfig = {
 
 describe("客户端渲染 - 浏览器测试", () => {
   afterAll(async () => {
-    await cleanupAllBrowsers();
+    // 动态导入 cleanupAllBrowsers，避免 Bun 下 node_modules 解析的 mod.js 未导出该函数导致加载报错
+    try {
+      const { cleanupAllBrowsers } = await import("@dreamer/test");
+      await cleanupAllBrowsers();
+    } catch {
+      // 忽略：部分环境（如 Bun + node_modules）可能无此导出，由运行器统一清理
+    }
   });
 
   it("应该导出所有必要的函数", async (ctx) => {
@@ -596,7 +594,7 @@ describe("客户端渲染 - 浏览器测试", () => {
 
   // ==================== 更新功能测试 ====================
 
-  it.skipIf(skipOnWindows, "Preact: 应该支持 update 函数", async (ctx) => {
+  it("Preact: 应该支持 update 函数", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
 
     const browser = (ctx as any).browser;
@@ -640,7 +638,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.hasInstance).toBe(true);
   }, browserConfig);
 
-  it.skipIf(skipOnWindows, "React: 应该支持 update 函数", async (ctx) => {
+  it("React: 应该支持 update 函数", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
 
     const browser = (ctx as any).browser;
@@ -686,7 +684,7 @@ describe("客户端渲染 - 浏览器测试", () => {
 
   // ==================== 性能监控集成测试 ====================
 
-  it.skipIf(skipOnWindows, "Preact: CSR 应该返回性能指标", async (ctx) => {
+  it("Preact: CSR 应该返回性能指标", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
 
     const browser = (ctx as any).browser;
@@ -746,7 +744,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.isSlow).toBe(false);
   }, browserConfig);
 
-  it.skipIf(skipOnWindows, "React: CSR 应该返回性能指标", async (ctx) => {
+  it("React: CSR 应该返回性能指标", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
 
     const browser = (ctx as any).browser;

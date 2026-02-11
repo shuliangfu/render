@@ -11,6 +11,9 @@ import {
   renderSSG,
 } from "../src/ssg.ts";
 
+/** SSG/React/Solid 内部可能使用定时器，关闭 sanitize 避免泄漏误报 */
+const noSanitize = { sanitizeOps: false, sanitizeResources: false };
+
 describe(
   "renderSSG",
   () => {
@@ -132,7 +135,7 @@ describe(
       );
       expect(indexContent).toContain("Hello, Solid SSG!");
     });
-  });
+  }, noSanitize);
 
   describe("Sitemap 和 Robots", () => {
     it("React 应该能够生成 sitemap.xml", async () => {
@@ -295,7 +298,7 @@ describe(
       );
       expect(robotsContent).toContain("User-agent");
     });
-  });
+  }, noSanitize);
 
   describe("路由数据", () => {
     it("React 应该能够处理路由数据", async () => {
@@ -377,7 +380,7 @@ describe(
       const content = await readTextFile(join(solidOutputDir, "index.html"));
       expect(content).toContain("Solid Title");
     });
-  });
+  }, noSanitize);
 });
 
 describe("generateSitemap", () => {
