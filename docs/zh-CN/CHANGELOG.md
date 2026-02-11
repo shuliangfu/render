@@ -7,6 +7,21 @@
 
 ---
 
+## [1.0.12] - 2026-02-11
+
+### 修复
+
+- **SSR 适配器**：恢复 preact、react、solid 适配器的静态导入。原先的动态导入在
+  dweb 打包服务端时导致模块解析异常（如 preact-csr 出现「app 容器未找到」）。
+- **客户端适配器**：客户端保持动态导入，避免将 solid-js（及其使用 `require` 的
+  seroval 依赖）打入浏览器包，否则会触发 "Dynamic require of seroval is not
+  supported"。
+- **客户端浏览器测试**：增加 `protocolTimeout`、`reuseBrowser`；修正非浏览器
+  环境测试中对 async renderCSR/hydrate 使用 `await` 以正确捕获拒绝；卸载测试
+  增加 `await`。
+
+---
+
 ## [1.0.11] - 2026-02-10
 
 ### 新增

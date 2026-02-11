@@ -10,7 +10,7 @@
  * - 客户端渲染（CSR）：将组件渲染到 DOM
  * - Hydration：激活服务端渲染的 HTML
  * - 布局组合：支持嵌套布局
- * - 多引擎支持：React、Preact
+ * - 多引擎支持：React、Preact、Solid
  *
  * @example
  * ```typescript
@@ -55,15 +55,11 @@ export {
   recordPerformanceMetrics,
 } from "./utils/performance.ts";
 
-// 适配器按 engine 动态加载，避免在 Solid/Preact 应用中加载 react-dom 导致版本冲突
-import type { Engine } from "./types.ts";
+// 客户端适配器按 engine 动态加载，避免 solid-js 的 seroval 依赖（使用 require）在浏览器打包时失败
 import type { CSROptions, CSRRenderResult, HydrationOptions } from "./types.ts";
 
-/** 按 engine 动态加载客户端适配器 */
-async function loadClientAdapter(engine: Engine): Promise<{
-  renderCSR: (opts: CSROptions) => CSRRenderResult;
-  hydrate: (opts: HydrationOptions) => CSRRenderResult;
-}> {
+/** 按 engine 动态加载客户端适配器，仅加载当前引擎（solid 含 seroval 等依赖，打包进浏览器会触发 require 报错） */
+async function loadClientAdapter(engine: "react" | "preact" | "solid") {
   switch (engine) {
     case "react":
       return await import("./adapters/react.ts");
@@ -81,7 +77,7 @@ async function loadClientAdapter(engine: Engine): Promise<{
 /**
  * 客户端渲染函数
  *
- * 根据指定的模板引擎类型，动态加载对应适配器并进行客户端渲染。
+ * 根据指定的模板引擎类型，调用对应适配器进行客户端渲染。
  * 注意：此函数只能在浏览器环境中运行。
  *
  * @param options CSR 选项

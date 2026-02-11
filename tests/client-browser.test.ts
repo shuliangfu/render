@@ -5,13 +5,7 @@
  * 需要 Playwright Chromium（先执行 npx playwright install chromium）
  */
 
-import {
-  afterAll,
-  assertRejects,
-  describe,
-  expect,
-  it,
-} from "@dreamer/test";
+import { afterAll, describe, expect, it } from "@dreamer/test";
 
 // 浏览器测试配置
 const browserConfig = {
@@ -25,6 +19,10 @@ const browserConfig = {
     enabled: true,
     // 使用 Playwright 自带的 Chromium（需先执行 npx playwright install chromium）
     browserSource: "test" as const,
+    // 协议超时，避免 Playwright 卡住
+    protocolTimeout: 90_000,
+    // 复用浏览器实例，加速后续测试
+    reuseBrowser: true,
     // 客户端模块入口
     entryPoint: "./src/client/mod.ts",
     // 全局变量名
@@ -35,7 +33,7 @@ const browserConfig = {
     moduleLoadTimeout: 30_000,
     // 无头模式
     headless: true,
-    // 自定义 body 内容（reuseBrowser 默认为 true，不写即复用）
+    // 自定义 body 内容
     bodyContent: `
       <div id="app"></div>
       <div id="hydrate-app"><p>Server rendered content</p></div>
@@ -267,28 +265,29 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(typeof renderCSR).toBe("function");
     expect(typeof hydrate).toBe("function");
 
-    // renderCSR / hydrate 为 async，须用 assertRejects 捕获 Promise 拒绝
-    await assertRejects(
-      () =>
-        renderCSR({
-          engine: "preact",
-          component: () => null,
-          container: "#app",
-        }),
-      Error,
-      "CSR render must run in browser environment",
-    );
+    try {
+      await renderCSR({
+        engine: "preact",
+        component: () => null,
+        container: "#app",
+      });
+      expect(false).toBe(true);
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect((e as Error).message).toContain("CSR render must run in browser environment");
+    }
 
-    await assertRejects(
-      () =>
-        hydrate({
-          engine: "preact",
-          component: () => null,
-          container: "#app",
-        }),
-      Error,
-      "Hydration must run in browser environment",
-    );
+    try {
+      await hydrate({
+        engine: "preact",
+        component: () => null,
+        container: "#app",
+      });
+      expect(false).toBe(true);
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect((e as Error).message).toContain("Hydration must run in browser environment");
+    }
   });
 
   // ==================== React 适配器测试 ====================
@@ -467,27 +466,29 @@ describe("客户端渲染 - 浏览器测试", () => {
   it("服务端: React 引擎应该检测非浏览器环境", async () => {
     const { renderCSR, hydrate } = await import("../src/client/mod.ts");
 
-    await assertRejects(
-      () =>
-        renderCSR({
-          engine: "react",
-          component: () => null,
-          container: "#app",
-        }),
-      Error,
-      "CSR render must run in browser environment",
-    );
+    try {
+      await renderCSR({
+        engine: "react",
+        component: () => null,
+        container: "#app",
+      });
+      expect(false).toBe(true);
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect((e as Error).message).toContain("CSR render must run in browser environment");
+    }
 
-    await assertRejects(
-      () =>
-        hydrate({
-          engine: "react",
-          component: () => null,
-          container: "#app",
-        }),
-      Error,
-      "Hydration must run in browser environment",
-    );
+    try {
+      await hydrate({
+        engine: "react",
+        component: () => null,
+        container: "#app",
+      });
+      expect(false).toBe(true);
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect((e as Error).message).toContain("Hydration must run in browser environment");
+    }
   });
 
   // ==================== 实际渲染测试 ====================
@@ -498,7 +499,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     const browser = (ctx as any).browser;
     if (!browser) return;
 
-    const result = await browser.evaluate(() => {
+    const result = await browser.evaluate(async () => {
       const RenderClient = (globalThis as any).RenderClient;
 
       if (!RenderClient) {
@@ -514,7 +515,7 @@ describe("客户端渲染 - 浏览器测试", () => {
       const TestComponent = () => null;
 
       try {
-        const renderResult = RenderClient.renderCSR({
+        const renderResult = await RenderClient.renderCSR({
           engine: "preact",
           component: TestComponent,
           container: "#app",
@@ -550,7 +551,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     const browser = (ctx as any).browser;
     if (!browser) return;
 
-    const result = await browser.evaluate(() => {
+    const result = await browser.evaluate(async () => {
       const RenderClient = (globalThis as any).RenderClient;
 
       if (!RenderClient) {
@@ -565,7 +566,7 @@ describe("客户端渲染 - 浏览器测试", () => {
       const TestComponent = () => null;
 
       try {
-        const renderResult = RenderClient.renderCSR({
+        const renderResult = await RenderClient.renderCSR({
           engine: "react",
           component: TestComponent,
           container: "#app",

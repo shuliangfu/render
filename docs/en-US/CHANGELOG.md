@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.12] - 2026-02-11
+
+### Fixed
+
+- **SSR adapters**: Revert to static imports for preact, react, and solid
+  adapters. The previous dynamic import caused module resolution issues when
+  dweb bundles the server (e.g. preact-csr "app container not found").
+- **Client adapters**: Keep dynamic import for client to avoid pulling solid-js
+  (and its seroval dependency using `require`) into browser bundle, which
+  triggers "Dynamic require of seroval is not supported".
+- **Client browser tests**: Add `protocolTimeout`, `reuseBrowser`; fix
+  non-browser tests to `await` async renderCSR/hydrate for proper rejection
+  handling; add `await` for unmount tests.
+
+---
+
 ## [1.0.11] - 2026-02-10
 
 ### Added

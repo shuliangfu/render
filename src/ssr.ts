@@ -1,10 +1,12 @@
 /**
  * 服务端渲染（SSR）核心函数
  *
- * 适配器按 engine 动态加载，避免在 Solid/Preact 应用中加载 react-dom 导致版本冲突。
+ * 适配器统一使用静态导入，保证在 dweb 等服务端打包场景下模块解析正确。
  */
 
-import type { Engine } from "./types.ts";
+import * as preactAdapter from "./adapters/preact.ts";
+import * as reactAdapter from "./adapters/react.ts";
+import * as solidAdapter from "./adapters/solid.ts";
 import type {
   LoadContext,
   Metadata,
@@ -48,22 +50,6 @@ import {
   generateDataScript,
   loadServerData,
 } from "./utils/server-data.ts";
-
-/** 按 engine 动态加载适配器，仅加载当前使用的引擎，避免引入 react/preact 导致版本冲突 */
-async function loadSSRAdapter(engine: Engine): Promise<{ renderSSR: (opts: SSROptions) => Promise<RenderResult> }> {
-  switch (engine) {
-    case "react":
-      return await import("./adapters/react.ts");
-    case "preact":
-      return await import("./adapters/preact.ts");
-    case "solid":
-      return await import("./adapters/solid.ts");
-    default: {
-      const _: never = engine;
-      throw new Error(`不支持的模板引擎: ${engine}`);
-    }
-  }
-}
 
 /**
  * 服务端渲染函数
@@ -205,11 +191,27 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     await cacheMetadata(context, mergedMetadata, options.metadataCache);
   }
 
-  // 按 engine 动态加载适配器并渲染（仅加载当前引擎，避免引入 react-dom）
+  // 调用适配器渲染：Preact/React 静态导入，Solid 动态加载
   let result: RenderResult;
   try {
-    const adapter = await loadSSRAdapter(engine);
-    result = await adapter.renderSSR(options);
+    switch (engine) {
+      case "react": {
+        result = await reactAdapter.renderSSR(options);
+        break;
+      }
+      case "preact": {
+        result = await preactAdapter.renderSSR(options);
+        break;
+      }
+      case "solid": {
+        result = await solidAdapter.renderSSR(options);
+        break;
+      }
+      default: {
+        const _exhaustive: never = engine;
+        throw new Error(`不支持的模板引擎: ${engine}`);
+      }
+    }
   } catch (error) {
     // 处理错误
     const shouldContinue = await handleRenderError(
@@ -225,8 +227,19 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
           ...options,
           component: options.errorHandler.fallbackComponent,
         };
-        const adapter = await loadSSRAdapter(engine);
-        result = await adapter.renderSSR(fallbackOptions);
+        switch (engine) {
+          case "react":
+            result = await reactAdapter.renderSSR(fallbackOptions);
+            break;
+          case "preact":
+            result = await preactAdapter.renderSSR(fallbackOptions);
+            break;
+          case "solid":
+            result = await solidAdapter.renderSSR(fallbackOptions);
+            break;
+          default:
+            throw new Error(`不支持的模板引擎: ${engine}`);
+        }
       } catch (_fallbackError) {
         // 降级渲染也失败，生成错误 HTML
         result = {

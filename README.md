@@ -664,13 +664,11 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.11** (2026-02-10)
+**v1.0.12** (2026-02-11)
 
-- **Added**: Solid.js support — adapter for SSR and client subpath
-  `@dreamer/render/client/solid`; engine accepts `"solid"` for SSR, CSR,
-  hydration, and SSG.
-- **Changed**: Docs restructured to `docs/en-US/` and `docs/zh-CN/`; doc links
-  updated.
+- **Fixed**: SSR adapters reverted to static imports to fix dweb preact-csr
+  module resolution; client keeps dynamic import to avoid solid-js/seroval
+  browser require error; browser test config and async handling fixes.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
