@@ -20,6 +20,9 @@ jobs:
       - name: Cache dependencies
         run: deno cache src/mod.ts tests/ 2>/dev/null || true
 
+      - name: Install Playwright Chromium
+        run: npx -y playwright@latest install chromium
+
       - name: Check
         run: deno check src/ tests/
 
@@ -41,6 +44,9 @@ jobs:
       - name: Cache dependencies
         run: deno cache src/mod.ts tests/
 
+      - name: Install Playwright Chromium
+        run: npx -y playwright@latest install chromium
+
       - name: Check
         run: deno check src/ tests/
 
@@ -61,6 +67,9 @@ jobs:
 
       - name: Cache dependencies
         run: deno cache src/mod.ts tests/ 2>/dev/null || true
+
+      - name: Install Playwright Chromium
+        run: npx -y playwright@latest install chromium
 
       - name: Check
         run: deno check src/ tests/
