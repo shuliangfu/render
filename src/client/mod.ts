@@ -55,58 +55,59 @@ export {
   recordPerformanceMetrics,
 } from "./utils/performance.ts";
 
-// 导入适配器
-import * as preactAdapter from "./adapters/preact.ts";
-import * as reactAdapter from "./adapters/react.ts";
-
+// 适配器按 engine 动态加载，避免在 Solid/Preact 应用中加载 react-dom 导致版本冲突
+import type { Engine } from "./types.ts";
 import type { CSROptions, CSRRenderResult, HydrationOptions } from "./types.ts";
+
+/** 按 engine 动态加载客户端适配器 */
+async function loadClientAdapter(engine: Engine): Promise<{
+  renderCSR: (opts: CSROptions) => CSRRenderResult;
+  hydrate: (opts: HydrationOptions) => CSRRenderResult;
+}> {
+  switch (engine) {
+    case "react":
+      return await import("./adapters/react.ts");
+    case "preact":
+      return await import("./adapters/preact.ts");
+    case "solid":
+      return await import("./adapters/solid.ts");
+    default: {
+      const _: never = engine;
+      throw new Error(`Unsupported template engine: ${engine}`);
+    }
+  }
+}
 
 /**
  * 客户端渲染函数
  *
- * 根据指定的模板引擎类型，调用对应的适配器进行客户端渲染。
+ * 根据指定的模板引擎类型，动态加载对应适配器并进行客户端渲染。
  * 注意：此函数只能在浏览器环境中运行。
  *
  * @param options CSR 选项
- * @returns 渲染结果，包含卸载函数和更新函数
+ * @returns 渲染结果的 Promise，包含卸载函数和更新函数
  * @throws 如果模板引擎不支持或不在浏览器环境
  *
  * @example
  * ```typescript
- * const result = renderCSR({
+ * const result = await renderCSR({
  *   engine: "preact",
  *   component: MyComponent,
  *   props: { name: "World" },
  *   container: "#app",
  * });
- *
- * // 卸载
  * result.unmount();
- *
- * // 更新属性
- * result.update?.({ name: "New World" });
  * ```
  */
-export function renderCSR(options: CSROptions): CSRRenderResult {
+export async function renderCSR(options: CSROptions): Promise<CSRRenderResult> {
   const { engine } = options;
 
-  // 检查是否在浏览器环境
   if (typeof globalThis.document === "undefined") {
     throw new Error("CSR render must run in browser environment");
   }
 
-  switch (engine) {
-    case "preact": {
-      return preactAdapter.renderCSR(options);
-    }
-    case "react": {
-      return reactAdapter.renderCSR(options);
-    }
-    default: {
-      const _exhaustive: never = engine;
-      throw new Error(`Unsupported template engine: ${engine}`);
-    }
-  }
+  const adapter = await loadClientAdapter(engine);
+  return adapter.renderCSR(options);
 }
 
 /**
@@ -116,12 +117,12 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
  * 注意：此函数只能在浏览器环境中运行。
  *
  * @param options Hydration 选项
- * @returns 渲染结果，包含卸载函数和更新函数
+ * @returns 渲染结果的 Promise，包含卸载函数和更新函数
  * @throws 如果模板引擎不支持或不在浏览器环境
  *
  * @example
  * ```typescript
- * const result = hydrate({
+ * const result = await hydrate({
  *   engine: "preact",
  *   component: MyComponent,
  *   props: serverData,
@@ -129,24 +130,13 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
  * });
  * ```
  */
-export function hydrate(options: HydrationOptions): CSRRenderResult {
+export async function hydrate(options: HydrationOptions): Promise<CSRRenderResult> {
   const { engine } = options;
 
-  // 检查是否在浏览器环境
   if (typeof globalThis.document === "undefined") {
     throw new Error("Hydration must run in browser environment");
   }
 
-  switch (engine) {
-    case "preact": {
-      return preactAdapter.hydrate(options);
-    }
-    case "react": {
-      return reactAdapter.hydrate(options);
-    }
-    default: {
-      const _exhaustive: never = engine;
-      throw new Error(`Unsupported template engine: ${engine}`);
-    }
-  }
+  const adapter = await loadClientAdapter(engine);
+  return adapter.hydrate(options);
 }

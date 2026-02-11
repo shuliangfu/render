@@ -52,8 +52,9 @@ export {
 } from "./ssg.ts";
 export { renderSSR } from "./ssr.ts";
 
-// 导出适配器（供高级用法）
-export * from "./adapters/mod.ts";
+// 注意：适配器不再从此处导出，避免加载 react/preact 导致与 Solid 等项目的版本冲突。
+// 服务端/客户端均按 engine 动态加载对应适配器。高级用法请直接引用具体路径，例如：
+// import * as solidAdapter from "@dreamer/render/adapters/solid";
 
 // 导出工具函数（供高级用法）
 export {

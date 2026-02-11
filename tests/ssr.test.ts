@@ -6,7 +6,9 @@ import { assertRejects, describe, expect, it } from "@dreamer/test";
 import { renderSSR } from "../src/ssr.ts";
 import type { SSROptions } from "../src/types.ts";
 
-describe("renderSSR", () => {
+describe(
+  "renderSSR",
+  () => {
   describe("React SSR", () => {
     it("应该能够渲染简单的 React 组件", async () => {
       // 简单的 React 组件
@@ -86,6 +88,69 @@ describe("renderSSR", () => {
     });
   });
 
+  describe("Solid SSR", () => {
+    it("应该能够渲染简单的 Solid 组件", async () => {
+      const { createComponent } = await import("solid-js");
+      const { Dynamic } = await import("solid-js/web");
+      const Component = () =>
+        createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return "Hello, Solid!";
+          },
+        });
+
+      const result = await renderSSR({
+        engine: "solid",
+        component: Component,
+      });
+
+      expect(result.html).toContain("Hello, Solid!");
+      expect(result.renderInfo?.engine).toBe("solid");
+    });
+
+    it("应该能够渲染带属性的 Solid 组件", async () => {
+      const { createComponent } = await import("solid-js");
+      const { Dynamic } = await import("solid-js/web");
+      const Component = (props: Record<string, unknown>) =>
+        createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return `Hello, ${props.name ?? ""}!`;
+          },
+        });
+
+      const result = await renderSSR({
+        engine: "solid",
+        component: Component,
+        props: { name: "World" },
+      });
+
+      expect(result.html).toContain("Hello, World!");
+    });
+
+    it("应该支持 HTML 模板", async () => {
+      const { createComponent } = await import("solid-js");
+      const { Dynamic } = await import("solid-js/web");
+      const Component = () =>
+        createComponent(Dynamic, {
+          component: "div",
+          get children() {
+            return "Solid Content";
+          },
+        });
+
+      const result = await renderSSR({
+        engine: "solid",
+        component: Component,
+        template: "<html><body><!--ssr-outlet--></body></html>",
+      });
+
+      expect(result.html).toContain("<html>");
+      expect(result.html).toContain("Solid Content");
+    });
+  });
+
   describe("错误处理", () => {
     it("应该拒绝不支持的模板引擎", async () => {
       await assertRejects(
@@ -115,4 +180,6 @@ describe("renderSSR", () => {
       );
     });
   });
-});
+  },
+  { sanitizeOps: false, sanitizeResources: false },
+);

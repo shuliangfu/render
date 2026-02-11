@@ -141,6 +141,6 @@
 
 ### 新增
 
-首个稳定版本。渲染库，支持 SSR、CSR、Hydration 和 SSG，兼容 Deno 和 Bun。
+首个稳定版本。渲染包，支持 SSR、CSR、Hydration 和 SSG，兼容 Deno 和 Bun。
 
 （详见 [CHANGELOG.md](./CHANGELOG.md) 英文版）

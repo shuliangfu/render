@@ -1,9 +1,10 @@
 /**
  * 服务端渲染（SSR）核心函数
+ *
+ * 适配器按 engine 动态加载，避免在 Solid/Preact 应用中加载 react-dom 导致版本冲突。
  */
 
-import * as preactAdapter from "./adapters/preact.ts";
-import * as reactAdapter from "./adapters/react.ts";
+import type { Engine } from "./types.ts";
 import type {
   LoadContext,
   Metadata,
@@ -47,6 +48,22 @@ import {
   generateDataScript,
   loadServerData,
 } from "./utils/server-data.ts";
+
+/** 按 engine 动态加载适配器，仅加载当前使用的引擎，避免引入 react/preact 导致版本冲突 */
+async function loadSSRAdapter(engine: Engine): Promise<{ renderSSR: (opts: SSROptions) => Promise<RenderResult> }> {
+  switch (engine) {
+    case "react":
+      return await import("./adapters/react.ts");
+    case "preact":
+      return await import("./adapters/preact.ts");
+    case "solid":
+      return await import("./adapters/solid.ts");
+    default: {
+      const _: never = engine;
+      throw new Error(`不支持的模板引擎: ${engine}`);
+    }
+  }
+}
 
 /**
  * 服务端渲染函数
@@ -188,24 +205,11 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     await cacheMetadata(context, mergedMetadata, options.metadataCache);
   }
 
-  // 调用适配器进行渲染（带错误处理）
+  // 按 engine 动态加载适配器并渲染（仅加载当前引擎，避免引入 react-dom）
   let result: RenderResult;
   try {
-    switch (engine) {
-      case "react": {
-        result = await reactAdapter.renderSSR(options);
-        break;
-      }
-      case "preact": {
-        result = await preactAdapter.renderSSR(options);
-        break;
-      }
-      default: {
-        // TypeScript 会确保所有情况都被处理
-        const _exhaustive: never = engine;
-        throw new Error(`不支持的模板引擎: ${engine}`);
-      }
-    }
+    const adapter = await loadSSRAdapter(engine);
+    result = await adapter.renderSSR(options);
   } catch (error) {
     // 处理错误
     const shouldContinue = await handleRenderError(
@@ -221,16 +225,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
           ...options,
           component: options.errorHandler.fallbackComponent,
         };
-        switch (engine) {
-          case "react": {
-            result = await reactAdapter.renderSSR(fallbackOptions);
-            break;
-          }
-          case "preact": {
-            result = await preactAdapter.renderSSR(fallbackOptions);
-            break;
-          }
-        }
+        const adapter = await loadSSRAdapter(engine);
+        result = await adapter.renderSSR(fallbackOptions);
       } catch (_fallbackError) {
         // 降级渲染也失败，生成错误 HTML
         result = {
