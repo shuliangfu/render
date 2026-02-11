@@ -21,6 +21,9 @@ function textComponent(text: string): Component<Record<string, unknown>> {
     });
 }
 
+/** Solid 内部使用定时器，关闭 sanitize 避免泄漏误报 */
+const noSanitize = { sanitizeOps: false, sanitizeResources: false };
+
 describe("Solid 适配器", () => {
   describe("renderSSR", () => {
     it("应该能够渲染简单组件", async () => {
@@ -305,4 +308,4 @@ describe("Solid 适配器", () => {
       );
     });
   });
-});
+}, noSanitize);
