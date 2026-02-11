@@ -679,12 +679,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.11**（2026-02-10）
+**v1.0.12**（2026-02-11）
 
-- **新增**：Solid.js 支持 — 提供 Solid 适配器及客户端子路径
-  `@dreamer/render/client/solid`，engine 支持 `"solid"`，用于 SSR、CSR、
-  Hydration 和 SSG。
-- **变更**：文档结构调整为 `docs/en-US/`、`docs/zh-CN/`，并更新文档链接。
+- **修复**：SSR 适配器恢复静态导入以修复 dweb preact-csr 模块解析；客户端保持
+  动态导入以避免 solid-js/seroval 浏览器 require 错误；浏览器测试配置与异步
+  处理修正。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
