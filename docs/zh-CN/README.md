@@ -3,10 +3,10 @@
 > 一个专注于渲染逻辑的包，提供 SSR、CSR、Hydration 和 SSG 功能，支持
 > React、Preact 两个模板引擎
 
-[English](./README.md) | 中文 (Chinese)
+[English](../../README.md) | 中文 (Chinese)
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE.md)
 [![Tests](https://img.shields.io/badge/tests-203%20passed-brightgreen)](./TEST_REPORT.md)
 
 ---
@@ -679,13 +679,14 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.10**（2026-02-09）
+**v1.0.11**（2026-02-10）
 
-- **新增**：`debug?: boolean` 选项，支持 CSROptions、HydrationOptions、
-  SSROptions、SSGOptions。传 `debug: true` 时输出 CSR、Hydration、SSR 的详细
-  调试日志，便于诊断 Windows 路径问题及 "(void 0) is not a function" 错误。
+- **新增**：Solid.js 支持 — 提供 Solid 适配器及客户端子路径
+  `@dreamer/render/client/solid`，engine 支持 `"solid"`，用于 SSR、CSR、
+  Hydration 和 SSG。
+- **变更**：文档结构调整为 `docs/en-US/`、`docs/zh-CN/`，并更新文档链接。
 
-完整历史见 [CHANGELOG-zh.md](./CHANGELOG-zh.md)。
+完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 
@@ -713,7 +714,7 @@ interface PerformanceMetrics {
 
 ## 📄 许可证
 
-MIT License - 详见 [LICENSE.md](./LICENSE.md)
+MIT License - 详见 [LICENSE.md](../../LICENSE.md)
 
 ---
 

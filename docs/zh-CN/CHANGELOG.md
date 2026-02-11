@@ -7,6 +7,20 @@
 
 ---
 
+## [1.0.11] - 2026-02-10
+
+### 新增
+
+- **Solid.js 支持**：新增 Solid 适配器，支持 SSR 及客户端子路径
+  `@dreamer/render/client/solid`。engine 选项现支持 `"solid"`，与
+  `"react"`、`"preact"` 并列，用于 SSR、CSR、Hydration 和 SSG。
+
+### 变更
+
+- **文档**：文档结构调整为 `docs/en-US/` 与 `docs/zh-CN/`；根目录 README 保留为英文入口；修正所有文档引用链接。
+
+---
+
 ## [1.0.10] - 2026-02-09
 
 ### 新增
@@ -143,4 +157,4 @@
 
 首个稳定版本。渲染包，支持 SSR、CSR、Hydration 和 SSG，兼容 Deno 和 Bun。
 
-（详见 [CHANGELOG.md](./CHANGELOG.md) 英文版）
+（详见 [CHANGELOG.md](../en-US/CHANGELOG.md) 英文版）

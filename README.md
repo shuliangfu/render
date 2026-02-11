@@ -3,11 +3,11 @@
 > A rendering library for SSR, CSR, Hydration, and SSG, supporting React and
 > Preact
 
-English | [中文 (Chinese)](./README-zh.md)
+English | [中文 (Chinese)](./docs/zh-CN/README.md)
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
-[![Tests](https://img.shields.io/badge/tests-203%20passed-brightgreen)](./TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-203%20passed-brightgreen)](./docs/en-US/TEST_REPORT.md)
 
 ---
 
@@ -658,20 +658,21 @@ interface PerformanceMetrics {
 | Deno    | 2.6.4   | ✅ 203 passed |
 | Bun     | 1.3.5   | ✅ 203 passed |
 
-See [TEST_REPORT.md](./TEST_REPORT.md) for details.
+See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ---
 
 ## 📋 Changelog
 
-**v1.0.10** (2026-02-09)
+**v1.0.11** (2026-02-10)
 
-- **Added**: `debug?: boolean` option for CSROptions, HydrationOptions, SSROptions,
-  and SSGOptions. When `debug: true`, emits detailed logs for CSR, hydration, and
-  SSR to help diagnose Windows path issues and "(void 0) is not a function"
-  errors.
+- **Added**: Solid.js support — adapter for SSR and client subpath
+  `@dreamer/render/client/solid`; engine accepts `"solid"` for SSR, CSR,
+  hydration, and SSG.
+- **Changed**: Docs restructured to `docs/en-US/` and `docs/zh-CN/`; doc links
+  updated.
 
-See [CHANGELOG.md](./CHANGELOG.md) for full history.
+See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
 ---
 
