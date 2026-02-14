@@ -137,6 +137,11 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       configKeys: Object.keys(componentConfig as object),
     });
 
+    // Hybrid 下同一容器可能先被 hydrate 再被 CSR 复用；确保先清空再挂载，避免 View 在非空容器上 appendChild 导致主体区不显示
+    while (containerElement.firstChild) {
+      containerElement.removeChild(containerElement.firstChild);
+    }
+
     const rootVNode = createComponentTree(
       viewCreateElement,
       componentConfig as { component: unknown; props: Record<string, unknown> },

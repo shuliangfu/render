@@ -7,6 +7,25 @@
 
 ---
 
+## [1.0.15] - 2026-02-13
+
+### 新增
+
+- **客户端浏览器测试**：扩展为 31 个用例，三个入口
+  fixture（View、Preact、React）； `browserMode: true` 与 ESM 打包；按引擎的实际
+  CSR 与 Hybrid hydrate 测试（View/Preact/React 实际 CSR 渲染与 DOM 断言、实际
+  Hybrid hydrate 与内容断言）； 测试报告更新为共 243 个测试。
+
+### 修复
+
+- **View 客户端适配器**：CSR 渲染前清空容器，使 hybrid 导航在 hydrate → unmount
+  → CSR 后正确显示主体内容。
+- **客户端浏览器测试**：放宽 Preact Hybrid unmount
+  断言（接受容器文本为空或保留）； React CSR/unmount 后增加短暂延迟再读取
+  DOM，以等待异步提交。
+
+---
+
 ## [1.0.14] - 2026-02-13
 
 ### 新增

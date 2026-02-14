@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.15] - 2026-02-13
+
+### Added
+
+- **Client browser tests**: Expanded to 31 tests with three entry fixtures
+  (View, Preact, React); `browserMode: true` and ESM bundle; per-engine actual
+  CSR and Hybrid hydration tests (View/Preact/React actual CSR render and DOM
+  assertion, actual Hybrid hydrate and content assertion); test report updated
+  to 243 tests total.
+
+### Fixed
+
+- **View client adapter**: Clear container before CSR render so hybrid
+  navigation shows main content correctly after hydrate → unmount → CSR.
+- **Client browser tests**: Relax Preact Hybrid unmount assertion (accept
+  container text empty or preserved); add short delay after React CSR/unmount
+  before reading DOM for async commit.
+
+---
+
 ## [1.0.14] - 2026-02-13
 
 ### Added

@@ -7,7 +7,7 @@
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
-[![Tests](https://img.shields.io/badge/tests-233%20passed-brightgreen)](./TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-243%20passed-brightgreen)](./TEST_REPORT.md)
 
 ---
 
@@ -689,16 +689,16 @@ interface PerformanceMetrics {
 | 指标     | 数值                      |
 | -------- | ------------------------- |
 | 测试时间 | 2026-02-13                |
-| 总测试数 | 233                       |
-| 通过     | 233 ✅                    |
+| 总测试数 | 243                       |
+| 通过     | 243 ✅                    |
 | 失败     | 0                         |
 | 通过率   | 100%                      |
-| 执行时间 | ~10–12s（`deno test -A`） |
+| 执行时间 | ~40–45s（`deno test -A`） |
 
 | 运行时 | 版本 | 测试结果      |
 | ------ | ---- | ------------- |
-| Deno   | 2.x+ | ✅ 233 passed |
-| Bun    | 1.x+ | ✅ 233 passed |
+| Deno   | 2.x+ | ✅ 243 passed |
+| Bun    | 1.x+ | ✅ 243 passed |
 
 详细测试报告请查看 [TEST_REPORT.md](./TEST_REPORT.md)
 
@@ -706,12 +706,12 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.14**（2026-02-13）
+**v1.0.15**（2026-02-13）
 
-- **新增**：View 引擎支持（SSR、CSR、Hydration）；新适配器、测试（共 233
-  个）与文档。
-- **移除**：Solid.js 支持（适配器及 client/solid）。
-- **变更**：许可证为 Apache 2.0（见 LICENSE）。
+- **新增**：客户端浏览器测试扩展为 31 个（View/Preact/React fixture，实际 CSR 与
+  Hybrid hydrate）；测试报告共 243 个。
+- **修复**：View 客户端适配器在 hybrid 导航前清空容器；React/Preact 浏览器
+  测试断言（异步提交、unmount）。
 
 [完整变更](./CHANGELOG.md)
 
