@@ -16,18 +16,18 @@
 
 | Metric         | Value                    |
 | -------------- | ------------------------ |
-| Total tests    | 233                      |
-| Passed         | 233 ✅                   |
+| Total tests    | 243                      |
+| Passed         | 243 ✅                   |
 | Failed         | 0                        |
 | Pass rate      | 100%                     |
-| Execution time | ~10–12s (`deno test -A`) |
+| Execution time | ~40–45s (`deno test -A`) |
 
 ### Runtime Compatibility
 
 | Runtime | Version | Result        |
 | ------- | ------- | ------------- |
-| Deno    | 2.x+    | ✅ 233 passed |
-| Bun     | 1.x+    | ✅ 233 passed |
+| Deno    | 2.x+    | ✅ 243 passed |
+| Bun     | 1.x+    | ✅ 243 passed |
 
 ### Test File Statistics
 
@@ -36,7 +36,7 @@
 | `adapters-preact.test.ts`   | 12    | ✅ All passed |
 | `adapters-react.test.ts`    | 11    | ✅ All passed |
 | `adapters-view.test.ts`     | 12    | ✅ All passed |
-| `client-browser.test.ts`    | 21    | ✅ All passed |
+| `client-browser.test.ts`    | 31    | ✅ All passed |
 | `client-utils.test.ts`      | 28    | ✅ All passed |
 | `edge-cases.test.ts`        | 14    | ✅ All passed |
 | `layout.test.ts`            | 33    | ✅ All passed |
@@ -87,34 +87,45 @@
 - ✅ Error handling
 - ✅ Performance monitoring
 
-### 4. Client Browser Tests (client-browser.test.ts) - 21 tests
+### 4. Client Browser Tests (client-browser.test.ts) - 31 tests
 
-#### General
+三个入口 fixture（View / Preact / React），`browserMode: true`；各自覆盖通用 API
+与对应引擎的实际 CSR/Hydration。
 
-- ✅ Export all required functions
-- ✅ Performance monitor instance creation
-- ✅ Performance monitor returns null when disabled
-- ✅ Error fallback UI display
-- ✅ HTMLElement container support
-- ✅ handleRenderError error handling
+#### View 入口（通用 + View 引擎）
 
-#### Preact Adapter
+- ✅ 导出所有必要函数
+- ✅ 创建性能监控实例
+- ✅ 未启用时返回 null
+- ✅ 错误降级 UI 显示
+- ✅ 容器不存在时抛出错误（renderCSR）
+- ✅ 非浏览器环境检测
+- ✅ 所有引擎：Hydration 错误降级 UI
+- ✅ handleRenderError 错误处理
+- ✅ View：实际 CSR 渲染并断言 DOM
+- ✅ View：实际 Hybrid hydrate 并断言内容仍在
+- ✅ View：Hybrid 流程（hydrate → unmount → CSR）主体区正确显示
 
-- ✅ Throws when container does not exist
-- ✅ Component unmount support
-- ✅ update function support
-- ✅ CSR returns performance metrics
-- ✅ Non-browser environment detection
+#### Preact 入口
 
-#### React Adapter
+- ✅ 容器不存在时抛出错误
+- ✅ 卸载组件
+- ✅ update 函数
+- ✅ CSR 返回性能指标
+- ✅ HTMLElement 作为容器
+- ✅ Preact：实际 CSR 渲染并断言 DOM
+- ✅ Preact：实际 Hybrid hydrate 并断言内容仍在
 
-- ✅ Throws when container does not exist (CSR)
-- ✅ Performance monitoring support
-- ✅ Throws when hydration container does not exist
-- ✅ Component unmount support
-- ✅ update function support
-- ✅ CSR returns performance metrics
-- ✅ Non-browser environment detection
+#### React 入口
+
+- ✅ 容器不存在时抛出错误（CSR）
+- ✅ Hydration 容器不存在时抛出错误
+- ✅ 性能监控
+- ✅ 卸载组件
+- ✅ update 函数
+- ✅ CSR 返回性能指标
+- ✅ React：实际 CSR 渲染并断言 DOM
+- ✅ React：实际 Hybrid hydrate 并断言内容仍在
 
 ### 5. Client Utils (client-utils.test.ts) - 28 tests
 
@@ -172,7 +183,7 @@
 ## Conclusion
 
 All features of `@dreamer/render` pass comprehensive testing with 100% coverage.
-All 233 tests pass on both Deno and Bun runtimes, with support for React,
+All 243 tests pass on both Deno and Bun runtimes, with support for React,
 Preact, and View template engines.
 
 ---

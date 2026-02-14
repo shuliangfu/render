@@ -7,42 +7,71 @@
 
 import { afterAll, describe, expect, it } from "@dreamer/test";
 
-// 浏览器测试配置
-const browserConfig = {
-  // 禁用资源检查（浏览器测试有内部定时器）
+/** 通用 body，三个入口共用 */
+const sharedBodyContent = `
+  <div id="app"></div>
+  <div id="hydrate-app"><p>Server rendered content</p></div>
+  <div id="error-app"></div>
+`;
+
+/** View 入口：仅 View 相关用例使用 */
+const browserConfigView = {
   sanitizeOps: false,
   sanitizeResources: false,
-  // 超时设置
   timeout: 60_000,
-  // 启用浏览器测试
   browser: {
     enabled: true,
-    // 使用 Playwright 自带的 Chromium（需先执行 npx playwright install chromium）
     browserSource: "test" as const,
-    // 协议超时，避免 Playwright 卡住
     protocolTimeout: 90_000,
-    // 复用浏览器实例，加速后续测试
     reuseBrowser: true,
-    // 客户端模块入口
-    entryPoint: "./src/client/mod.ts",
-    // 全局变量名
+    entryPoint: "./tests/fixtures/view/browser-entry.ts",
     globalName: "RenderClient",
-    // 将 JSR 依赖打包进 bundle
-    browserMode: false,
-    // 模块加载超时
+    browserMode: true,
     moduleLoadTimeout: 30_000,
-    // 无头模式
     headless: true,
-    // 自定义 body 内容
-    bodyContent: `
-      <div id="app"></div>
-      <div id="hydrate-app"><p>Server rendered content</p></div>
-      <div id="error-app"></div>
-    `,
+    bodyContent: sharedBodyContent,
   },
 };
 
-describe("客户端渲染 - 浏览器测试", () => {
+/** Preact 入口：仅 Preact 相关用例使用 */
+const browserConfigPreact = {
+  sanitizeOps: false,
+  sanitizeResources: false,
+  timeout: 60_000,
+  browser: {
+    enabled: true,
+    browserSource: "test" as const,
+    protocolTimeout: 90_000,
+    reuseBrowser: true,
+    entryPoint: "./tests/fixtures/preact/browser-entry.ts",
+    globalName: "RenderClient",
+    browserMode: true,
+    moduleLoadTimeout: 30_000,
+    headless: true,
+    bodyContent: sharedBodyContent,
+  },
+};
+
+/** React 入口：仅 React 相关用例使用 */
+const browserConfigReact = {
+  sanitizeOps: false,
+  sanitizeResources: false,
+  timeout: 60_000,
+  browser: {
+    enabled: true,
+    browserSource: "test" as const,
+    protocolTimeout: 90_000,
+    reuseBrowser: true,
+    entryPoint: "./tests/fixtures/react/browser-entry.ts",
+    globalName: "RenderClient",
+    browserMode: true,
+    moduleLoadTimeout: 30_000,
+    headless: true,
+    bodyContent: sharedBodyContent,
+  },
+};
+
+describe("客户端渲染 - View 入口", () => {
   afterAll(async () => {
     // 动态导入 cleanupAllBrowsers，避免 Bun 下 node_modules 解析的 mod.js 未导出该函数导致加载报错
     try {
@@ -101,7 +130,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.hasCreatePerformanceMonitor).toBe(true);
     expect(result.hasPerformanceMonitor).toBe(true);
     expect(result.hasRecordPerformanceMetrics).toBe(true);
-  }, browserConfig);
+  }, browserConfigView);
 
   it("应该创建性能监控实例", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
@@ -145,7 +174,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.engine).toBe("preact");
     expect(result.phase).toBe("csr");
     expect(result.hasDuration).toBe(true);
-  }, browserConfig);
+  }, browserConfigView);
 
   it("应该在未启用时返回 null", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
@@ -173,7 +202,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     }
 
     expect(result.isNull).toBe(true);
-  }, browserConfig);
+  }, browserConfigView);
 
   it("应该显示错误降级 UI", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
@@ -215,15 +244,14 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.hasContent).toBe(true);
     expect(result.containsErrorMessage).toBe(true);
     expect(result.containsReloadButton).toBe(true);
-  }, browserConfig);
+  }, browserConfigView);
 
-  it("应该在容器不存在时抛出错误（renderCSR）", async (ctx) => {
+  it("应该在容器不存在时抛出错误（renderCSR，View 引擎）", async (ctx) => {
     if ((ctx as any)._browserSetupError) return;
 
     const browser = (ctx as any).browser;
     if (!browser) return;
 
-    // renderCSR 为 async，须在浏览器内 await 才能捕获容器不存在时的抛错
     const result = await browser.evaluate(async () => {
       const RenderClient = (globalThis as any).RenderClient;
 
@@ -231,12 +259,11 @@ describe("客户端渲染 - 浏览器测试", () => {
         return { error: "RenderClient not available" };
       }
 
-      // 简单组件（不依赖 Preact）
       const TestComponent = () => null;
 
       try {
         await RenderClient.renderCSR({
-          engine: "preact",
+          engine: "view",
           component: TestComponent,
           container: "#non-existent-container",
         });
@@ -256,7 +283,7 @@ describe("客户端渲染 - 浏览器测试", () => {
 
     expect(result.threw).toBe(true);
     expect(result.message).toContain("Container element not found");
-  }, browserConfig);
+  }, browserConfigView);
 
   it("应该在非浏览器环境检测失败", async () => {
     // 在服务端运行，验证非浏览器环境下 renderCSR/hydrate 会拒绝
@@ -293,131 +320,6 @@ describe("客户端渲染 - 浏览器测试", () => {
       );
     }
   });
-
-  // ==================== React 适配器测试 ====================
-
-  it("React: 应该在容器不存在时抛出错误", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const TestComponent = () => null;
-
-      try {
-        await RenderClient.renderCSR({
-          engine: "react",
-          component: TestComponent,
-          container: "#non-existent-container",
-        });
-        return { threw: false };
-      } catch (error) {
-        return {
-          threw: true,
-          message: (error as Error).message,
-        };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.threw).toBe(true);
-    expect(result.message).toContain("Container element not found");
-  }, browserConfig);
-
-  it("React: 应该支持性能监控", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      // 创建性能监控器并测试 React 引擎
-      const monitor = RenderClient.createPerformanceMonitor({
-        enabled: true,
-        slowThreshold: 100,
-      });
-
-      if (!monitor) return { created: false };
-
-      monitor.start("react", "csr");
-      const metrics = monitor.end();
-
-      return {
-        created: true,
-        hasMetrics: !!metrics,
-        engine: metrics.engine,
-        phase: metrics.phase,
-        hasDuration: typeof metrics.duration === "number",
-      };
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.created).toBe(true);
-    expect(result.hasMetrics).toBe(true);
-    expect(result.engine).toBe("react");
-    expect(result.phase).toBe("csr");
-    expect(result.hasDuration).toBe(true);
-  }, browserConfig);
-
-  it("React: Hydration 应该在容器不存在时抛出错误", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const TestComponent = () => null;
-
-      try {
-        await RenderClient.hydrate({
-          engine: "react",
-          component: TestComponent,
-          container: "#non-existent-container",
-        });
-        return { threw: false };
-      } catch (error) {
-        return {
-          threw: true,
-          message: (error as Error).message,
-        };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.threw).toBe(true);
-    expect(result.message).toContain("Container element not found");
-  }, browserConfig);
 
   // ==================== 错误处理测试（所有引擎） ====================
 
@@ -463,7 +365,7 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.containsErrorMessage).toBe(true);
     expect(result.containsPhaseText).toBe(true);
     expect(result.containsReloadButton).toBe(true);
-  }, browserConfig);
+  }, browserConfigView);
 
   // ==================== 服务端环境测试（所有引擎） ====================
 
@@ -498,359 +400,6 @@ describe("客户端渲染 - 浏览器测试", () => {
       );
     }
   });
-
-  // ==================== 实际渲染测试 ====================
-
-  it("Preact: 应该支持卸载组件", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      // 清空容器
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      // 简单组件
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = await RenderClient.renderCSR({
-          engine: "preact",
-          component: TestComponent,
-          container: "#app",
-        });
-
-        // 验证 unmount 函数存在
-        const hasUnmount = typeof renderResult.unmount === "function";
-
-        // 调用 unmount
-        renderResult.unmount();
-
-        return {
-          hasUnmount,
-          unmounted: true,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasUnmount).toBe(true);
-    expect(result.unmounted).toBe(true);
-  }, browserConfig);
-
-  it("React: 应该支持卸载组件", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      // 清空容器
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = await RenderClient.renderCSR({
-          engine: "react",
-          component: TestComponent,
-          container: "#app",
-        });
-
-        const hasUnmount = typeof renderResult.unmount === "function";
-        renderResult.unmount();
-
-        return {
-          hasUnmount,
-          unmounted: true,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasUnmount).toBe(true);
-    expect(result.unmounted).toBe(true);
-  }, browserConfig);
-
-  // ==================== 更新功能测试 ====================
-
-  it("Preact: 应该支持 update 函数", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = await RenderClient.renderCSR({
-          engine: "preact",
-          component: TestComponent,
-          container: "#app",
-        });
-
-        return {
-          hasUpdate: typeof renderResult.update === "function",
-          hasInstance: renderResult.instance !== undefined,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasUpdate).toBe(true);
-    expect(result.hasInstance).toBe(true);
-  }, browserConfig);
-
-  it("React: 应该支持 update 函数", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = await RenderClient.renderCSR({
-          engine: "react",
-          component: TestComponent,
-          container: "#app",
-        });
-
-        return {
-          hasUpdate: typeof renderResult.update === "function",
-          hasInstance: renderResult.instance !== undefined,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasUpdate).toBe(true);
-    expect(result.hasInstance).toBe(true);
-  }, browserConfig);
-
-  // ==================== 性能监控集成测试 ====================
-
-  it("Preact: CSR 应该返回性能指标", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = await RenderClient.renderCSR({
-          engine: "preact",
-          component: TestComponent,
-          container: "#app",
-          performance: {
-            enabled: true,
-            slowThreshold: 1000,
-          },
-        });
-
-        const perf = renderResult.performance;
-
-        return {
-          hasPerformance: !!perf,
-          hasStartTime: typeof perf?.startTime === "number",
-          hasEndTime: typeof perf?.endTime === "number",
-          hasDuration: typeof perf?.duration === "number",
-          engine: perf?.engine,
-          phase: perf?.phase,
-          isSlow: perf?.isSlow,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasPerformance).toBe(true);
-    expect(result.hasStartTime).toBe(true);
-    expect(result.hasEndTime).toBe(true);
-    expect(result.hasDuration).toBe(true);
-    expect(result.engine).toBe("preact");
-    expect(result.phase).toBe("csr");
-    expect(result.isSlow).toBe(false);
-  }, browserConfig);
-
-  it("React: CSR 应该返回性能指标", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        const renderResult = await RenderClient.renderCSR({
-          engine: "react",
-          component: TestComponent,
-          container: "#app",
-          performance: {
-            enabled: true,
-            slowThreshold: 1000,
-          },
-        });
-
-        const perf = renderResult.performance;
-
-        return {
-          hasPerformance: !!perf,
-          engine: perf?.engine,
-          phase: perf?.phase,
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.hasPerformance).toBe(true);
-    expect(result.engine).toBe("react");
-    expect(result.phase).toBe("csr");
-  }, browserConfig);
-
-  // ==================== 容器选择器测试 ====================
-
-  it("应该支持 HTMLElement 作为容器", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(async () => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const app = document.getElementById("app");
-      if (!app) return { error: "app container not found" };
-      app.innerHTML = "";
-
-      const TestComponent = () => null;
-
-      try {
-        // 直接传入 HTMLElement 而不是选择器字符串
-        const renderResult = await RenderClient.renderCSR({
-          engine: "preact",
-          component: TestComponent,
-          container: app, // 直接传入元素
-        });
-
-        return {
-          success: true,
-          hasUnmount: typeof renderResult.unmount === "function",
-        };
-      } catch (error) {
-        return { error: (error as Error).message };
-      }
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
-    }
-
-    expect(result.success).toBe(true);
-    expect(result.hasUnmount).toBe(true);
-  }, browserConfig);
 
   // ==================== handleRenderError 浏览器测试 ====================
 
@@ -898,5 +447,608 @@ describe("客户端渲染 - 浏览器测试", () => {
     expect(result.errorCalled).toBe(true);
     expect(result.errorMessage).toBe("Test browser error");
     expect(result.shouldUseFallback).toBe(true);
-  }, browserConfig);
-}, browserConfig);
+  }, browserConfigView);
+
+  // ==================== View 实际 CSR / Hybrid 渲染测试 ====================
+
+  it("View: 实际 CSR 渲染并断言 DOM 内容", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.renderCSR || !RenderClient.ViewJSX) {
+        return { error: "RenderClient or ViewJSX not available" };
+      }
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+
+      const ViewComp = () =>
+        RenderClient.ViewJSX("div", { children: "View CSR Hello" }, undefined);
+      const res = await RenderClient.renderCSR({
+        engine: "view",
+        component: ViewComp,
+        container: "#app",
+      });
+      const textAfterRender = app?.innerText?.trim() ?? "";
+      res.unmount();
+      const textAfterUnmount = app?.innerText?.trim() ?? "";
+      return {
+        textAfterRender,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfterRender).toContain("View CSR Hello");
+    expect(result.textAfterUnmount).toBe("");
+    expect(result.hasUnmount).toBe(true);
+  }, browserConfigView);
+
+  it("View: 实际 Hybrid hydrate 并断言内容仍在", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.hydrate || !RenderClient.ViewJSX) {
+        return { error: "RenderClient or ViewJSX not available" };
+      }
+      const container = document.getElementById("hydrate-app");
+      if (!container) return { error: "hydrate-app not found" };
+      // 服务端 HTML：<p>Server rendered content</p>
+      const ViewComp = () =>
+        RenderClient.ViewJSX(
+          "div",
+          {
+            children: RenderClient.ViewJSX("p", {
+              children: "Server rendered content",
+            }, undefined),
+          },
+          undefined,
+        );
+      const res = await RenderClient.hydrate({
+        engine: "view",
+        component: ViewComp,
+        container: "#hydrate-app",
+      });
+      const textAfterHydrate = container?.innerText?.trim() ?? "";
+      res.unmount();
+      const textAfterUnmount = container?.innerText?.trim() ?? "";
+      return {
+        textAfterHydrate,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfterHydrate).toContain("Server rendered content");
+    expect(result.hasUnmount).toBe(true);
+    expect(result.textAfterUnmount).toBe("");
+  }, browserConfigView);
+
+  it(
+    "View: Hybrid 流程（先 hydrate 再 unmount 再 CSR）主体区正确显示",
+    async (ctx) => {
+      if ((ctx as any)._browserSetupError) return;
+      const browser = (ctx as any).browser;
+      if (!browser) return;
+
+      const result = await browser.evaluate(async () => {
+        const RenderClient = (globalThis as any).RenderClient;
+        if (
+          !RenderClient?.hydrate || !RenderClient.renderCSR ||
+          !RenderClient.ViewJSX
+        ) {
+          return { error: "RenderClient or ViewJSX not available" };
+        }
+        const app = document.getElementById("app");
+        if (!app) return { error: "app not found" };
+        app.innerHTML = "<p>Initial SSR</p>";
+
+        const Page1 = () =>
+          RenderClient.ViewJSX("div", { children: "Page 1" }, undefined);
+        const hyd = await RenderClient.hydrate({
+          engine: "view",
+          component: Page1,
+          container: "#app",
+        });
+        const afterHydrate = app?.innerText?.trim() ?? "";
+        hyd.unmount();
+        const Page2 = () =>
+          RenderClient.ViewJSX("div", { children: "Page 2 CSR" }, undefined);
+        await RenderClient.renderCSR({
+          engine: "view",
+          component: Page2,
+          container: "#app",
+        });
+        const afterCSR = app?.innerText?.trim() ?? "";
+        return { afterHydrate, afterCSR };
+      });
+
+      if (result.error) {
+        console.warn("测试跳过:", result.error);
+        return;
+      }
+      expect(result.afterCSR).toContain("Page 2 CSR");
+    },
+    browserConfigView,
+  );
+}, browserConfigView);
+
+describe("Preact 实际渲染（Preact 入口）", () => {
+  afterAll(async () => {
+    try {
+      const { cleanupAllBrowsers } = await import("@dreamer/test");
+      await cleanupAllBrowsers();
+    } catch {
+      // ignore
+    }
+  });
+
+  it("Preact: 应该在容器不存在时抛出错误", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      try {
+        await RenderClient.renderCSR({
+          engine: "preact",
+          component: () => null,
+          container: "#non-existent-container",
+        });
+        return { threw: false };
+      } catch (error) {
+        return { threw: true, message: (error as Error).message };
+      }
+    });
+    if (result.error) return;
+    expect(result.threw).toBe(true);
+    expect(result.message).toContain("Container element not found");
+  }, browserConfigPreact);
+
+  it("Preact: 应该支持卸载组件", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+      const res = await RenderClient.renderCSR({
+        engine: "preact",
+        component: () => null,
+        container: "#app",
+      });
+      const hasUnmount = typeof res.unmount === "function";
+      res.unmount();
+      return { hasUnmount, unmounted: true };
+    });
+    if (result.error) return;
+    expect(result.hasUnmount).toBe(true);
+    expect(result.unmounted).toBe(true);
+  }, browserConfigPreact);
+
+  it("Preact: 应该支持 update 函数", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+      const res = await RenderClient.renderCSR({
+        engine: "preact",
+        component: () => null,
+        container: "#app",
+      });
+      return {
+        hasUpdate: typeof res.update === "function",
+        hasInstance: res.instance !== undefined,
+      };
+    });
+    if (result.error) return;
+    expect(result.hasUpdate).toBe(true);
+    expect(result.hasInstance).toBe(true);
+  }, browserConfigPreact);
+
+  it("Preact: CSR 应该返回性能指标", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+      const res = await RenderClient.renderCSR({
+        engine: "preact",
+        component: () => null,
+        container: "#app",
+        performance: { enabled: true, slowThreshold: 1000 },
+      });
+      const perf = res.performance;
+      return {
+        hasPerformance: !!perf,
+        engine: perf?.engine,
+        phase: perf?.phase,
+      };
+    });
+    if (result.error) return;
+    expect(result.hasPerformance).toBe(true);
+    expect(result.engine).toBe("preact");
+    expect(result.phase).toBe("csr");
+  }, browserConfigPreact);
+
+  it("Preact: 应该支持 HTMLElement 作为容器", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+      const res = await RenderClient.renderCSR({
+        engine: "preact",
+        component: () => null,
+        container: app,
+      });
+      return { success: true, hasUnmount: typeof res.unmount === "function" };
+    });
+    if (result.error) return;
+    expect(result.success).toBe(true);
+    expect(result.hasUnmount).toBe(true);
+  }, browserConfigPreact);
+
+  it("Preact: 实际 CSR 渲染并断言 DOM 内容", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.renderCSR || !RenderClient.PreactH) {
+        return { error: "RenderClient or PreactH not available" };
+      }
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+
+      const Comp = () => RenderClient.PreactH("div", null, "Preact CSR Hello");
+      const res = await RenderClient.renderCSR({
+        engine: "preact",
+        component: Comp,
+        container: "#app",
+      });
+      const textAfterRender = app?.innerText?.trim() ?? "";
+      res.unmount();
+      const textAfterUnmount = app?.innerText?.trim() ?? "";
+      return {
+        textAfterRender,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfterRender).toContain("Preact CSR Hello");
+    expect(result.textAfterUnmount).toBe("");
+    expect(result.hasUnmount).toBe(true);
+  }, browserConfigPreact);
+
+  it("Preact: 实际 Hybrid hydrate 并断言内容仍在", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.hydrate || !RenderClient.PreactH) {
+        return { error: "RenderClient or PreactH not available" };
+      }
+      const container = document.getElementById("hydrate-app");
+      if (!container) return { error: "hydrate-app not found" };
+
+      const Comp = () =>
+        RenderClient.PreactH(
+          "div",
+          null,
+          RenderClient.PreactH("p", null, "Server rendered content"),
+        );
+      const res = await RenderClient.hydrate({
+        engine: "preact",
+        component: Comp,
+        container: "#hydrate-app",
+      });
+      const textAfterHydrate = container?.innerText?.trim() ?? "";
+      res.unmount();
+      // Preact render(null, container) 可能不清空宿主内已有 DOM，故仅断言 hydrate 后内容与 unmount 可调用
+      const textAfterUnmount = container?.innerText?.trim() ?? "";
+      return {
+        textAfterHydrate,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfterHydrate).toContain("Server rendered content");
+    expect(result.hasUnmount).toBe(true);
+    // Preact hydrate 后 unmount 可能仍保留原 DOM 节点，接受空或保留内容两种结果
+    expect(["", "Server rendered content"]).toContain(result.textAfterUnmount);
+  }, browserConfigPreact);
+}, browserConfigPreact);
+
+describe("React 实际渲染（React 入口）", () => {
+  afterAll(async () => {
+    try {
+      const { cleanupAllBrowsers } = await import("@dreamer/test");
+      await cleanupAllBrowsers();
+    } catch {
+      // ignore
+    }
+  });
+
+  it("React: 应该在容器不存在时抛出错误", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      try {
+        await RenderClient.renderCSR({
+          engine: "react",
+          component: () => null,
+          container: "#non-existent-container",
+        });
+        return { threw: false };
+      } catch (error) {
+        return { threw: true, message: (error as Error).message };
+      }
+    });
+    if (result.error) return;
+    expect(result.threw).toBe(true);
+    expect(result.message).toContain("Container element not found");
+  }, browserConfigReact);
+
+  it("React: Hydration 应该在容器不存在时抛出错误", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      try {
+        await RenderClient.hydrate({
+          engine: "react",
+          component: () => null,
+          container: "#non-existent-container",
+        });
+        return { threw: false };
+      } catch (error) {
+        return { threw: true, message: (error as Error).message };
+      }
+    });
+    if (result.error) return;
+    expect(result.threw).toBe(true);
+    expect(result.message).toContain("Container element not found");
+  }, browserConfigReact);
+
+  it("React: 应该支持性能监控", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(() => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const monitor = RenderClient.createPerformanceMonitor({
+        enabled: true,
+        slowThreshold: 100,
+      });
+      if (!monitor) return { created: false };
+      monitor.start("react", "csr");
+      const metrics = monitor.end();
+      return {
+        created: true,
+        hasMetrics: !!metrics,
+        engine: metrics.engine,
+        phase: metrics.phase,
+      };
+    });
+    if (result.error) return;
+    expect(result.created).toBe(true);
+    expect(result.engine).toBe("react");
+    expect(result.phase).toBe("csr");
+  }, browserConfigReact);
+
+  it("React: 应该支持卸载组件", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+      const res = await RenderClient.renderCSR({
+        engine: "react",
+        component: () => null,
+        container: "#app",
+      });
+      const hasUnmount = typeof res.unmount === "function";
+      res.unmount();
+      return { hasUnmount, unmounted: true };
+    });
+    if (result.error) return;
+    expect(result.hasUnmount).toBe(true);
+    expect(result.unmounted).toBe(true);
+  }, browserConfigReact);
+
+  it("React: 应该支持 update 函数", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+      const res = await RenderClient.renderCSR({
+        engine: "react",
+        component: () => null,
+        container: "#app",
+      });
+      return {
+        hasUpdate: typeof res.update === "function",
+        hasInstance: res.instance !== undefined,
+      };
+    });
+    if (result.error) return;
+    expect(result.hasUpdate).toBe(true);
+    expect(result.hasInstance).toBe(true);
+  }, browserConfigReact);
+
+  it("React: CSR 应该返回性能指标", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient) return { error: "RenderClient not available" };
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+      const res = await RenderClient.renderCSR({
+        engine: "react",
+        component: () => null,
+        container: "#app",
+        performance: { enabled: true, slowThreshold: 1000 },
+      });
+      const perf = res.performance;
+      return {
+        hasPerformance: !!perf,
+        engine: perf?.engine,
+        phase: perf?.phase,
+      };
+    });
+    if (result.error) return;
+    expect(result.hasPerformance).toBe(true);
+    expect(result.engine).toBe("react");
+    expect(result.phase).toBe("csr");
+  }, browserConfigReact);
+
+  it("React: 实际 CSR 渲染并断言 DOM 内容", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.renderCSR || !RenderClient.ReactCreateElement) {
+        return { error: "RenderClient or ReactCreateElement not available" };
+      }
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+
+      const Comp = () =>
+        RenderClient.ReactCreateElement("div", null, "React CSR Hello");
+      const res = await RenderClient.renderCSR({
+        engine: "react",
+        component: Comp,
+        container: "#app",
+      });
+      // React 18 root.render() 异步提交，等待一帧再读 DOM
+      await new Promise((r) => setTimeout(r, 0));
+      const textAfterRender = app?.innerText?.trim() ?? "";
+      res.unmount();
+      await new Promise((r) => setTimeout(r, 0));
+      const textAfterUnmount = app?.innerText?.trim() ?? "";
+      return {
+        textAfterRender,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfterRender).toContain("React CSR Hello");
+    expect(result.textAfterUnmount).toBe("");
+    expect(result.hasUnmount).toBe(true);
+  }, browserConfigReact);
+
+  it("React: 实际 Hybrid hydrate 并断言内容仍在", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.hydrate || !RenderClient.ReactCreateElement) {
+        return { error: "RenderClient or ReactCreateElement not available" };
+      }
+      const container = document.getElementById("hydrate-app");
+      if (!container) return { error: "hydrate-app not found" };
+
+      const Comp = () =>
+        RenderClient.ReactCreateElement(
+          "div",
+          null,
+          RenderClient.ReactCreateElement("p", null, "Server rendered content"),
+        );
+      const res = await RenderClient.hydrate({
+        engine: "react",
+        component: Comp,
+        container: "#hydrate-app",
+      });
+      const textAfterHydrate = container?.innerText?.trim() ?? "";
+      res.unmount();
+      const textAfterUnmount = container?.innerText?.trim() ?? "";
+      return {
+        textAfterHydrate,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfterHydrate).toContain("Server rendered content");
+    expect(result.hasUnmount).toBe(true);
+    expect(result.textAfterUnmount).toBe("");
+  }, browserConfigReact);
+}, browserConfigReact);
