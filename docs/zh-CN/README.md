@@ -1,13 +1,13 @@
 # @dreamer/render
 
 > 一个专注于渲染逻辑的包，提供 SSR、CSR、Hydration 和 SSG 功能，支持
-> React、Preact 两个模板引擎
+> React、Preact、View 三个模板引擎
 
 [English](../../README.md) | 中文 (Chinese)
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE.md)
-[![Tests](https://img.shields.io/badge/tests-203%20passed-brightgreen)](./TEST_REPORT.md)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
+[![Tests](https://img.shields.io/badge/tests-233%20passed-brightgreen)](./TEST_REPORT.md)
 
 ---
 
@@ -35,14 +35,15 @@ bunx jsr add @dreamer/render
 
 ## 🌍 环境兼容性
 
-| 环境       | 版本要求              | 状态                                     |
-| ---------- | --------------------- | ---------------------------------------- |
-| **Deno**   | 2.5+                  | ✅ 完全支持                              |
-| **Bun**    | 1.0+                  | ✅ 完全支持                              |
-| **浏览器** | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration）                |
-| **React**  | 18+                   | ✅ 完全支持                              |
-| **Preact** | 10+                   | ✅ 完全支持                              |
-| **依赖**   | -                     | 📦 需要对应的模板引擎包（React、Preact） |
+| 环境       | 版本要求              | 状态                                           |
+| ---------- | --------------------- | ---------------------------------------------- |
+| **Deno**   | 2.5+                  | ✅ 完全支持                                    |
+| **Bun**    | 1.0+                  | ✅ 完全支持                                    |
+| **浏览器** | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration）                      |
+| **React**  | 18+                   | ✅ 完全支持                                    |
+| **Preact** | 10+                   | ✅ 完全支持                                    |
+| **View**   | 1.0+                  | ✅ 完全支持（SSR、CSR、Hydration）             |
+| **依赖**   | -                     | 📦 需要对应的模板引擎包（React、Preact、View） |
 
 ---
 
@@ -51,10 +52,11 @@ bunx jsr add @dreamer/render
 - **多模板引擎支持**：
   - React 18+ 支持
   - Preact 10+ 支持
+  - View 1.0+ 支持（@dreamer/view）
   - 统一的渲染接口
 - **服务端渲染（SSR）**：
   - 在服务端将组件渲染为 HTML 字符串
-  - 支持流式渲染（React、Preact）
+  - 支持流式渲染（React、Preact、View）
   - 支持 HTML 模板包装
   - 支持元数据管理
   - 支持服务端数据注入
@@ -103,7 +105,7 @@ bunx jsr add @dreamer/render
 - **客户端渲染（CSR）**：交互性强的单页应用
 - **水合（Hydration）**：SSR + CSR 混合应用，提升用户体验
 - **静态站点生成（SSG）**：博客、文档站点、营销页面
-- **多模板引擎支持**：根据项目需求选择 React 或 Preact
+- **多模板引擎支持**：根据项目需求选择 React、Preact 或 View
 - **元数据管理**：SEO 优化，社交分享（OG、Twitter Card）
 - **数据注入**：服务端数据传递到客户端
 - **布局系统**：统一的页面布局管理
@@ -242,6 +244,31 @@ const files = await renderSSG({
 
 console.log(`生成了 ${files.length} 个文件`);
 ```
+
+### View 引擎（SSR）
+
+使用 `@dreamer/view` 时设置 `engine: "view"`，可进行 SSR、CSR 和
+Hydration。组件需通过 `@dreamer/view/jsx-runtime` 的 `jsx` 构建。
+
+```typescript
+import { renderSSR } from "jsr:@dreamer/render";
+import { jsx } from "jsr:@dreamer/view/jsx-runtime";
+
+const App = (props: { name?: string }) =>
+  jsx("div", { children: `Hello, ${props?.name ?? "View"}!` }, undefined);
+
+const result = await renderSSR({
+  engine: "view",
+  component: App,
+  props: { name: "World" },
+  template: "<html><body></body></html>",
+});
+
+console.log(result.html);
+```
+
+客户端：使用 `@dreamer/render/client`，`engine: "view"` 下可调用 `renderCSR` 和
+`hydrate`，View 客户端适配器已内置。
 
 ---
 
@@ -396,12 +423,12 @@ const result = await renderSSR({
 
 | 参数            | 类型                      | 必需 | 说明                                             |
 | --------------- | ------------------------- | ---- | ------------------------------------------------ |
-| `engine`        | `Engine`                  | ✅   | 模板引擎类型（"react" \| "preact"）              |
+| `engine`        | `Engine`                  | ✅   | 模板引擎类型（"react" \| "preact" \| "view"）    |
 | `component`     | `unknown`                 | ✅   | 组件（React/Preact 组件）                        |
 | `props`         | `Record<string, unknown>` | ❌   | 组件属性                                         |
 | `layouts`       | `LayoutComponent[]`       | ❌   | 布局组件列表（从外到内）                         |
 | `template`      | `string`                  | ❌   | HTML 模板（用于包装渲染结果）                    |
-| `stream`        | `boolean`                 | ❌   | 是否启用流式渲染（仅 React、Preact）             |
+| `stream`        | `boolean`                 | ❌   | 是否启用流式渲染（React、Preact、View）          |
 | `loadContext`   | `LoadContext`             | ❌   | Load Context（传递给 load 方法和 metadata 函数） |
 | `errorHandler`  | `ErrorHandler`            | ❌   | 错误处理选项                                     |
 | `performance`   | `PerformanceOptions`      | ❌   | 性能监控选项                                     |
@@ -510,7 +537,7 @@ const routes = expandDynamicRoute("/user/[id]", ["1", "2", "3"]);
 支持的模板引擎类型：
 
 ```typescript
-type Engine = "react" | "preact";
+type Engine = "react" | "preact" | "view";
 ```
 
 #### `Metadata`
@@ -647,7 +674,7 @@ interface PerformanceMetrics {
 
 ## ⚡ 性能优化
 
-- **流式渲染**：React 和 Preact 支持流式渲染，提高首屏性能
+- **流式渲染**：React、Preact、View 支持流式渲染，提高首屏性能
 - **元数据缓存**：可选的元数据缓存机制，减少重复计算
 - **数据压缩**：支持大数据压缩，减少 HTML 体积
 - **数据懒加载**：支持大数据懒加载，优化首屏性能
@@ -659,19 +686,19 @@ interface PerformanceMetrics {
 
 ## 📊 测试报告
 
-| 指标     | 数值                   |
-| -------- | ---------------------- |
-| 测试时间 | 2026-02-03             |
-| 总测试数 | 231                    |
-| 通过     | 231 ✅                 |
-| 失败     | 0                      |
-| 通过率   | 100%                   |
-| 执行时间 | ~32s（`deno test -A`） |
+| 指标     | 数值                      |
+| -------- | ------------------------- |
+| 测试时间 | 2026-02-13                |
+| 总测试数 | 233                       |
+| 通过     | 233 ✅                    |
+| 失败     | 0                         |
+| 通过率   | 100%                      |
+| 执行时间 | ~10–12s（`deno test -A`） |
 
-| 运行时 | 版本  | 测试结果      |
-| ------ | ----- | ------------- |
-| Deno   | 2.6.4 | ✅ 231 passed |
-| Bun    | 1.3.5 | ✅ 231 passed |
+| 运行时 | 版本 | 测试结果      |
+| ------ | ---- | ------------- |
+| Deno   | 2.x+ | ✅ 233 passed |
+| Bun    | 1.x+ | ✅ 233 passed |
 
 详细测试报告请查看 [TEST_REPORT.md](./TEST_REPORT.md)
 
@@ -679,11 +706,12 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.13**（2026-02-11）
+**v1.0.14**（2026-02-13）
 
-- **修复**：Solid SSR 适配器改为动态导入 solid-js/web，避免服务端调用客户端
-  API；补充 SSR 编译要求说明。
-- **新增**：Preact 适配器在 composeLayouts 后增加调试日志。
+- **新增**：View 引擎支持（SSR、CSR、Hydration）；新适配器、测试（共 233
+  个）与文档。
+- **移除**：Solid.js 支持（适配器及 client/solid）。
+- **变更**：许可证为 Apache 2.0（见 LICENSE）。
 
 [完整变更](./CHANGELOG.md)
 
@@ -695,7 +723,7 @@ interface PerformanceMetrics {
 
 - **服务端和客户端分离**：通过 `/client` 子路径明确区分服务端和客户端代码
 - **统一接口**：服务端和客户端使用相同的 API 接口，降低学习成本
-- **多模板引擎支持**：支持 React、Preact，根据项目需求选择
+- **多模板引擎支持**：支持 React、Preact、View，根据项目需求选择
 - **类型安全**：完整的 TypeScript 类型支持
 - **组件导出约定**：组件可以导出 `metadata`、`load`、`scripts`、`inheritLayout`
   等属性
@@ -715,7 +743,7 @@ interface PerformanceMetrics {
 
 ## 📄 许可证
 
-MIT License - 详见 [LICENSE.md](../../LICENSE.md)
+Apache License 2.0 - 详见 [LICENSE](../../LICENSE)
 
 ---
 

@@ -179,64 +179,6 @@ describe(
       });
     });
 
-    describe("Solid 元数据与数据", () => {
-      it("应该支持 Solid 静态元数据", async () => {
-        const { createComponent } = await import("solid-js");
-        const { Dynamic } = await import("solid-js/web");
-        const Component = () =>
-          createComponent(Dynamic, {
-            component: "div",
-            get children() {
-              return "Content";
-            },
-          });
-        (Component as unknown as Record<string, unknown>).metadata = {
-          title: "Solid 测试页面",
-          description: "Solid 元数据测试",
-        } as Metadata;
-
-        const result = await renderSSR({
-          engine: "solid",
-          component: Component,
-          template: "<html><head></head><body><!--ssr-outlet--></body></html>",
-        });
-
-        expect(result.metadata?.title).toBe("Solid 测试页面");
-        expect(result.metadata?.description).toBe("Solid 元数据测试");
-        expect(result.html).toContain("<title>Solid 测试页面</title>");
-      });
-
-      it("应该支持 Solid 页面 load 方法", async () => {
-        const { createComponent } = await import("solid-js");
-        const { Dynamic } = await import("solid-js/web");
-        const Component = () =>
-          createComponent(Dynamic, {
-            component: "div",
-            get children() {
-              return "Content";
-            },
-          });
-        (Component as unknown as Record<string, unknown>).load = async (
-          context: LoadContext,
-        ) => ({
-          pageData: "Solid 页面数据",
-          url: context.url,
-        });
-
-        const result = await renderSSR({
-          engine: "solid",
-          component: Component,
-          loadContext: { url: "/solid-test", params: {} },
-        });
-
-        expect(result.pageData).toEqual({
-          pageData: "Solid 页面数据",
-          url: "/solid-test",
-        });
-        expect(result.html).toContain("window.__DATA__");
-      });
-    });
-
     describe("脚本提取和注入", () => {
       it("应该从组件中提取脚本", async () => {
         const Component = () => "Content";
@@ -670,26 +612,6 @@ describe(
 
         expect(result.html).toContain("Preact");
         expect(result.renderInfo?.engine).toBe("preact");
-      });
-
-      it("应该支持 Solid", async () => {
-        const { createComponent } = await import("solid-js");
-        const { Dynamic } = await import("solid-js/web");
-        const Component = () =>
-          createComponent(Dynamic, {
-            component: "div",
-            get children() {
-              return "Solid";
-            },
-          });
-
-        const result = await renderSSR({
-          engine: "solid",
-          component: Component,
-        });
-
-        expect(result.html).toContain("Solid");
-        expect(result.renderInfo?.engine).toBe("solid");
       });
 
       it("不支持的引擎应抛出错误", async () => {

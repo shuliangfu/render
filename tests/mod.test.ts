@@ -17,7 +17,7 @@ describe(
       });
 
       it("应该支持所有模板引擎类型", () => {
-        const engines: Engine[] = ["react", "preact", "solid"];
+        const engines: Engine[] = ["react", "preact", "view"];
         expect(engines.length).toBe(3);
       });
     });

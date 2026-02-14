@@ -1,13 +1,13 @@
 # @dreamer/render
 
-> A rendering library for SSR, CSR, Hydration, and SSG, supporting React and
-> Preact
+> A rendering library for SSR, CSR, Hydration, and SSG, supporting React,
+> Preact, and View
 
 English | [中文 (Chinese)](./docs/zh-CN/README.md)
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
-[![Tests](https://img.shields.io/badge/tests-203%20passed-brightgreen)](./docs/en-US/TEST_REPORT.md)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+[![Tests](https://img.shields.io/badge/tests-233%20passed-brightgreen)](./docs/en-US/TEST_REPORT.md)
 
 ---
 
@@ -36,14 +36,15 @@ bunx jsr add @dreamer/render
 
 ## 🌍 Environment Compatibility
 
-| Environment      | Version          | Status                                     |
-| ---------------- | ---------------- | ------------------------------------------ |
-| **Deno**         | 2.5+             | ✅ Full support                            |
-| **Bun**          | 1.0+             | ✅ Full support                            |
-| **Browser**      | Modern (ES2020+) | ✅ CSR, Hydration                          |
-| **React**        | 18+              | ✅ Full support                            |
-| **Preact**       | 10+              | ✅ Full support                            |
-| **Dependencies** | -                | 📦 Requires template engine (React/Preact) |
+| Environment      | Version          | Status                                          |
+| ---------------- | ---------------- | ----------------------------------------------- |
+| **Deno**         | 2.5+             | ✅ Full support                                 |
+| **Bun**          | 1.0+             | ✅ Full support                                 |
+| **Browser**      | Modern (ES2020+) | ✅ CSR, Hydration                               |
+| **React**        | 18+              | ✅ Full support                                 |
+| **Preact**       | 10+              | ✅ Full support                                 |
+| **View**         | 1.0+             | ✅ Full support (SSR, CSR, Hydration)           |
+| **Dependencies** | -                | 📦 Requires template engine (React/Preact/View) |
 
 ---
 
@@ -52,10 +53,11 @@ bunx jsr add @dreamer/render
 - **Multi-engine**:
   - React 18+
   - Preact 10+
+  - View 1.0+ (@dreamer/view)
   - Unified render API
 - **SSR**:
   - Render components to HTML on server
-  - Streaming (React, Preact)
+  - Streaming (React, Preact, View)
   - HTML template wrapping
   - Metadata, server data injection, layout system
   - Script extraction and injection
@@ -92,7 +94,7 @@ bunx jsr add @dreamer/render
 - **CSR**: Interactive SPAs
 - **Hydration**: SSR + CSR hybrid
 - **SSG**: Blogs, docs, marketing pages
-- **Multi-engine**: Choose React or Preact
+- **Multi-engine**: Choose React, Preact, or View
 - **Metadata**: SEO, OG, Twitter Card
 - **Data injection**: Server → client
 - **Layout system**: Unified page layouts
@@ -231,6 +233,31 @@ const files = await renderSSG({
 
 console.log(`Generated ${files.length} files`);
 ```
+
+### View engine (SSR)
+
+Use `@dreamer/view` with `engine: "view"` for SSR, CSR, and Hydration.
+Components are built with `jsx` from `@dreamer/view/jsx-runtime`.
+
+```typescript
+import { renderSSR } from "jsr:@dreamer/render";
+import { jsx } from "jsr:@dreamer/view/jsx-runtime";
+
+const App = (props: { name?: string }) =>
+  jsx("div", { children: `Hello, ${props?.name ?? "View"}!` }, undefined);
+
+const result = await renderSSR({
+  engine: "view",
+  component: App,
+  props: { name: "World" },
+  template: "<html><body></body></html>",
+});
+
+console.log(result.html);
+```
+
+Client: use `@dreamer/render/client` with `engine: "view"` for `renderCSR` and
+`hydrate`; the View client adapter is included.
 
 ---
 
@@ -383,21 +410,21 @@ Server-side render function. Uses the adapter for the specified engine.
 
 **Options**:
 
-| Param           | Type                      | Required | Description                      |
-| --------------- | ------------------------- | -------- | -------------------------------- |
-| `engine`        | `Engine`                  | ✅       | Engine ("react" \| "preact")     |
-| `component`     | `unknown`                 | ✅       | Component                        |
-| `props`         | `Record<string, unknown>` | ❌       | Component props                  |
-| `layouts`       | `LayoutComponent[]`       | ❌       | Layouts (outer to inner)         |
-| `template`      | `string`                  | ❌       | HTML template                    |
-| `stream`        | `boolean`                 | ❌       | Enable streaming (React, Preact) |
-| `loadContext`   | `LoadContext`             | ❌       | Context for load and metadata    |
-| `errorHandler`  | `ErrorHandler`            | ❌       | Error handling                   |
-| `performance`   | `PerformanceOptions`      | ❌       | Performance monitoring           |
-| `metadataCache` | `CacheOptions`            | ❌       | Metadata cache                   |
-| `compression`   | `CompressionOptions`      | ❌       | Data compression                 |
-| `contextData`   | `ContextData`             | ❌       | Context API data                 |
-| `lazyData`      | `boolean`                 | ❌       | Enable lazy data loading         |
+| Param           | Type                      | Required | Description                            |
+| --------------- | ------------------------- | -------- | -------------------------------------- |
+| `engine`        | `Engine`                  | ✅       | Engine ("react" \| "preact" \| "view") |
+| `component`     | `unknown`                 | ✅       | Component                              |
+| `props`         | `Record<string, unknown>` | ❌       | Component props                        |
+| `layouts`       | `LayoutComponent[]`       | ❌       | Layouts (outer to inner)               |
+| `template`      | `string`                  | ❌       | HTML template                          |
+| `stream`        | `boolean`                 | ❌       | Enable streaming (React, Preact, View) |
+| `loadContext`   | `LoadContext`             | ❌       | Context for load and metadata          |
+| `errorHandler`  | `ErrorHandler`            | ❌       | Error handling                         |
+| `performance`   | `PerformanceOptions`      | ❌       | Performance monitoring                 |
+| `metadataCache` | `CacheOptions`            | ❌       | Metadata cache                         |
+| `compression`   | `CompressionOptions`      | ❌       | Data compression                       |
+| `contextData`   | `ContextData`             | ❌       | Context API data                       |
+| `lazyData`      | `boolean`                 | ❌       | Enable lazy data loading               |
 
 **Returns**: Render result (HTML, metadata, data)
 
@@ -495,7 +522,7 @@ const routes = expandDynamicRoute("/user/[id]", ["1", "2", "3"]);
 Supported engines:
 
 ```typescript
-type Engine = "react" | "preact";
+type Engine = "react" | "preact" | "view";
 ```
 
 #### `Metadata`
@@ -632,7 +659,8 @@ interface PerformanceMetrics {
 
 ## ⚡ Performance
 
-- **Streaming**: React and Preact support streaming for faster first paint
+- **Streaming**: React, Preact, and View support streaming for faster first
+  paint
 - **Metadata cache**: Optional cache to reduce repeated computation
 - **Data compression**: Reduce HTML size
 - **Lazy data loading**: Optimize first-screen performance
@@ -644,19 +672,19 @@ interface PerformanceMetrics {
 
 ## 📊 Test Report
 
-| Metric      | Value                 |
-| ----------- | --------------------- |
-| Test date   | 2026-02-03            |
-| Total tests | 203                   |
-| Passed      | 203 ✅                |
-| Failed      | 0                     |
-| Pass rate   | 100%                  |
-| Duration    | ~25s (`deno test -A`) |
+| Metric      | Value                    |
+| ----------- | ------------------------ |
+| Test date   | 2026-02-13               |
+| Total tests | 233                      |
+| Passed      | 233 ✅                   |
+| Failed      | 0                        |
+| Pass rate   | 100%                     |
+| Duration    | ~10–12s (`deno test -A`) |
 
 | Runtime | Version | Result        |
 | ------- | ------- | ------------- |
-| Deno    | 2.6.4   | ✅ 203 passed |
-| Bun     | 1.3.5   | ✅ 203 passed |
+| Deno    | 2.x+    | ✅ 233 passed |
+| Bun     | 1.x+    | ✅ 233 passed |
 
 See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
@@ -664,11 +692,12 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.13** (2026-02-11)
+**v1.0.14** (2026-02-13)
 
-- **Fixed**: Solid SSR adapter uses dynamic import for solid-js/web to avoid
-  client-only API on server; add SSR compile requirement note.
-- **Added**: Preact adapter extra debug log after composeLayouts.
+- **Added**: View engine support (SSR, CSR, Hydration); new adapters, tests (233
+  total), and docs.
+- **Removed**: Solid.js support (adapter and client/solid).
+- **Changed**: License Apache 2.0 (see LICENSE).
 
 [Full changelog](./docs/en-US/CHANGELOG.md)
 
@@ -680,7 +709,7 @@ See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
 - **Server/client separation**: Use `/client` subpath for client code
 - **Unified API**: Same API for server and client
-- **Multi-engine**: React or Preact
+- **Multi-engine**: React, Preact, or View
 - **Type safety**: Full TypeScript support
 - **Component exports**: `metadata`, `load`, `scripts`, `inheritLayout`
 - **Metadata merge**: Deep merge; page metadata overrides layout
@@ -698,7 +727,7 @@ Issues and Pull Requests are welcome!
 
 ## 📄 License
 
-MIT License - see [LICENSE.md](./LICENSE.md)
+Apache License 2.0 - see [LICENSE](./LICENSE)
 
 ---
 

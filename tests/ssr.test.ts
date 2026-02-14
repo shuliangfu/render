@@ -3,6 +3,7 @@
  */
 
 import { assertRejects, describe, expect, it } from "@dreamer/test";
+import { jsx } from "@dreamer/view/jsx-runtime";
 import { renderSSR } from "../src/ssr.ts";
 import type { SSROptions } from "../src/types.ts";
 
@@ -88,40 +89,32 @@ describe(
       });
     });
 
-    describe("Solid SSR", () => {
-      it("应该能够渲染简单的 Solid 组件", async () => {
-        const { createComponent } = await import("solid-js");
-        const { Dynamic } = await import("solid-js/web");
+    describe("View SSR", () => {
+      it("应该能够渲染简单的 View 组件", async () => {
         const Component = () =>
-          createComponent(Dynamic, {
-            component: "div",
-            get children() {
-              return "Hello, Solid!";
-            },
-          });
+          jsx("div", { children: "Hello, View!" }, undefined);
 
         const result = await renderSSR({
-          engine: "solid",
+          engine: "view",
           component: Component,
         });
 
-        expect(result.html).toContain("Hello, Solid!");
-        expect(result.renderInfo?.engine).toBe("solid");
+        expect(result.html).toContain("Hello, View!");
+        expect(result.renderInfo?.engine).toBe("view");
       });
 
-      it("应该能够渲染带属性的 Solid 组件", async () => {
-        const { createComponent } = await import("solid-js");
-        const { Dynamic } = await import("solid-js/web");
-        const Component = (props: Record<string, unknown>) =>
-          createComponent(Dynamic, {
-            component: "div",
-            get children() {
-              return `Hello, ${props.name ?? ""}!`;
+      it("应该能够渲染带属性的 View 组件", async () => {
+        const Component = (props: { name?: string }) =>
+          jsx(
+            "div",
+            {
+              children: `Hello, ${(props as { name?: string }).name ?? ""}!`,
             },
-          });
+            undefined,
+          );
 
         const result = await renderSSR({
-          engine: "solid",
+          engine: "view",
           component: Component,
           props: { name: "World" },
         });
@@ -130,24 +123,20 @@ describe(
       });
 
       it("应该支持 HTML 模板", async () => {
-        const { createComponent } = await import("solid-js");
-        const { Dynamic } = await import("solid-js/web");
         const Component = () =>
-          createComponent(Dynamic, {
-            component: "div",
-            get children() {
-              return "Solid Content";
-            },
-          });
+          jsx("div", { children: "View Content" }, undefined);
+
+        const template = "<html><body><!--ssr-outlet--></body></html>";
 
         const result = await renderSSR({
-          engine: "solid",
+          engine: "view",
           component: Component,
-          template: "<html><body><!--ssr-outlet--></body></html>",
+          template,
         });
 
         expect(result.html).toContain("<html>");
-        expect(result.html).toContain("Solid Content");
+        expect(result.html).toContain("<body>");
+        expect(result.html).toContain("View Content");
       });
     });
 

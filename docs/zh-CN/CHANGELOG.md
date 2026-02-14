@@ -7,6 +7,41 @@
 
 ---
 
+## [1.0.14] - 2026-02-13
+
+### 新增
+
+- **View 引擎支持**：完整支持 View 模板引擎（`@dreamer/view`）。
+  - **SSR**：新增服务端适配器 `src/adapters/view.ts`，使用 `@dreamer/view` 的
+    `renderToString` 与 `@dreamer/view/stream` 的
+    `renderToStream`；支持布局、模板注入、流式渲染、错误处理与性能监控。
+  - **CSR 与 Hydration**：新增客户端适配器 `src/client/adapters/view.ts`；通过
+    `@dreamer/render/client` 使用 `engine: "view"` 的 `renderCSR` 与
+    `hydrate`；支持布局、错误处理与性能监控。
+  - **引擎类型**：服务端与客户端类型中的 `Engine` 现为
+    `"react" | "preact" | "view"`。
+  - **导出**：新增子路径 `@dreamer/render/client/view` 用于 View 客户端适配器。
+  - **测试**：新增测试文件 `tests/adapters-view.test.ts`（12
+    个用例）；`tests/ssr.test.ts` 中增加 View SSR 用例；`mod.test.ts`
+    更新为三种引擎；共 233 个测试，全部通过。
+  - **文档**：README 与文档已更新 View 引擎说明、快速开始（View SSR
+    示例）、环境表、API 表、测试报告摘要（233 通过）及模板引擎支持表。
+
+### 移除
+
+- **Solid.js 支持**：移除 Solid 模板引擎支持。
+  - Solid SSR 适配器与客户端适配器（`@dreamer/render/client/solid`）已移除。
+  - `Engine` 类型不再包含 `"solid"`。
+  - 与 Solid.js 相关的依赖与代码已从包中移除。
+
+### 变更
+
+- **许可证**：本项目采用 Apache License, Version 2.0 许可。完整条款见
+  [LICENSE](../../LICENSE) 文件。`deno.json` 中的 `license` 字段为
+  `"Apache-2.0"`。
+
+---
+
 ## [1.0.13] - 2026-02-11
 
 ### 修复
