@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.14] - 2026-02-13
+
+### Added
+
+- **View engine support**: Full support for the View template engine
+  (`@dreamer/view`).
+  - **SSR**: New server adapter `src/adapters/view.ts` using `renderToString`
+    and `renderToStream` from `@dreamer/view` and `@dreamer/view/stream`;
+    supports layouts, template injection, streaming, error handling, and
+    performance monitoring.
+  - **CSR & Hydration**: New client adapter `src/client/adapters/view.ts`;
+    `renderCSR` and `hydrate` with `engine: "view"` via
+    `@dreamer/render/client`; supports layouts, error handling, and performance
+    monitoring.
+  - **Engine type**: `Engine` is now `"react" | "preact" | "view"` in both
+    server and client types.
+  - **Exports**: New subpath `@dreamer/render/client/view` for the View client
+    adapter.
+  - **Tests**: New test file `tests/adapters-view.test.ts` (12 tests); View SSR
+    cases in `tests/ssr.test.ts`; `mod.test.ts` updated for three engines; 233
+    tests total, all passing.
+  - **Docs**: README and docs updated with View engine description, quick start
+    (View SSR example), environment table, API tables, test report summary (233
+    passed), and Template Engine Support table.
+
+### Removed
+
+- **Solid.js support**: Removed Solid template engine support.
+  - Solid SSR adapter and client adapter (`@dreamer/render/client/solid`) have
+    been removed.
+  - `Engine` type no longer includes `"solid"`.
+  - Dependencies and code related to Solid.js have been removed from the
+    package.
+
+### Changed
+
+- **License**: This project is licensed under the Apache License, Version 2.0.
+  See the [LICENSE](../../LICENSE) file for the full text. The `license` field
+  in `deno.json` is set to `"Apache-2.0"`.
+
+---
+
 ## [1.0.13] - 2026-02-11
 
 ### Fixed

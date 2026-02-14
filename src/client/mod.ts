@@ -10,7 +10,7 @@
  * - 客户端渲染（CSR）：将组件渲染到 DOM
  * - Hydration：激活服务端渲染的 HTML
  * - 布局组合：支持嵌套布局
- * - 多引擎支持：React、Preact、Solid
+ * - 多引擎支持：React、Preact
  *
  * @example
  * ```typescript
@@ -55,18 +55,17 @@ export {
   recordPerformanceMetrics,
 } from "./utils/performance.ts";
 
-// 客户端适配器按 engine 动态加载，避免 solid-js 的 seroval 依赖（使用 require）在浏览器打包时失败
 import type { CSROptions, CSRRenderResult, HydrationOptions } from "./types.ts";
 
-/** 按 engine 动态加载客户端适配器，仅加载当前引擎（solid 含 seroval 等依赖，打包进浏览器会触发 require 报错） */
-async function loadClientAdapter(engine: "react" | "preact" | "solid") {
+/** 按 engine 动态加载客户端适配器 */
+async function loadClientAdapter(engine: "react" | "preact" | "view") {
   switch (engine) {
     case "react":
       return await import("./adapters/react.ts");
     case "preact":
       return await import("./adapters/preact.ts");
-    case "solid":
-      return await import("./adapters/solid.ts");
+    case "view":
+      return await import("./adapters/view.ts");
     default: {
       const _: never = engine;
       throw new Error(`Unsupported template engine: ${engine}`);

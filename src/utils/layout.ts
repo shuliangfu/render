@@ -58,7 +58,7 @@ export function filterLayouts(layouts?: LayoutComponent[]): LayoutComponent[] {
 }
 
 /**
- * 组合布局和组件（React/Preact/Solid）
+ * 组合布局和组件（React/Preact）
  *
  * @param engine 模板引擎类型
  * @param component 页面组件
@@ -68,7 +68,7 @@ export function filterLayouts(layouts?: LayoutComponent[]): LayoutComponent[] {
  * @returns 组合后的组件元素
  */
 export function composeLayouts(
-  _engine: "react" | "preact" | "solid",
+  _engine: "react" | "preact" | "view",
   component: unknown,
   props: Record<string, unknown> = {},
   layouts?: LayoutComponent[],

@@ -6,7 +6,7 @@
 
 import * as preactAdapter from "./adapters/preact.ts";
 import * as reactAdapter from "./adapters/react.ts";
-import * as solidAdapter from "./adapters/solid.ts";
+import * as viewAdapter from "./adapters/view.ts";
 import type {
   LoadContext,
   Metadata,
@@ -191,7 +191,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     await cacheMetadata(context, mergedMetadata, options.metadataCache);
   }
 
-  // 调用适配器渲染：Preact/React 静态导入，Solid 动态加载
+  // 调用适配器渲染
   let result: RenderResult;
   try {
     switch (engine) {
@@ -203,8 +203,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         result = await preactAdapter.renderSSR(options);
         break;
       }
-      case "solid": {
-        result = await solidAdapter.renderSSR(options);
+      case "view": {
+        result = await viewAdapter.renderSSR(options);
         break;
       }
       default: {
@@ -234,8 +234,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
           case "preact":
             result = await preactAdapter.renderSSR(fallbackOptions);
             break;
-          case "solid":
-            result = await solidAdapter.renderSSR(fallbackOptions);
+          case "view":
+            result = await viewAdapter.renderSSR(fallbackOptions);
             break;
           default:
             throw new Error(`不支持的模板引擎: ${engine}`);

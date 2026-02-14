@@ -5,7 +5,7 @@
 /**
  * 支持的模板引擎类型
  */
-export type Engine = "react" | "preact" | "solid";
+export type Engine = "react" | "preact" | "view";
 
 /**
  * 元数据
@@ -206,7 +206,7 @@ export interface SSROptions {
   skipLayouts?: boolean;
   /** HTML 模板（可选，用于包装渲染结果） */
   template?: string;
-  /** 是否启用流式渲染（React 原生流式；Preact/Solid 为模拟分块） */
+  /** 是否启用流式渲染（React 原生流式；Preact 为模拟分块） */
   stream?: boolean;
   /** Load Context（用于传递给组件的 load 方法和 metadata 函数） */
   loadContext?: LoadContext;
