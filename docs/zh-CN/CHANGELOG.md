@@ -7,6 +7,20 @@
 
 ---
 
+## [1.0.16] - 2026-02-14
+
+### 新增
+
+- **View 客户端适配器**（`src/client/adapters/view.ts`）：实现 `renderCSR` 与
+  `hydrate`（基于 `@dreamer/view` 的 `createRoot`、`hydrate`）；复出
+  `createReactiveRoot` 并新增
+  `buildViewTree(component, props, layouts?,
+  skipLayouts?)`，用于状态驱动的
+  View 单根对接。从 `@dreamer/render/client/view` 使用 View 引擎 CSR、Hydration
+  及 `createReactiveRoot` + `buildViewTree` 集成。
+
+---
+
 ## [1.0.15] - 2026-02-13
 
 ### 新增

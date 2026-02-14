@@ -706,14 +706,10 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.15**（2026-02-13）
+**v1.0.16**（2026-02-14）
 
-- **新增**：客户端浏览器测试扩展为 31 个（View/Preact/React fixture，实际 CSR 与
-  Hybrid hydrate）；测试报告共 243 个。
-- **修复**：View 客户端适配器在 hybrid 导航前清空容器；React/Preact 浏览器
-  测试断言（异步提交、unmount）。
-
-[完整变更](./CHANGELOG.md)
+- **新增**：View 客户端适配器，提供 `renderCSR`、`hydrate`、`createReactiveRoot`
+  与 `buildViewTree`（`@dreamer/render/client/view`）。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
