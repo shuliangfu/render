@@ -7,6 +7,19 @@
 
 ---
 
+## [1.0.17] - 2026-02-15
+
+### 修复
+
+- **View 客户端适配器**（`src/client/adapters/view.ts`）：在 `viewCreateElement`
+  中，当子节点仅通过第二个参数传入（如 `createComponentTree` 只调用
+  `createElement(Layout, { children: childElement })` 且无第三参）时，不再用
+  `undefined` 覆盖 `props.children`。使用
+  `resolvedChildren = fromArgs !== undefined ? fromArgs : rest.children`，使布局能收到页面
+  VNode，主体内容得以渲染。
+
+---
+
 ## [1.0.16] - 2026-02-14
 
 ### 新增

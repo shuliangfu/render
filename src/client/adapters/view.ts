@@ -32,21 +32,22 @@ import {
 } from "../utils/performance.ts";
 import type { LayoutComponent } from "../types.ts";
 
-/** View 的 createElement 等价：用 jsx(type, props, key) 构建 VNode */
+/** View 的 createElement 等价：用 jsx(type, props, key) 构建 VNode。注意：createComponentTree 只传 (component, props) 两参，children 在 props.children 中，不能再用第三参覆盖为 undefined。 */
 function viewCreateElement(
   component: unknown,
   props: unknown,
   ...children: unknown[]
 ): VNode {
   const rest = (props as Record<string, unknown>) ?? {};
-  const child = children.length === 1
+  const fromArgs = children.length === 1
     ? children[0]
     : children.length > 1
     ? children
     : undefined;
+  const resolvedChildren = fromArgs !== undefined ? fromArgs : rest.children;
   return jsx(
     component as VNode["type"],
-    { ...rest, children: child },
+    { ...rest, children: resolvedChildren },
     undefined,
   );
 }

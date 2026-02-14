@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.17] - 2026-02-15
+
+### Fixed
+
+- **View client adapter** (`src/client/adapters/view.ts`): In
+  `viewCreateElement`, do not overwrite `props.children` with `undefined` when
+  children are only passed via the second argument (e.g. when
+  `createComponentTree` calls
+  `createElement(Layout, { children: childElement })` with no third argument).
+  Use `resolvedChildren = fromArgs !== undefined ? fromArgs : rest.children` so
+  layout receives page VNode and main content renders.
+
+---
+
 ## [1.0.16] - 2026-02-14
 
 ### Added

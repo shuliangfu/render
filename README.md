@@ -692,10 +692,11 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.16** (2026-02-14)
+**v1.0.17** (2026-02-15)
 
-- **Added**: View client adapter with `renderCSR`, `hydrate`,
-  `createReactiveRoot`, and `buildViewTree` for `@dreamer/render/client/view`.
+- **Fixed**: View client adapter `viewCreateElement` no longer overwrites
+  `props.children` with `undefined` when children are passed only in props
+  (fixes layout main content not rendering in dweb View CSR/hybrid).
 
 [Full changelog](./docs/en-US/CHANGELOG.md)
 

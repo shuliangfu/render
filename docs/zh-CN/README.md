@@ -706,10 +706,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.16**（2026-02-14）
+**v1.0.17**（2026-02-15）
 
-- **新增**：View 客户端适配器，提供 `renderCSR`、`hydrate`、`createReactiveRoot`
-  与 `buildViewTree`（`@dreamer/render/client/view`）。
+- **修复**：View 客户端适配器 `viewCreateElement` 在子节点仅通过 props
+  传入时不再用 `undefined` 覆盖 `props.children`，修复 dweb View CSR/hybrid
+  下布局主体不渲染问题。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
