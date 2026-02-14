@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.16] - 2026-02-14
+
+### Added
+
+- **View client adapter** (`src/client/adapters/view.ts`): Implemented
+  `renderCSR` and `hydrate` using `@dreamer/view` `createRoot` and `hydrate`;
+  re-exported `createReactiveRoot` and added
+  `buildViewTree(component, props,
+  layouts?, skipLayouts?)` for state-driven
+  View roots. Use `@dreamer/render/client/view` for View engine CSR, hydration,
+  and `createReactiveRoot` + `buildViewTree` integration.
+
+---
+
 ## [1.0.15] - 2026-02-13
 
 ### Added

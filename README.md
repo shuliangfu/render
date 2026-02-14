@@ -692,12 +692,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.15** (2026-02-13)
+**v1.0.16** (2026-02-14)
 
-- **Added**: Client browser tests expanded to 31 (View/Preact/React fixtures,
-  actual CSR and Hybrid hydration); test report 243 total.
-- **Fixed**: View client adapter clears container before CSR for hybrid
-  navigation; React/Preact browser test assertions (async commit, unmount).
+- **Added**: View client adapter with `renderCSR`, `hydrate`,
+  `createReactiveRoot`, and `buildViewTree` for `@dreamer/render/client/view`.
 
 [Full changelog](./docs/en-US/CHANGELOG.md)
 
