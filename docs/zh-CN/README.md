@@ -706,11 +706,10 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.17**（2026-02-15）
+**v1.0.18**（2026-02-13）
 
-- **修复**：View 客户端适配器 `viewCreateElement` 在子节点仅通过 props
-  传入时不再用 `undefined` 覆盖 `props.children`，修复 dweb View CSR/hybrid
-  下布局主体不渲染问题。
+- **变更**：将 `@dreamer/view` 升级为 `^1.0.5`，以兼容 dweb init 与
+  @dreamer/esbuild 解析器（以项目版本为准）。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

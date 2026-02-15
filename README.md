@@ -692,13 +692,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.17** (2026-02-15)
+**v1.0.18** (2026-02-13)
 
-- **Fixed**: View client adapter `viewCreateElement` no longer overwrites
-  `props.children` with `undefined` when children are passed only in props
-  (fixes layout main content not rendering in dweb View CSR/hybrid).
-
-[Full changelog](./docs/en-US/CHANGELOG.md)
+- **Changed**: Bump `@dreamer/view` to `^1.0.5` for compatibility with dweb init
+  and @dreamer/esbuild resolver (project version takes precedence).
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

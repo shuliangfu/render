@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.18] - 2026-02-13
+
+### Changed
+
+- **Dependencies**: Bump `@dreamer/view` to `^1.0.5` for compatibility with dweb
+  init and @dreamer/esbuild resolver (project deno.json version takes
+  precedence).
+
+---
+
 ## [1.0.17] - 2026-02-15
 
 ### Fixed
