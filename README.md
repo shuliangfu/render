@@ -692,10 +692,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.21** (2026-02-15)
+**v1.0.22** (2026-02-15)
 
-- **Changed**: Bump `@dreamer/view` to `^1.0.9` (input value fix with vIf/vShow,
-  extended tests).
+- **Changed**: Bump `@dreamer/view` to `^1.0.10` (view’s esbuild ^1.0.24,
+  Windows CI resolver fix).
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

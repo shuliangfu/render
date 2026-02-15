@@ -706,10 +706,10 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.21**（2026-02-15）
+**v1.0.22**（2026-02-15）
 
-- **变更**：将 `@dreamer/view` 升级为 `^1.0.9`（vIf/vShow 导致的 input value
-  修复、扩展测试）。
+- **变更**：将 `@dreamer/view` 升级为 `^1.0.10`（view 依赖 esbuild ^1.0.24，含
+  Windows CI 解析器修复）。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
