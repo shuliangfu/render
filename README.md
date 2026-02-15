@@ -692,10 +692,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.19** (2026-02-13)
+**v1.0.20** (2026-02-15)
 
-- **Changed**: Bump `@dreamer/view` to `^1.0.7` (input focus in dynamic getters,
-  context/Provider patch updates).
+- **Changed**: Bump `@dreamer/view` to `^1.0.8` (SSR plain function child fix,
+  getter Fragment input focus).
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
