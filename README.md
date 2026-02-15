@@ -692,10 +692,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.18** (2026-02-13)
+**v1.0.19** (2026-02-13)
 
-- **Changed**: Bump `@dreamer/view` to `^1.0.5` for compatibility with dweb init
-  and @dreamer/esbuild resolver (project version takes precedence).
+- **Changed**: Bump `@dreamer/view` to `^1.0.7` (input focus in dynamic getters,
+  context/Provider patch updates).
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
