@@ -706,10 +706,10 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.19**（2026-02-13）
+**v1.0.20**（2026-02-15）
 
-- **变更**：将 `@dreamer/view` 升级为 `^1.0.7`（动态 getter 内 input
-  焦点、context/Provider patch 更新）。
+- **变更**：将 `@dreamer/view` 升级为 `^1.0.8`（SSR 普通函数子节点修复、getter
+  Fragment 内 input 保持焦点）。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

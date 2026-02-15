@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.20] - 2026-02-15
+
+### Changed
+
+- **Dependencies**: Bump `@dreamer/view` to `^1.0.8` (SSR no longer outputs
+  plain function source as HTML; input keeps focus when getter returns single
+  Fragment).
+
+---
+
 ## [1.0.19] - 2026-02-13
 
 ### Changed
