@@ -7,12 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [1.0.22] - 2026-02-15
+## [1.0.23] - 2026-02-15
 
 ### Changed
 
-- **Dependencies:** Bump `@dreamer/view` to `^1.0.10` (esbuild ^1.0.24
-  dependency update for Windows CI resolver fix).
+- **Dependencies:** Bump `@dreamer/view` to `^1.0.11` (isEmptyChild helper; skip
+  rendering `false` and `""` in JSX children in both client and SSR).
 
 ---
 
