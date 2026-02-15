@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.21] - 2026-02-15
+
+### Changed
+
+- **Dependencies**: Bump `@dreamer/view` to `^1.0.9` (input value fix with
+  vIf/vShow directives, extended unit tests).
+
+---
+
 ## [1.0.20] - 2026-02-15
 
 ### Changed
