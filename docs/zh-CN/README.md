@@ -706,10 +706,10 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.18**（2026-02-13）
+**v1.0.19**（2026-02-13）
 
-- **变更**：将 `@dreamer/view` 升级为 `^1.0.5`，以兼容 dweb init 与
-  @dreamer/esbuild 解析器（以项目版本为准）。
+- **变更**：将 `@dreamer/view` 升级为 `^1.0.7`（动态 getter 内 input
+  焦点、context/Provider patch 更新）。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

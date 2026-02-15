@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.19] - 2026-02-13
+
+### Changed
+
+- **Dependencies**: Bump `@dreamer/view` to `^1.0.7` (input focus fix in dynamic
+  getters, context/Provider DOM updates in patch).
+
+---
+
 ## [1.0.18] - 2026-02-13
 
 ### Changed
