@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/render",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/mod.ts",
@@ -16,28 +16,48 @@
       "NOTICE",
       "README.md"
     ],
-    "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/test/**", "**/tests/**"]
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      "**/test/**",
+      "**/tests/**"
+    ]
   },
   "lint": {
-    "include": ["src/"],
-    "rules": { "tags": ["recommended"], "exclude": ["no-explicit-any"] }
+    "include": [
+      "src/"
+    ],
+    "rules": {
+      "tags": [
+        "recommended"
+      ],
+      "exclude": [
+        "no-explicit-any"
+      ]
+    }
   },
   "imports": {
-    "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@^1.0.5",
-    "@dreamer/test": "jsr:@dreamer/test@^1.0.5",
-    "@dreamer/view": "jsr:@dreamer/view@^1.0.11",
-
+    "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@^1.0.7",
+    "@dreamer/test": "jsr:@dreamer/test@^1.0.6",
+    "@dreamer/view": "jsr:@dreamer/view@^1.0.12",
     "react": "npm:react@19.2.4",
     "react-dom": "npm:react-dom@19.2.4",
     "scheduler": "npm:scheduler@0.27.0",
-
     "preact": "npm:preact@10.28.3",
     "preact-render-to-string": "npm:preact-render-to-string@6.2.0"
   },
   "nodeModulesDir": "auto",
-  "compilerOptions": { "lib": ["deno.window", "dom"] },
+  "compilerOptions": {
+    "lib": [
+      "deno.window",
+      "dom"
+    ]
+  },
   "allowScripts": {
     "allow": [],
-    "deny": ["npm:esbuild@0.27.2", "npm:puppeteer@24.36.1"]
+    "deny": [
+      "npm:esbuild@0.27.2",
+      "npm:puppeteer@24.36.1"
+    ]
   }
 }
