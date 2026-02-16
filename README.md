@@ -692,10 +692,9 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.24** (2026-02-16)
+**v1.0.25** (2026-02-16)
 
-- **Changed**: Bump `@dreamer/view` to `^1.0.12`; update `@dreamer/test` and
-  `@dreamer/runtime-adapter` to latest compatible versions.
+- **Changed**: Bump `@dreamer/view` to `^1.0.14`.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

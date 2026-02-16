@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/render",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/mod.ts",
@@ -39,7 +39,7 @@
   "imports": {
     "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@^1.0.7",
     "@dreamer/test": "jsr:@dreamer/test@^1.0.6",
-    "@dreamer/view": "jsr:@dreamer/view@^1.0.12",
+    "@dreamer/view": "jsr:@dreamer/view@^1.0.14",
     "react": "npm:react@19.2.4",
     "react-dom": "npm:react-dom@19.2.4",
     "scheduler": "npm:scheduler@0.27.0",

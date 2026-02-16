@@ -706,10 +706,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.24**（2026-02-16）
+**v1.0.25**（2026-02-16）
 
-- **变更**：将 `@dreamer/view` 升级为 `^1.0.12`；更新 `@dreamer/test`、
-  `@dreamer/runtime-adapter` 至最新兼容版本。
+- **变更**：将 `@dreamer/view` 升级至 `^1.0.14`。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
