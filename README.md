@@ -692,8 +692,7 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.29** (2026-02-18): i18n init at entry only (`initRenderI18n()` in mod);
-`$t()` no longer calls ensure/init internally.
+**v1.0.30** (2026-02-18): Updated @dreamer/view dependency to ^1.0.19.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
