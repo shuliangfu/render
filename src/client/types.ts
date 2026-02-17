@@ -1,132 +1,128 @@
 /**
- * 客户端渲染类型定义
+ * Client render types (CSR, Hydration, shared).
  *
- * 提供浏览器端渲染所需的完整类型定义
+ * @packageDocumentation
  */
 
 /**
- * 模板引擎类型
+ * Template engine: react, preact, view.
  */
 export type Engine = "react" | "preact" | "view";
 
 /**
- * 布局组件配置
+ * Layout component config.
  */
 export interface LayoutComponent {
-  /** 布局组件 */
+  /** Layout component */
   component: unknown;
-  /** 布局属性 */
+  /** Layout props */
   props?: Record<string, unknown>;
 }
 
 /**
- * 错误处理选项
+ * Error handling options.
  */
 export interface ErrorHandler {
-  /**
-   * 错误处理函数
-   * @param error 错误对象
-   * @param context 错误上下文
-   */
+  /** Error callback */
   onError?: (error: Error, context: {
     engine: Engine;
     component: unknown;
     phase: "csr" | "hydrate";
   }) => void | Promise<void>;
-  /** 错误降级组件（用于渲染错误时显示） */
+  /** Fallback component when render errors */
   fallbackComponent?: unknown;
-  /** 是否在控制台输出错误（默认：true） */
+  /** Log errors to console (default true) */
   logError?: boolean;
 }
 
 /**
- * 性能监控选项
+ * Performance monitoring options.
  */
 export interface PerformanceOptions {
-  /** 是否启用性能监控（默认：false） */
+  /** Enable performance monitoring (default false) */
   enabled?: boolean;
-  /** 性能指标回调函数 */
+  /** Metrics callback */
   onMetrics?: (metrics: PerformanceMetrics) => void;
-  /** 慢渲染阈值（毫秒，超过此值会触发警告，默认：100） */
+  /** Slow render threshold in ms (default 100) */
   slowThreshold?: number;
 }
 
 /**
- * 性能指标
+ * Performance metrics.
  */
 export interface PerformanceMetrics {
-  /** 渲染开始时间 */
+  /** Render start time */
   startTime: number;
-  /** 渲染结束时间 */
+  /** Render end time */
   endTime: number;
-  /** 总渲染时间（毫秒） */
+  /** Total duration in ms */
   duration: number;
-  /** 引擎类型 */
+  /** Engine type */
   engine: Engine;
-  /** 渲染阶段 */
+  /** Phase (csr | hydrate) */
   phase: "csr" | "hydrate";
-  /** 是否为慢渲染 */
+  /** Whether render was slow */
   isSlow?: boolean;
 }
 
 /**
- * CSR 渲染选项
+ * CSR render options.
  */
 export interface CSROptions {
-  /** 模板引擎 */
+  /** Template engine */
   engine: Engine;
-  /** 页面组件 */
+  /** Page component */
   component: unknown;
-  /** 组件属性 */
+  /** Component props */
   props?: Record<string, unknown>;
-  /** 布局组件列表（从外到内） */
+  /** Layouts (outer to inner) */
   layouts?: LayoutComponent[];
-  /** 是否跳过布局 */
+  /** Skip layouts */
   skipLayouts?: boolean;
-  /** 容器选择器或元素 */
+  /** Container selector or element */
   container: string | HTMLElement;
-  /** 错误处理选项 */
+  /** Error handling */
   errorHandler?: ErrorHandler;
-  /** 性能监控选项 */
+  /** Performance options */
   performance?: PerformanceOptions;
-  /** 是否启用详细调试日志（默认：false） */
+  /** Enable debug logging (default false) */
   debug?: boolean;
 }
 
 /**
- * CSR 渲染结果
+ * CSR render result (unmount, update, instance, performance).
  */
 export interface CSRRenderResult {
-  /** 卸载组件 */
+  /** Unmount the rendered tree */
   unmount: () => void;
-  /** 更新组件属性 */
+  /** Update component props */
   update?: (props: Record<string, unknown>) => void;
-  /** 组件实例（可选） */
+  /** Component instance (optional) */
   instance?: unknown;
-  /** 性能指标（如果启用了性能监控） */
+  /** Performance metrics if enabled */
   performance?: PerformanceMetrics;
 }
 
 /**
- * Hydration 选项
+ * Hydration options.
  */
 export interface HydrationOptions {
-  /** 模板引擎 */
+  /** Template engine */
   engine: Engine;
-  /** 页面组件 */
+  /** Page component */
   component: unknown;
-  /** 组件属性 */
+  /** Component props */
   props?: Record<string, unknown>;
-  /** 布局组件列表（从外到内） */
+  /** Layouts (outer to inner) */
   layouts?: LayoutComponent[];
-  /** 是否跳过布局 */
+  /** Skip layouts */
   skipLayouts?: boolean;
-  /** 容器选择器或元素 */
+  /** Container selector or element */
   container: string | HTMLElement;
-  /** 错误处理选项 */
+  /** Error handling */
   errorHandler?: ErrorHandler;
-  /** 性能监控选项 */
+  /** Performance options */
   performance?: PerformanceOptions;
-  /** 是否启用详细调试日志（默认：false） */
+  /** Debug logging (default false) */
   debug?: boolean;
 }

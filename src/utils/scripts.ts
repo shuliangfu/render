@@ -1,28 +1,26 @@
 /**
- * 脚本提取和注入工具函数
+ * Script extraction and injection: get script definitions from components and generate script tags.
  *
- * 用于从组件中提取脚本定义，并生成脚本标签 HTML
+ * @packageDocumentation
  */
 
 import type { ScriptDefinition } from "../types.ts";
 
 /**
- * 从组件中提取脚本定义
+ * Extract script definitions from component (direct or default.scripts).
  *
- * @param component 组件对象
- * @returns 脚本定义列表
+ * @param component - Component (function or object with default)
+ * @returns List of script definitions
  */
 export function extractScripts(component: unknown): ScriptDefinition[] {
   const scripts: ScriptDefinition[] = [];
 
-  // 支持函数组件和对象组件
   if (component === null || component === undefined) {
     return scripts;
   }
 
   const comp = component as Record<string, unknown>;
 
-  // 方式 1：直接导出 scripts（数组）
   if ("scripts" in comp && Array.isArray(comp.scripts)) {
     const compScripts = comp.scripts as unknown[];
     for (const script of compScripts) {
@@ -34,7 +32,6 @@ export function extractScripts(component: unknown): ScriptDefinition[] {
     }
   }
 
-  // 方式 2：default export 的对象中有 scripts
   if (
     "default" in comp && typeof comp.default === "object" &&
     comp.default !== null
@@ -56,20 +53,18 @@ export function extractScripts(component: unknown): ScriptDefinition[] {
 }
 
 /**
- * 合并脚本列表（去重、排序）
+ * Merge script lists (dedupe by src/content, sort by priority).
  *
- * @param scriptLists 多个脚本列表
- * @returns 合并后的脚本列表
+ * @param scriptLists - One or more script arrays
+ * @returns Merged, deduplicated, sorted list
  */
 export function mergeScripts(
   ...scriptLists: ScriptDefinition[][]
 ): ScriptDefinition[] {
   const scriptMap = new Map<string, ScriptDefinition>();
 
-  // 收集所有脚本
   for (const scripts of scriptLists) {
     for (const script of scripts) {
-      // 生成唯一键（基于 src 或 content）
       const key = script.src || script.content || JSON.stringify(script);
       if (!scriptMap.has(key)) {
         scriptMap.set(key, script);
@@ -77,7 +72,6 @@ export function mergeScripts(
     }
   }
 
-  // 转换为数组并按优先级排序
   const merged = Array.from(scriptMap.values());
   merged.sort((a, b) => {
     const priorityA = a.priority ?? 100;
@@ -89,10 +83,10 @@ export function mergeScripts(
 }
 
 /**
- * 生成脚本标签 HTML
+ * Generate <script> tag HTML from script definitions.
  *
- * @param scripts 脚本定义列表
- * @returns 脚本标签 HTML 字符串
+ * @param scripts - Script definitions
+ * @returns HTML string of script tags
  */
 export function generateScriptTags(scripts: ScriptDefinition[]): string {
   return scripts.map((script) => {
@@ -116,7 +110,6 @@ export function generateScriptTags(scripts: ScriptDefinition[]): string {
       attrs.push("defer");
     }
 
-    // 添加其他属性
     for (const [key, value] of Object.entries(script)) {
       if (
         !["src", "content", "type", "async", "defer", "priority"].includes(
@@ -132,20 +125,18 @@ export function generateScriptTags(scripts: ScriptDefinition[]): string {
     }
 
     if (script.content) {
-      // 内联脚本
       return `<script ${attrs.join(" ")}>${script.content}</script>`;
     } else {
-      // 外部脚本
       return `<script ${attrs.join(" ")}></script>`;
     }
   }).join("\n  ");
 }
 
 /**
- * 生成异步脚本加载代码
+ * Generate async script loader code (IIFE that runs inline or loads external scripts).
  *
- * @param scripts 脚本定义列表
- * @returns 异步加载脚本的 JavaScript 代码
+ * @param scripts - Script definitions
+ * @returns JavaScript code string for async loading
  */
 export function generateAsyncScriptLoader(scripts: ScriptDefinition[]): string {
   const asyncScripts = scripts.filter((s) =>
@@ -157,10 +148,8 @@ export function generateAsyncScriptLoader(scripts: ScriptDefinition[]): string {
 
   const scriptLoaders = asyncScripts.map((script) => {
     if (script.content) {
-      // 内联脚本，直接执行
       return `(function() { ${script.content} })();`;
     } else if (script.src) {
-      // 外部脚本，动态加载
       return `(function() {
         const script = document.createElement('script');
         script.src = ${JSON.stringify(script.src)};

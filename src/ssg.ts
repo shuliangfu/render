@@ -1,5 +1,5 @@
 /**
- * 静态站点生成（SSG）核心函数
+ * Static site generation (SSG) entry: renderSSG, expandDynamicRoute, generateRobots, generateSitemap.
  */
 
 import { dirname, join, mkdir, writeTextFile } from "@dreamer/runtime-adapter";
@@ -7,11 +7,11 @@ import { renderSSR } from "./ssr.ts";
 import type { SSGOptions } from "./types.ts";
 
 /**
- * 生成 sitemap.xml
+ * Generate sitemap.xml string from route list.
  *
- * @param routes 路由列表
- * @param baseUrl 基础 URL（可选）
- * @returns sitemap.xml 内容
+ * @param routes - Route paths (e.g. `["/", "/about"]`)
+ * @param baseUrl - Base URL prepended to each loc (default `""`)
+ * @returns sitemaps.org XML string
  */
 function generateSitemap(routes: string[], baseUrl = ""): string {
   const urls = routes.map((route) => {
@@ -26,11 +26,11 @@ ${urls}
 }
 
 /**
- * 生成 robots.txt
+ * Generate robots.txt string.
  *
- * @param allowAll 是否允许所有爬虫
- * @param disallowPaths 禁止访问的路径列表
- * @returns robots.txt 内容
+ * @param allowAll - Allow all crawlers (default true); if true and disallowPaths empty returns "User-agent: *\nAllow: /"
+ * @param disallowPaths - Paths to disallow (default [])
+ * @returns robots.txt content
  */
 function generateRobots(allowAll = true, disallowPaths: string[] = []): string {
   if (allowAll && disallowPaths.length === 0) {
@@ -44,11 +44,11 @@ function generateRobots(allowAll = true, disallowPaths: string[] = []): string {
 }
 
 /**
- * 处理动态路由
+ * Expand a dynamic route with placeholders into concrete paths.
  *
- * @param route 路由路径（可能包含 [param]）
- * @param params 参数值列表
- * @returns 生成的实际路由列表
+ * @param route - Route path with `[param]` placeholders (e.g. `"/post/[id]"`)
+ * @param params - Values to substitute for each placeholder
+ * @returns Expanded path list; if no `[`/`]` returns single-element array with route
  */
 function expandDynamicRoute(route: string, params: string[]): string[] {
   if (!route.includes("[") || !route.includes("]")) {
@@ -57,20 +57,18 @@ function expandDynamicRoute(route: string, params: string[]): string[] {
 
   return params.map((param) => {
     let expanded = route;
-    // 替换 [param] 为实际值
+    // Replace [param] with actual value
     expanded = expanded.replace(/\[([^\]]+)\]/g, param);
     return expanded;
   });
 }
 
 /**
- * 静态站点生成函数
+ * Pre-render all routes to static HTML files (SSG).
  *
- * 预渲染所有路由为静态 HTML 文件
- *
- * @param options SSG 选项
- * @returns 生成的文件列表
- * @throws 如果生成失败
+ * @param options - SSG options (engine, routes, outputDir, loadRouteComponent, etc.)
+ * @returns List of generated file paths
+ * @throws If generation fails for a route
  *
  * @example
  * ```typescript
@@ -78,10 +76,7 @@ function expandDynamicRoute(route: string, params: string[]): string[] {
  *   engine: "react",
  *   routes: ["/", "/about"],
  *   outputDir: "./dist",
- *   loadRouteComponent: async (route) => {
- *     // 动态加载路由组件
- *     return await import(`./pages${route}.tsx`);
- *   },
+ *   loadRouteComponent: async (route) => import(`./pages${route}.tsx`),
  *   template: "<html><body></body></html>",
  *   generateSitemap: true,
  *   generateRobots: true
@@ -105,26 +100,18 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     options: customOptions = {},
   } = options;
 
-  // 确保输出目录存在
   await mkdir(outputDir, { recursive: true });
 
   const generatedFiles: string[] = [];
 
-  // 处理每个路由
   for (const route of routes) {
     try {
-      // 加载路由组件
       const routeComponent = await loadRouteComponent(route);
 
-      // 加载布局组件（如果有，从外到内：_app -> _layout）
       const layouts = loadRouteLayouts ? await loadRouteLayouts(route) : [];
 
-      // 加载路由数据（如果有）
       const routeData = loadRouteData ? await loadRouteData(route) : {};
 
-      // 使用 SSR 渲染（支持 layouts 选项，布局组合在 renderSSR 中处理）
-      // 如果 enableDataInjection 为 true，则注入数据（用于 Hydration）
-      // 否则跳过数据注入（纯静态页面）
       // deno-lint-ignore no-explicit-any
       const ssrOptions: any = {
         engine,
@@ -136,7 +123,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
         },
         layouts: layouts.length > 0 ? layouts : undefined,
         template,
-        skipDataInjection: !options.enableDataInjection, // 根据配置决定是否注入数据
+        skipDataInjection: !options.enableDataInjection,
         loadContext: {
           url: route,
           params: {},
@@ -145,30 +132,20 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
 
       const result = await renderSSR(ssrOptions);
 
-      // 构建输出文件路径
-      // 将路由路径转换为文件路径
       let filePath = route === "/" ? "/index.html" : `${route}.html`;
-      // 确保路径以 / 开头
       if (!filePath.startsWith("/")) {
         filePath = "/" + filePath;
       }
-      // 移除开头的 /
       filePath = filePath.substring(1);
       const fullPath = join(outputDir, filePath);
 
-      // 确保目录存在（使用 dirname 确保 Windows 兼容）
       const dirPath = dirname(fullPath);
       if (dirPath && dirPath !== ".") {
         await mkdir(dirPath, { recursive: true });
       }
 
-      // 写入 HTML 文件
-      // 确保 html 是字符串类型
-      // 直接从 result.html 获取，确保类型正确
       if (!result || typeof result !== "object" || !("html" in result)) {
-        throw new Error(
-          `SSG 错误: result 对象无效，类型: ${typeof result}`,
-        );
+        throw new Error(`SSG: invalid result, type: ${typeof result}`);
       }
 
       const resultHtml = result.html;
@@ -177,39 +154,29 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       if (typeof resultHtml === "string") {
         html = resultHtml;
       } else {
-        // 如果 result.html 不是字符串，记录错误并尝试转换
         console.error(
-          `SSG 错误: result.html 不是字符串类型，类型: ${typeof resultHtml}，值:`,
+          `SSG: result.html not string, type: ${typeof resultHtml}`,
           resultHtml,
         );
-        // 尝试转换为字符串
         html = String(resultHtml);
-        // 如果转换后是 "[object Object]"，说明转换失败，抛出错误
         if (html === "[object Object]") {
           throw new Error(
-            `SSG 错误: 无法将 result.html 转换为字符串，类型: ${typeof resultHtml}，值: ${
-              JSON.stringify(resultHtml)
-            }`,
+            `SSG: cannot stringify result.html, type: ${typeof resultHtml}`,
           );
         }
       }
 
-      // 若提供 headInject，在 </head> 前注入（用于在 _app 输出的 head 中插入 link 等）
       if (headInject && html.includes("</head>")) {
         html = html.replace(/<\/head>/i, `${headInject}\n</head>`);
       }
 
-      // 如果是纯静态 HTML，移除所有脚本标签
       if (pureHTML) {
         html = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
       }
 
-      // 确保 html 是字符串类型（在写入前再次检查）
       if (typeof html !== "string") {
         throw new Error(
-          `SSG 错误: 写入前 html 不是字符串类型，类型: ${typeof html}，值: ${
-            JSON.stringify(html)
-          }`,
+          `SSG: html not string before write, type: ${typeof html}`,
         );
       }
 
@@ -218,14 +185,13 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       onFileGenerated?.(fullPath);
     } catch (error) {
       throw new Error(
-        `SSG 生成失败 (路由: ${route}): ${
+        `SSG failed (route: ${route}): ${
           error instanceof Error ? error.message : String(error)
         }`,
       );
     }
   }
 
-  // 生成 sitemap.xml
   if (shouldGenerateSitemap) {
     const sitemapPath = join(outputDir, "sitemap.xml");
     const sitemap = generateSitemap(routes);
@@ -233,7 +199,6 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     generatedFiles.push(sitemapPath);
   }
 
-  // 生成 robots.txt
   if (shouldGenerateRobots) {
     const robotsPath = join(outputDir, "robots.txt");
     const robots = generateRobots();
@@ -244,5 +209,4 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
   return generatedFiles;
 }
 
-// 导出辅助函数（供外部使用）
 export { expandDynamicRoute, generateRobots, generateSitemap };

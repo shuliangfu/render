@@ -706,9 +706,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.25**（2026-02-16）
+**v1.0.26**（2026-02-17）
 
-- **变更**：将 `@dreamer/view` 升级至 `^1.0.14`。
+- **变更**：JSDoc 与注释改为英文；`@dreamer/view` 为 `^1.0.15`。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

@@ -1,8 +1,10 @@
 /**
- * View 客户端渲染适配器
+ * View client adapter: CSR, Hydration, buildViewTree, createReactiveRoot.
  *
- * 使用 @dreamer/view 的 createRoot、hydrate 实现 CSR 与 Hydration。
- * 并导出 createReactiveRoot 与 buildViewTree，供 dweb 等对接「状态驱动、原地 patch」的 View 根。
+ * @module @dreamer/render/client/view
+ * @packageDocumentation
+ *
+ * Uses @dreamer/view createRoot/hydrate for CSR and Hydration. **Exports:** renderCSR, hydrate, buildViewTree, createReactiveRoot (for dweb state-driven patch roots).
  */
 
 import type { VNode } from "@dreamer/view";
@@ -32,7 +34,7 @@ import {
 } from "../utils/performance.ts";
 import type { LayoutComponent } from "../types.ts";
 
-/** View 的 createElement 等价：用 jsx(type, props, key) 构建 VNode。注意：createComponentTree 只传 (component, props) 两参，children 在 props.children 中，不能再用第三参覆盖为 undefined。 */
+/** View createElement equivalent: build VNode with jsx(type, props, key). createComponentTree passes (component, props); children from props.children. */
 function viewCreateElement(
   component: unknown,
   props: unknown,
@@ -63,8 +65,15 @@ function debugLog(
 }
 
 /**
- * 根据页面组件、props、布局构建 View 根 VNode。
- * 供 createReactiveRoot 的 buildTree 使用：state 变化时只 patch，不整树卸载。
+ * Build View root VNode from page component, props, and optional layouts.
+ *
+ * Used by createReactiveRoot buildTree: state changes trigger patch only, no full unmount.
+ *
+ * @param component - Page component (function or object)
+ * @param props - Component props
+ * @param layouts - Optional layouts (outer to inner)
+ * @param skipLayouts - Skip layouts
+ * @returns Root VNode for createRoot/createReactiveRoot
  */
 export function buildViewTree(
   component: unknown,
@@ -82,11 +91,17 @@ export function buildViewTree(
   ) as VNode;
 }
 
-/** 从 View 复用的 createReactiveRoot，供 dweb 等对接状态驱动根 */
+/**
+ * Re-export createReactiveRoot from @dreamer/view for state-driven patch roots (e.g. dweb).
+ */
 export { createReactiveRoot };
 
 /**
- * View 客户端渲染（CSR）
+ * Render component to container in browser with View engine (CSR).
+ *
+ * @param options - CSR options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug
+ * @returns Result with unmount, update, instance, performance; on error returns object with unmount, instance
+ * @throws If component invalid or container not found
  */
 export function renderCSR(options: CSROptions): CSRRenderResult {
   const {
@@ -206,7 +221,11 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
 }
 
 /**
- * View Hydration
+ * Hydrate server-rendered HTML with View engine.
+ *
+ * @param options - Hydration options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug
+ * @returns Result with unmount, update, instance, performance; on error returns object with unmount, instance
+ * @throws If component invalid or container not found
  */
 export function hydrate(options: HydrationOptions): CSRRenderResult {
   const {

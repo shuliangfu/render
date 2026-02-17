@@ -1,38 +1,21 @@
 /**
+ * Client render entry: CSR and Hydration for React, Preact, View.
+ *
  * @module @dreamer/render/client
+ * @packageDocumentation
  *
- * 客户端渲染库
- *
- * 提供浏览器端的 CSR 和 Hydration 功能。
- * 不依赖任何服务端模块，可安全在浏览器中使用。
- *
- * 功能特性：
- * - 客户端渲染（CSR）：将组件渲染到 DOM
- * - Hydration：激活服务端渲染的 HTML
- * - 布局组合：支持嵌套布局
- * - 多引擎支持：React、Preact
+ * Browser-only; no server deps. **Exports:** renderCSR, hydrate; types CSROptions, CSRRenderResult, HydrationOptions, Engine, ErrorHandler, LayoutComponent, PerformanceMetrics, PerformanceOptions.
  *
  * @example
  * ```typescript
  * import { renderCSR, hydrate } from "@dreamer/render/client";
- *
- * // 客户端渲染
- * const result = renderCSR({
- *   engine: "preact",
- *   component: MyComponent,
- *   props: { name: "World" },
- *   container: "#app",
- * });
- *
- * // 后续可以卸载
+ * const result = await renderCSR({ engine: "preact", component: MyComponent, props: { name: "World" }, container: "#app" });
  * result.unmount();
- *
- * // 或者更新属性
  * result.update?.({ name: "New World" });
  * ```
  */
 
-// 导出类型
+// Type exports
 export type {
   CSROptions,
   CSRRenderResult,
@@ -44,7 +27,7 @@ export type {
   PerformanceOptions,
 } from "./types.ts";
 
-// 导出工具函数（供高级用法）
+// Utils (advanced)
 export {
   handleRenderError,
   renderErrorFallback,
@@ -57,7 +40,7 @@ export {
 
 import type { CSROptions, CSRRenderResult, HydrationOptions } from "./types.ts";
 
-/** 按 engine 动态加载客户端适配器 */
+/** Load client adapter by engine */
 async function loadClientAdapter(engine: "react" | "preact" | "view") {
   switch (engine) {
     case "react":
@@ -74,25 +57,13 @@ async function loadClientAdapter(engine: "react" | "preact" | "view") {
 }
 
 /**
- * 客户端渲染函数
+ * Render component to a container in the browser (CSR).
  *
- * 根据指定的模板引擎类型，调用对应适配器进行客户端渲染。
- * 注意：此函数只能在浏览器环境中运行。
+ * Loads adapter by options.engine; supports layouts, error handling, performance.
  *
- * @param options CSR 选项
- * @returns 渲染结果的 Promise，包含卸载函数和更新函数
- * @throws 如果模板引擎不支持或不在浏览器环境
- *
- * @example
- * ```typescript
- * const result = await renderCSR({
- *   engine: "preact",
- *   component: MyComponent,
- *   props: { name: "World" },
- *   container: "#app",
- * });
- * result.unmount();
- * ```
+ * @param options - CSR options: engine, component, props, container, layouts, errorHandler, performance, debug
+ * @returns Promise of result with unmount, update, instance, performance
+ * @throws If not in browser (no document) or engine unsupported
  */
 export async function renderCSR(options: CSROptions): Promise<CSRRenderResult> {
   const { engine } = options;
@@ -106,24 +77,13 @@ export async function renderCSR(options: CSROptions): Promise<CSRRenderResult> {
 }
 
 /**
- * Hydration 函数
+ * Hydrate server-rendered HTML in the browser.
  *
- * 激活服务端渲染的 HTML，使其成为可交互的客户端应用。
- * 注意：此函数只能在浏览器环境中运行。
+ * Loads adapter by options.engine and runs hydrate on the container.
  *
- * @param options Hydration 选项
- * @returns 渲染结果的 Promise，包含卸载函数和更新函数
- * @throws 如果模板引擎不支持或不在浏览器环境
- *
- * @example
- * ```typescript
- * const result = await hydrate({
- *   engine: "preact",
- *   component: MyComponent,
- *   props: serverData,
- *   container: "#app",
- * });
- * ```
+ * @param options - Hydration options: engine, component, props, container, layouts, errorHandler, performance, debug
+ * @returns Promise of result with unmount, update, instance, performance
+ * @throws If not in browser or engine unsupported
  */
 export async function hydrate(
   options: HydrationOptions,

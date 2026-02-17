@@ -1,7 +1,7 @@
 /**
- * 服务端数据注入工具函数
+ * Server data utilities: extract load function, call it, generate data script.
  *
- * 用于提取、调用和生成数据注入脚本
+ * @packageDocumentation
  */
 
 import type {
@@ -12,25 +12,22 @@ import type {
 } from "../types.ts";
 
 /**
- * 从组件中提取 load 方法
+ * Extract load function from component (direct or default.load).
  *
- * @param component 组件对象
- * @returns load 函数，如果不存在则返回 null
+ * @param component - Component (function or object with default)
+ * @returns load function or null
  */
 export function extractLoadFunction(component: unknown): LoadFunction | null {
-  // 支持函数组件和对象组件
   if (component === null || component === undefined) {
     return null;
   }
 
   const comp = component as Record<string, unknown>;
 
-  // 方式 1：直接导出 load 函数
   if ("load" in comp && typeof comp.load === "function") {
     return comp.load as LoadFunction;
   }
 
-  // 方式 2：default export 的对象中有 load 函数
   if (
     "default" in comp && typeof comp.default === "object" &&
     comp.default !== null
@@ -45,11 +42,11 @@ export function extractLoadFunction(component: unknown): LoadFunction | null {
 }
 
 /**
- * 调用 load 方法获取服务端数据
+ * Call load function to get server data; on error log and return null.
  *
- * @param loadFn load 函数
- * @param context Load 上下文
- * @returns 服务端数据，如果 loadFn 为 null 则返回 null
+ * @param loadFn - load function or null
+ * @param context - Load context
+ * @returns Server data or null
  */
 export async function loadServerData(
   loadFn: LoadFunction | null,
@@ -63,17 +60,16 @@ export async function loadServerData(
     const result = await loadFn(context);
     return result || null;
   } catch (error) {
-    // 如果 load 方法出错，记录错误但不抛出（避免影响渲染）
-    console.error("Load 方法执行失败:", error);
+    console.error("Load function failed:", error);
     return null;
   }
 }
 
 /**
- * 生成统一的数据注入脚本
+ * Generate data script that assigns window.__DATA__ with metadata, layout, page, route, etc.
  *
- * @param options 数据注入选项
- * @returns 数据注入脚本 HTML 字符串
+ * @param options - metadata, layoutData, pageData, route, url, params, etc.
+ * @returns Script HTML string
  */
 export function generateDataScript(options: {
   metadata: Metadata;
@@ -86,14 +82,12 @@ export function generateDataScript(options: {
   pageRoute?: string;
   [key: string]: unknown;
 }): string {
-  // 构建统一的数据对象
   const data: Record<string, unknown> = {
     metadata: options.metadata,
     layout: options.layoutData,
     page: options.pageData,
   };
 
-  // 添加路由和上下文信息
   if (options.route !== undefined) {
     data.route = options.route;
   }
@@ -110,7 +104,6 @@ export function generateDataScript(options: {
     data.pageRoute = options.pageRoute;
   }
 
-  // 添加其他上下文信息（排除已处理的字段）
   const excludedKeys = [
     "metadata",
     "layoutData",
@@ -127,9 +120,6 @@ export function generateDataScript(options: {
     }
   }
 
-  // 将数据序列化为 JSON（使用 JSON.stringify，浏览器会自动处理 XSS）
   const json = JSON.stringify(data);
-
-  // 生成脚本标签
   return `<script>window.__DATA__ = ${json};</script>`;
 }

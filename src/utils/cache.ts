@@ -1,18 +1,17 @@
 /**
- * 缓存工具函数
+ * Cache utilities for metadata and render results.
  *
- * 用于缓存元数据和其他渲染结果
+ * @packageDocumentation
  */
 
 import type { CacheOptions, LoadContext, Metadata } from "../types.ts";
 
-/** 默认最大缓存条目数，防止无界增长导致内存泄漏 */
+/** Default max cache entries to avoid unbounded growth. */
 const DEFAULT_MAX_CACHE_SIZE = 1000;
 
 /**
- * 默认缓存存储（内存缓存）
- *
- * 限制：超过 maxSize 时移除最旧条目；get 时 lazy 删除过期项
+ * Default in-memory cache storage.
+ * Evicts oldest when over maxSize; lazy-deletes expired on get.
  */
 class MemoryCache {
   private cache = new Map<string, { value: unknown; expires: number }>();
@@ -40,7 +39,7 @@ class MemoryCache {
     const expires = ttl ? Date.now() + ttl : 0;
     this.cache.set(key, { value, expires });
 
-    // 超过上限时移除最旧条目，防止内存泄漏
+    // Evict oldest when over limit
     if (this.cache.size > this.maxSize) {
       const firstKey = this.cache.keys().next().value;
       if (firstKey !== undefined) this.cache.delete(firstKey);
@@ -53,11 +52,11 @@ class MemoryCache {
 }
 
 /**
- * 生成缓存键
+ * Generate cache key from Load context.
  *
- * @param context Load 上下文
- * @param prefix 键前缀
- * @returns 缓存键
+ * @param context - Load context (url, params, etc.)
+ * @param prefix - Key prefix (default "render")
+ * @returns Cache key string
  */
 export function generateCacheKey(
   context: LoadContext,
@@ -74,11 +73,11 @@ export function generateCacheKey(
 }
 
 /**
- * 获取缓存值
+ * Get cached value by key and options.
  *
- * @param key 缓存键
- * @param options 缓存选项
- * @returns 缓存值，如果不存在或已过期则返回 null
+ * @param key - Cache key
+ * @param options - Optional cache options (enabled, storage, ttl, getCacheKey)
+ * @returns Cached value, or null if disabled/miss/expired
  */
 export async function getCache(
   key: string,
@@ -99,11 +98,11 @@ export async function getCache(
 }
 
 /**
- * 设置缓存值
+ * Set value in cache.
  *
- * @param key 缓存键
- * @param value 缓存值
- * @param options 缓存选项
+ * @param key - Cache key
+ * @param value - Value to cache
+ * @param options - Optional cache options
  */
 export async function setCache(
   key: string,
@@ -125,10 +124,10 @@ export async function setCache(
 }
 
 /**
- * 删除缓存值
+ * Delete cache entry by key.
  *
- * @param key 缓存键
- * @param options 缓存选项
+ * @param key - Cache key
+ * @param options - Optional cache options
  */
 export async function deleteCache(
   key: string,
@@ -149,11 +148,11 @@ export async function deleteCache(
 }
 
 /**
- * 缓存元数据
+ * Cache metadata by context.
  *
- * @param context Load 上下文
- * @param metadata 元数据
- * @param options 缓存选项
+ * @param context - Load context (for cache key)
+ * @param metadata - Metadata to cache
+ * @param options - Optional cache options
  */
 export async function cacheMetadata(
   context: LoadContext,
@@ -172,11 +171,11 @@ export async function cacheMetadata(
 }
 
 /**
- * 获取缓存的元数据
+ * Get cached metadata by Load context and cache options.
  *
- * @param context Load 上下文
- * @param options 缓存选项
- * @returns 缓存的元数据，如果不存在则返回 null
+ * @param context - Load context (for cache key)
+ * @param options - Optional cache options
+ * @returns Cached metadata, or null if disabled or miss
  */
 export async function getCachedMetadata(
   context: LoadContext,

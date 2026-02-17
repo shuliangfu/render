@@ -1,34 +1,29 @@
 /**
- * 元数据工具函数
+ * Metadata utilities: extract, resolve, merge, and generate meta tags.
  *
- * 用于提取、解析、合并和生成元数据
+ * @packageDocumentation
  */
 
 import type { LoadContext, Metadata, MetadataValue } from "../types.ts";
 
 /**
- * 从组件中提取 metadata（可能是静态对象、同步函数或异步函数）
+ * Extract metadata from component (static object, sync function, or async function).
  *
- * @param component 组件对象
- * @returns metadata 值（可能是对象或函数），如果不存在则返回 null
+ * @param component - Component (function or object with default)
+ * @returns Metadata value or null
  */
 export function extractMetadata(component: unknown): MetadataValue | null {
-  // 支持函数组件和对象组件
   if (component === null || component === undefined) {
     return null;
   }
 
-  // 将组件转换为可访问属性的对象
   const comp = component as Record<string, unknown>;
 
-  // 方式 1：直接导出（可能是对象、同步函数或异步函数）
   if ("metadata" in comp) {
     const metadata = comp.metadata;
-    // 静态对象
     if (typeof metadata === "object" && metadata !== null) {
       return metadata as Metadata;
     }
-    // 同步函数或异步函数
     if (typeof metadata === "function") {
       return metadata as
         | ((context: LoadContext) => Metadata)
@@ -36,7 +31,6 @@ export function extractMetadata(component: unknown): MetadataValue | null {
     }
   }
 
-  // 方式 2：default export 的对象中有 metadata
   if (
     "default" in comp && typeof comp.default === "object" &&
     comp.default !== null
@@ -44,11 +38,9 @@ export function extractMetadata(component: unknown): MetadataValue | null {
     const defaultComp = comp.default as Record<string, unknown>;
     if ("metadata" in defaultComp) {
       const metadata = defaultComp.metadata;
-      // 静态对象
       if (typeof metadata === "object" && metadata !== null) {
         return metadata as Metadata;
       }
-      // 同步函数或异步函数
       if (typeof metadata === "function") {
         return metadata as
           | ((context: LoadContext) => Metadata)
@@ -61,11 +53,11 @@ export function extractMetadata(component: unknown): MetadataValue | null {
 }
 
 /**
- * 解析 metadata（如果是函数则调用，如果是对象则直接返回）
+ * Resolve metadata: call if function, return if object.
  *
- * @param metadata metadata 值（可能是对象或函数）
- * @param context Load 上下文
- * @returns 解析后的元数据，如果不存在则返回 null
+ * @param metadata - Metadata value or null
+ * @param context - Load context
+ * @returns Resolved metadata or null
  */
 export async function resolveMetadata(
   metadata: MetadataValue | null,
@@ -75,21 +67,14 @@ export async function resolveMetadata(
     return null;
   }
 
-  // 如果是函数，调用函数获取元数据
   if (typeof metadata === "function") {
     return await metadata(context);
   }
 
-  // 如果是对象，直接返回
   return metadata;
 }
 
-/**
- * HTML 转义函数
- *
- * @param text 要转义的文本
- * @returns 转义后的文本
- */
+/** Escape HTML special characters. */
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     "&": "&amp;",
@@ -102,23 +87,21 @@ function escapeHtml(text: string): string {
 }
 
 /**
- * 合并元数据（页面覆盖布局，深度合并）
+ * Merge metadata: layouts outer-to-inner, then page (page wins); deep merge.
  *
- * @param layoutMetadataList 布局元数据列表（从外到内）
- * @param pageMetadata 页面元数据
- * @returns 合并后的元数据
+ * @param layoutMetadataList - Layout metadata (outer to inner)
+ * @param pageMetadata - Page metadata
+ * @returns Merged metadata
  */
 export function mergeMetadata(
   layoutMetadataList: Metadata[],
   pageMetadata: Metadata | null,
 ): Metadata {
-  // 从外到内合并布局元数据
   let merged: Metadata = {};
   for (const layoutMeta of layoutMetadataList) {
     merged = deepMerge(merged, layoutMeta);
   }
 
-  // 页面元数据覆盖布局元数据
   if (pageMetadata) {
     merged = deepMerge(merged, pageMetadata);
   }
@@ -127,16 +110,15 @@ export function mergeMetadata(
 }
 
 /**
- * 深度合并两个对象（用于合并元数据）
+ * Deep merge two metadata objects (source wins).
  *
- * @param target 目标对象
- * @param source 源对象
- * @returns 合并后的对象
+ * @param target - Base metadata
+ * @param source - Overrides
+ * @returns Merged metadata
  */
 function deepMerge(target: Metadata, source: Metadata): Metadata {
   const result = { ...target };
 
-  // 浅层字段：直接覆盖
   if (source.title !== undefined) {
     result.title = source.title;
   }
@@ -150,7 +132,6 @@ function deepMerge(target: Metadata, source: Metadata): Metadata {
     result.author = source.author;
   }
 
-  // 深层对象：深度合并
   if (source.og) {
     result.og = {
       ...target.og,
@@ -169,7 +150,6 @@ function deepMerge(target: Metadata, source: Metadata): Metadata {
     result.twitter = { ...target.twitter };
   }
 
-  // 自定义标签：合并
   if (source.custom) {
     result.custom = {
       ...target.custom,
@@ -183,24 +163,21 @@ function deepMerge(target: Metadata, source: Metadata): Metadata {
 }
 
 /**
- * 生成 meta 标签 HTML
+ * Generate meta tag HTML from metadata.
  *
- * @param metadata 页面元数据
- * @returns meta 标签 HTML 字符串
+ * @param metadata - Page metadata
+ * @returns HTML string of meta tags
  */
 export function generateMetaTags(metadata: Metadata): string {
   const tags: string[] = [];
 
-  // 标题
   if (metadata.title) {
     tags.push(`<title>${escapeHtml(metadata.title)}</title>`);
-    // Open Graph 标题（如果没有单独设置）
     if (!metadata.og?.title) {
       tags.push(
         `<meta property="og:title" content="${escapeHtml(metadata.title)}" />`,
       );
     }
-    // Twitter Card 标题（如果没有单独设置）
     if (!metadata.twitter?.title) {
       tags.push(
         `<meta name="twitter:title" content="${escapeHtml(metadata.title)}" />`,
@@ -208,14 +185,12 @@ export function generateMetaTags(metadata: Metadata): string {
     }
   }
 
-  // 描述
   if (metadata.description) {
     tags.push(
       `<meta name="description" content="${
         escapeHtml(metadata.description)
       }" />`,
     );
-    // Open Graph 描述（如果没有单独设置）
     if (!metadata.og?.description) {
       tags.push(
         `<meta property="og:description" content="${
@@ -223,7 +198,6 @@ export function generateMetaTags(metadata: Metadata): string {
         }" />`,
       );
     }
-    // Twitter Card 描述（如果没有单独设置）
     if (!metadata.twitter?.description) {
       tags.push(
         `<meta name="twitter:description" content="${
@@ -233,21 +207,18 @@ export function generateMetaTags(metadata: Metadata): string {
     }
   }
 
-  // 关键词
   if (metadata.keywords) {
     tags.push(
       `<meta name="keywords" content="${escapeHtml(metadata.keywords)}" />`,
     );
   }
 
-  // 作者
   if (metadata.author) {
     tags.push(
       `<meta name="author" content="${escapeHtml(metadata.author)}" />`,
     );
   }
 
-  // Open Graph 元数据
   if (metadata.og) {
     if (metadata.og.title) {
       tags.push(
@@ -282,7 +253,6 @@ export function generateMetaTags(metadata: Metadata): string {
     }
   }
 
-  // Twitter Card 元数据
   if (metadata.twitter) {
     if (metadata.twitter.card) {
       tags.push(
@@ -314,7 +284,6 @@ export function generateMetaTags(metadata: Metadata): string {
     }
   }
 
-  // 自定义 meta 标签
   if (metadata.custom) {
     for (const [key, value] of Object.entries(metadata.custom)) {
       tags.push(
