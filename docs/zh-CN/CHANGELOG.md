@@ -7,6 +7,27 @@
 
 ---
 
+## [1.0.27] - 2026-02-17
+
+### 新增
+
+- **SSG：** 支持 query 形式动态路由展开（如 `/user?id=[id]` →
+  `/user?id=1`、`/user?id=2`）。
+- **SSG：** `routeToFilePath(route)`，将 route（pathname 或
+  pathname?search）映射为输出文件路径；带 query 的 route 使用
+  `path/__q_key_value.html`。
+- **SSG：** `filePathToRoute(filePath)`，作为 `routeToFilePath`
+  的逆运算，用于生产读盘与 hydration。
+
+### 变更
+
+- **SSG：** `expandDynamicRoute` 现支持在 query 中占位；`renderSSG` 使用
+  `routeToFilePath` 生成输出路径。
+- **测试：** 共 252 个测试；新增对 `routeToFilePath`、`filePathToRoute` 及 query
+  形式 `expandDynamicRoute` 的测试；中文测试报告已全文翻译。
+
+---
+
 ## [1.0.26] - 2026-02-17
 
 ### 变更
