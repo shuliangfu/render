@@ -45,8 +45,9 @@ function generateRobots(allowAll = true, disallowPaths: string[] = []): string {
 
 /**
  * Expand a dynamic route with placeholders into concrete paths.
+ * Supports path segments (e.g. `"/user/[id]"`) and query (e.g. `"/user?id=[id]"`).
  *
- * @param route - Route path with `[param]` placeholders (e.g. `"/post/[id]"`)
+ * @param route - Route with `[param]` placeholders (e.g. `"/post/[id]"` or `"/user?id=[id]"`)
  * @param params - Values to substitute for each placeholder
  * @returns Expanded path list; if no `[`/`]` returns single-element array with route
  */
@@ -57,10 +58,75 @@ function expandDynamicRoute(route: string, params: string[]): string[] {
 
   return params.map((param) => {
     let expanded = route;
-    // Replace [param] with actual value
+    // Replace [param] with actual value (works in path and in query)
     expanded = expanded.replace(/\[([^\]]+)\]/g, param);
     return expanded;
   });
+}
+
+const SSG_QUERY_PREFIX = "__q_";
+
+/**
+ * Convert a route string (pathname or pathname?search) to the relative file path under SSG output.
+ * Query routes (e.g. `/user?id=1`) are stored as `path/__q_key_value.html` so they are unique and reversible.
+ *
+ * @param route - Full route (e.g. `"/"`, `"/about"`, `"/user/1"`, `"/user?id=1"`)
+ * @returns Relative file path (e.g. `"index.html"`, `"about.html"`, `"user/1.html"`, `"user/__q_id_1.html"`)
+ */
+export function routeToFilePath(route: string): string {
+  const qIndex = route.indexOf("?");
+  const pathname = qIndex >= 0 ? route.slice(0, qIndex) : route;
+  const search = qIndex >= 0 ? route.slice(qIndex) : "";
+
+  const pathPart = pathname === "/" || !pathname
+    ? "index"
+    : pathname.replace(/^\//, "").replace(/\/$/, "") || "index";
+
+  if (!search) {
+    return `${pathPart}.html`;
+  }
+
+  const params = new URLSearchParams(search.slice(1));
+  const sortedKeys = Array.from(params.keys()).sort();
+  const queryPart = sortedKeys
+    .map((k) => `${k}_${params.get(k) ?? ""}`)
+    .join("__");
+  return `${pathPart}/${SSG_QUERY_PREFIX}${queryPart}.html`;
+}
+
+/**
+ * Convert a relative SSG file path back to the route string (pathname + optional search).
+ * Inverse of routeToFilePath.
+ *
+ * @param filePath - Relative path (e.g. `"user/__q_id_1.html"`)
+ * @returns Route string (e.g. `"/user?id=1"`)
+ */
+export function filePathToRoute(filePath: string): string {
+  const normalized = filePath.replace(/^\.\//, "").replace(/\/$/, "");
+  const base = normalized.replace(/\.html$/i, "").trim();
+  if (!base || base === "index") {
+    return "/";
+  }
+
+  const querySegment = `/${SSG_QUERY_PREFIX}`;
+  const qIdx = base.indexOf(querySegment);
+  if (qIdx < 0) {
+    return "/" + base;
+  }
+
+  const pathPart = base.slice(0, qIdx) || "index";
+  const queryPart = base.slice(qIdx + querySegment.length);
+  const pairs = queryPart.split("__");
+  const params = new URLSearchParams();
+  for (const p of pairs) {
+    const sep = p.indexOf("_");
+    if (sep >= 0) {
+      params.set(p.slice(0, sep), p.slice(sep + 1));
+    }
+  }
+  const search = params.toString();
+  return (pathPart === "index" ? "/" : "/" + pathPart) +
+    (search ? "?" + search : "");
 }
 
 /**
@@ -132,11 +198,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
 
       const result = await renderSSR(ssrOptions);
 
-      let filePath = route === "/" ? "/index.html" : `${route}.html`;
-      if (!filePath.startsWith("/")) {
-        filePath = "/" + filePath;
-      }
-      filePath = filePath.substring(1);
+      const filePath = routeToFilePath(route);
       const fullPath = join(outputDir, filePath);
 
       const dirPath = dirname(fullPath);

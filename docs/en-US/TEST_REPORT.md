@@ -4,30 +4,30 @@
 
 | Item                 | Info                            |
 | -------------------- | ------------------------------- |
-| Test library version | @dreamer/render@1.0.13          |
+| Test library version | @dreamer/render@1.0.26          |
 | Runtime adapter      | @dreamer/runtime-adapter@^1.0.5 |
-| Test framework       | @dreamer/test@^1.0.5            |
-| Test date            | 2026-02-13                      |
+| Test framework       | @dreamer/test@^1.0.6            |
+| Test date            | 2026-02-17                      |
 | Test environment     | Deno 2.x+ / Bun 1.x+            |
 
 ## Test Results
 
 ### Overall Statistics
 
-| Metric         | Value                    |
-| -------------- | ------------------------ |
-| Total tests    | 243                      |
-| Passed         | 243 ✅                   |
-| Failed         | 0                        |
-| Pass rate      | 100%                     |
-| Execution time | ~40–45s (`deno test -A`) |
+| Metric         | Value                 |
+| -------------- | --------------------- |
+| Total tests    | 252                   |
+| Passed         | 252 ✅                |
+| Failed         | 0                     |
+| Pass rate      | 100%                  |
+| Execution time | ~46s (`deno test -A`) |
 
 ### Runtime Compatibility
 
 | Runtime | Version | Result        |
 | ------- | ------- | ------------- |
-| Deno    | 2.x+    | ✅ 243 passed |
-| Bun     | 1.x+    | ✅ 243 passed |
+| Deno    | 2.x+    | ✅ 252 passed |
+| Bun     | 1.x+    | ✅ 252 passed |
 
 ### Test File Statistics
 
@@ -42,7 +42,7 @@
 | `layout.test.ts`            | 33    | ✅ All passed |
 | `mod.test.ts`               | 7     | ✅ All passed |
 | `ssg-advanced.test.ts`      | 13    | ✅ All passed |
-| `ssg.test.ts`               | 16    | ✅ All passed |
+| `ssg.test.ts`               | 25    | ✅ All passed |
 | `ssr-comprehensive.test.ts` | 32    | ✅ All passed |
 | `ssr.test.ts`               | 11    | ✅ All passed |
 | `utils.test.ts`             | 23    | ✅ All passed |
@@ -158,7 +158,13 @@ covers general API and engine-specific actual CSR/Hydration.
 - ✅ React/Preact SSG generation
 - ✅ Sitemap and Robots generation (React/Preact)
 - ✅ Route data handling
-- ✅ Dynamic route expansion, custom template, multi-engine comparison
+- ✅ Dynamic route expansion (path segment `/user/[id]` and query form
+  `/user?id=[id]`)
+- ✅ `routeToFilePath`: route → relative file path (including query as
+  `path/__q_key_value.html`)
+- ✅ `filePathToRoute`: file path → route (inverse of `routeToFilePath`,
+  round-trip)
+- ✅ Custom template, multi-engine comparison
 
 ### 8. SSR Tests (ssr.test.ts, ssr-comprehensive.test.ts)
 
@@ -183,10 +189,10 @@ covers general API and engine-specific actual CSR/Hydration.
 ## Conclusion
 
 All features of `@dreamer/render` pass comprehensive testing with 100% coverage.
-All 243 tests pass on both Deno and Bun runtimes, with support for React,
+All 252 tests pass on both Deno and Bun runtimes, with support for React,
 Preact, and View template engines.
 
 ---
 
-**Report generated**: 2026-02-13 **Test environment**: Deno 2.x+ / Bun 1.x+
-**Test framework**: @dreamer/test@^1.0.5
+**Report generated**: 2026-02-17 **Test environment**: Deno 2.x+ / Bun 1.x+
+**Test framework**: @dreamer/test@^1.0.6

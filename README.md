@@ -7,7 +7,7 @@ English | [中文 (Chinese)](./docs/zh-CN/README.md)
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Tests](https://img.shields.io/badge/tests-243%20passed-brightgreen)](./docs/en-US/TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-252%20passed-brightgreen)](./docs/en-US/TEST_REPORT.md)
 
 ---
 
@@ -672,19 +672,19 @@ interface PerformanceMetrics {
 
 ## 📊 Test Report
 
-| Metric      | Value                    |
-| ----------- | ------------------------ |
-| Test date   | 2026-02-13               |
-| Total tests | 243                      |
-| Passed      | 243 ✅                   |
-| Failed      | 0                        |
-| Pass rate   | 100%                     |
-| Duration    | ~10–12s (`deno test -A`) |
+| Metric      | Value                 |
+| ----------- | --------------------- |
+| Test date   | 2026-02-17            |
+| Total tests | 252                   |
+| Passed      | 252 ✅                |
+| Failed      | 0                     |
+| Pass rate   | 100%                  |
+| Duration    | ~46s (`deno test -A`) |
 
 | Runtime | Version | Result        |
 | ------- | ------- | ------------- |
-| Deno    | 2.x+    | ✅ 243 passed |
-| Bun     | 1.x+    | ✅ 243 passed |
+| Deno    | 2.x+    | ✅ 252 passed |
+| Bun     | 1.x+    | ✅ 252 passed |
 
 See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
@@ -692,10 +692,12 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.26** (2026-02-17)
+**v1.0.27** (2026-02-17)
 
-- **Changed**: JSDoc and comments rewritten in English; `@dreamer/view`
-  `^1.0.15`.
+- **Added**: SSG query-style dynamic routes (`/user?id=[id]`),
+  `routeToFilePath`, `filePathToRoute`.
+- **Changed**: `expandDynamicRoute` supports query; 252 tests; zh-CN TEST_REPORT
+  translated.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

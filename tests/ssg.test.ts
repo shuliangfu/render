@@ -6,9 +6,11 @@ import { join, readTextFile, remove } from "@dreamer/runtime-adapter";
 import { describe, expect, it } from "@dreamer/test";
 import {
   expandDynamicRoute,
+  filePathToRoute,
   generateRobots,
   generateSitemap,
   renderSSG,
+  routeToFilePath,
 } from "../src/ssg.ts";
 
 /** SSG/React/Preact 内部可能使用定时器，关闭 sanitize 避免泄漏误报 */
@@ -320,4 +322,60 @@ describe("expandDynamicRoute", () => {
     expect(routes.length).toBe(2);
     expect(routes[0]).toContain("1-100");
   });
+
+  it("应该展开 query 形式动态路由（如 /user?id=[id]）", () => {
+    const routes = expandDynamicRoute("/user?id=[id]", ["1", "2", "3"]);
+
+    expect(routes).toEqual(["/user?id=1", "/user?id=2", "/user?id=3"]);
+  });
 }, { sanitizeOps: false, sanitizeResources: false });
+
+describe("routeToFilePath", () => {
+  it("根路径应映射为 index.html", () => {
+    expect(routeToFilePath("/")).toBe("index.html");
+  });
+
+  it("纯 pathname 应映射为 path.html", () => {
+    expect(routeToFilePath("/about")).toBe("about.html");
+    expect(routeToFilePath("/user/1")).toBe("user/1.html");
+  });
+
+  it("带 query 的 route 应映射为 path/__q_key_value.html", () => {
+    expect(routeToFilePath("/user?id=1")).toBe("user/__q_id_1.html");
+    expect(routeToFilePath("/user?id=1&tab=2")).toBe(
+      "user/__q_id_1__tab_2.html",
+    );
+  });
+
+  it("query 参数键按字母序排列以保证稳定输出", () => {
+    expect(routeToFilePath("/page?b=2&a=1")).toBe(
+      "page/__q_a_1__b_2.html",
+    );
+  });
+});
+
+describe("filePathToRoute", () => {
+  it("index.html 应映射为 /", () => {
+    expect(filePathToRoute("index.html")).toBe("/");
+    expect(filePathToRoute("./index.html")).toBe("/");
+  });
+
+  it("纯 path 文件应映射为 /path", () => {
+    expect(filePathToRoute("about.html")).toBe("/about");
+    expect(filePathToRoute("user/1.html")).toBe("/user/1");
+  });
+
+  it("__q_ 文件应映射为 path?query", () => {
+    expect(filePathToRoute("user/__q_id_1.html")).toBe("/user?id=1");
+    expect(filePathToRoute("user/__q_id_1__tab_2.html")).toBe(
+      "/user?id=1&tab=2",
+    );
+  });
+
+  it("与 routeToFilePath 互为逆运算（round-trip）", () => {
+    const routes = ["/", "/about", "/user/1", "/user?id=1", "/page?a=1&b=2"];
+    for (const route of routes) {
+      expect(filePathToRoute(routeToFilePath(route))).toBe(route);
+    }
+  });
+});

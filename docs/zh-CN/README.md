@@ -7,7 +7,7 @@
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
-[![Tests](https://img.shields.io/badge/tests-243%20passed-brightgreen)](./TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-252%20passed-brightgreen)](./TEST_REPORT.md)
 
 ---
 
@@ -686,19 +686,19 @@ interface PerformanceMetrics {
 
 ## 📊 测试报告
 
-| 指标     | 数值                      |
-| -------- | ------------------------- |
-| 测试时间 | 2026-02-13                |
-| 总测试数 | 243                       |
-| 通过     | 243 ✅                    |
-| 失败     | 0                         |
-| 通过率   | 100%                      |
-| 执行时间 | ~40–45s（`deno test -A`） |
+| 指标     | 数值                   |
+| -------- | ---------------------- |
+| 测试时间 | 2026-02-17             |
+| 总测试数 | 252                    |
+| 通过     | 252 ✅                 |
+| 失败     | 0                      |
+| 通过率   | 100%                   |
+| 执行时间 | ~46s（`deno test -A`） |
 
 | 运行时 | 版本 | 测试结果      |
 | ------ | ---- | ------------- |
-| Deno   | 2.x+ | ✅ 243 passed |
-| Bun    | 1.x+ | ✅ 243 passed |
+| Deno   | 2.x+ | ✅ 252 passed |
+| Bun    | 1.x+ | ✅ 252 passed |
 
 详细测试报告请查看 [TEST_REPORT.md](./TEST_REPORT.md)
 
@@ -706,9 +706,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.26**（2026-02-17）
+**v1.0.27**（2026-02-17）
 
-- **变更**：JSDoc 与注释改为英文；`@dreamer/view` 为 `^1.0.15`。
+- **新增**：SSG 支持 query
+  形式动态路由（`/user?id=[id]`）、`routeToFilePath`、`filePathToRoute`。
+- **变更**：`expandDynamicRoute` 支持 query；252 个测试；中文测试报告已翻译。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

@@ -43,9 +43,11 @@ export type {
 // 导出核心渲染函数（服务端）
 export {
   expandDynamicRoute,
+  filePathToRoute,
   generateRobots,
   generateSitemap,
   renderSSG,
+  routeToFilePath,
 } from "./ssg.ts";
 export { renderSSR } from "./ssr.ts";
 

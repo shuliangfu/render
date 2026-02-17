@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.27] - 2026-02-17
+
+### Added
+
+- **SSG:** Query-style dynamic route expansion (e.g. `/user?id=[id]` →
+  `/user?id=1`, `/user?id=2`).
+- **SSG:** `routeToFilePath(route)` to map route (pathname or pathname?search)
+  to output file path; query routes use `path/__q_key_value.html`.
+- **SSG:** `filePathToRoute(filePath)` as the inverse of `routeToFilePath` for
+  serving and hydration.
+
+### Changed
+
+- **SSG:** `expandDynamicRoute` now supports placeholders in query string;
+  `renderSSG` uses `routeToFilePath` for output paths.
+- **Tests:** 252 tests; new tests for `routeToFilePath`, `filePathToRoute`, and
+  query-form `expandDynamicRoute`. zh-CN TEST_REPORT fully translated.
+
+---
+
 ## [1.0.26] - 2026-02-17
 
 ### Changed
