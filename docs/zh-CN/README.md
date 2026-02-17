@@ -706,11 +706,12 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.27**（2026-02-17）
+**v1.0.28**（2026-02-17）
 
-- **新增**：SSG 支持 query
-  形式动态路由（`/user?id=[id]`）、`routeToFilePath`、`filePathToRoute`。
-- **变更**：`expandDynamicRoute` 支持 query；252 个测试；中文测试报告已翻译。
+- **新增**：服务端 i18n，SSROptions/SSGOptions 支持可选 `lang`，未传时从环境变量
+  自动检测；en-US/zh-CN 文案覆盖错误与日志。
+- **变更**：所有服务端错误与日志文案使用 `$t`；View/Preact
+  适配器降级失败文案已翻译。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

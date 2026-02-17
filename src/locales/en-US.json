@@ -1,0 +1,22 @@
+{
+  "error": {
+    "unsupportedEngine": "Unsupported template engine: {engine}",
+    "ssrFailed": "SSR render failed ({engine}): {message}",
+    "renderErrorTitle": "Render Error",
+    "loadFailed": "Load function failed:",
+    "performanceCallbackFailed": "Performance metrics callback failed:",
+    "decompressFailed": "Decompress failed:",
+    "handlerFailed": "Error handler failed:",
+    "ssrResultNotString": "SSR error: result.html is not a string, type: {type}",
+    "ssrCannotStringify": "SSR error: cannot convert result.html to string, type: {type}",
+    "ssgInvalidResult": "SSG: invalid result, type: {type}",
+    "ssgResultNotString": "SSG: result.html not string, type: {type}",
+    "ssgCannotStringify": "SSG: cannot stringify result.html, type: {type}",
+    "ssgHtmlNotString": "SSG: html not string before write, type: {type}",
+    "viewSsrFailed": "View SSR render failed (including fallback): {message}",
+    "preactSsrFailed": "Preact SSR render failed (including fallback): {message}"
+  },
+  "log": {
+    "renderError": "[{engine}] {phase} render error:"
+  }
+}

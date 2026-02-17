@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import { $t } from "../i18n.ts";
 import type {
   LoadContext,
   LoadFunction,
@@ -60,7 +61,7 @@ export async function loadServerData(
     const result = await loadFn(context);
     return result || null;
   } catch (error) {
-    console.error("Load function failed:", error);
+    console.error($t("error.loadFailed"), error);
     return null;
   }
 }

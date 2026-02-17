@@ -7,6 +7,28 @@
 
 ---
 
+## [1.0.28] - 2026-02-17
+
+### 新增
+
+- **服务端 i18n：** `SSROptions` 与 `SSGOptions` 支持可选
+  `lang`；未传时从环境变量 （LANGUAGE/LC_ALL/LANG）自动检测。新增
+  `i18n.ts`、`detectLocale()`、 `ensureRenderI18n()`、`$t()`；文案文件
+  `en-US.json`、`zh-CN.json` 覆盖错误与日志。
+- **错误/日志翻译：** SSR/SSG 抛错、error-handler 文案、generateErrorHTML 标题、
+  server-data/performance/compression 的 console 输出，以及 View/Preact 适配器
+  降级失败抛错均使用 `$t`。
+
+### 变更
+
+- **Error handler：** `handleRenderError`、`generateErrorHTML` 增加可选参数
+  `lang`； 所有面向用户的字符串使用 locale 键。
+- **适配器（View、Preact）：** 降级渲染失败时的抛错使用
+  `$t("error.viewSsrFailed" | "error.preactSsrFailed", { message }, locale)`；
+  `handleRenderError` 传入 `options.lang`。
+
+---
+
 ## [1.0.27] - 2026-02-17
 
 ### 新增

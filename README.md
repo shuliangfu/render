@@ -692,12 +692,12 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.27** (2026-02-17)
+**v1.0.28** (2026-02-17)
 
-- **Added**: SSG query-style dynamic routes (`/user?id=[id]`),
-  `routeToFilePath`, `filePathToRoute`.
-- **Changed**: `expandDynamicRoute` supports query; 252 tests; zh-CN TEST_REPORT
-  translated.
+- **Added**: Server-side i18n with optional `lang` on SSROptions/SSGOptions;
+  auto-detect from env when omitted; en-US/zh-CN locales for errors and logs.
+- **Changed**: All server-side error and log messages use `$t`; View/Preact
+  adapter fallback failure messages translated.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

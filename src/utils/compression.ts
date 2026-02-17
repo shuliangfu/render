@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import { $t } from "../i18n.ts";
 import type { CompressionOptions } from "../types.ts";
 
 /** Base64 encode (no external deps). */
@@ -112,7 +113,7 @@ export function decompressData(compressed: string): unknown {
     const decompressed = base64Decode(compressed);
     return JSON.parse(decompressed);
   } catch (error) {
-    console.error("Decompress failed:", error);
+    console.error($t("error.decompressFailed"), error);
     return null;
   }
 }

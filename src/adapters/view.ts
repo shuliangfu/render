@@ -12,6 +12,7 @@ import { renderToString } from "@dreamer/view";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import { renderToStream } from "@dreamer/view/stream";
 import type { RenderResult, SSROptions } from "../types.ts";
+import { $t, type Locale } from "../i18n.ts";
 import { handleRenderError } from "../utils/error-handler.ts";
 import { injectComponentHtml } from "../utils/html-inject.ts";
 import {
@@ -93,7 +94,10 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     performance: perfOptions,
     debug,
     options: viewOptions,
+    lang,
   } = options;
+
+  const locale = lang as Locale | undefined;
 
   debugLog(debug, "view", "start", {
     stream,
@@ -174,6 +178,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       error,
       { engine: "view", component, phase: "ssr" },
       errorHandler,
+      locale,
     );
 
     if (shouldContinue && errorHandler?.fallbackComponent) {
@@ -184,11 +189,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         };
         return await renderSSR(fallbackOptions);
       } catch (_fallbackError) {
-        throw new Error(
-          `View SSR 渲染失败（包括降级组件）: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-        );
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error($t("error.viewSsrFailed", { message }, locale));
       }
     }
 

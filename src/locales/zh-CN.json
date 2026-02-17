@@ -1,0 +1,22 @@
+{
+  "error": {
+    "unsupportedEngine": "不支持的模板引擎: {engine}",
+    "ssrFailed": "SSR 渲染失败 ({engine}): {message}",
+    "renderErrorTitle": "渲染错误",
+    "loadFailed": "Load 函数失败:",
+    "performanceCallbackFailed": "性能指标回调失败:",
+    "decompressFailed": "解压失败:",
+    "handlerFailed": "错误处理回调失败:",
+    "ssrResultNotString": "SSR 错误: result.html 不是字符串类型，类型: {type}",
+    "ssrCannotStringify": "SSR 错误: 无法将 result.html 转换为字符串，类型: {type}",
+    "ssgInvalidResult": "SSG: 无效结果，类型: {type}",
+    "ssgResultNotString": "SSG: result.html 不是字符串，类型: {type}",
+    "ssgCannotStringify": "SSG: 无法将 result.html 转为字符串，类型: {type}",
+    "ssgHtmlNotString": "SSG: 写入前 html 不是字符串，类型: {type}",
+    "viewSsrFailed": "View SSR 渲染失败（包括降级组件）: {message}",
+    "preactSsrFailed": "Preact SSR 渲染失败（包括降级组件）: {message}"
+  },
+  "log": {
+    "renderError": "[{engine}] {phase} 渲染错误:"
+  }
+}

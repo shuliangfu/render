@@ -48,6 +48,7 @@ import {
   generateDataScript,
   loadServerData,
 } from "./utils/server-data.ts";
+import { $t, type Locale } from "./i18n.ts";
 
 /**
  * Server-side render: call the adapter for the given engine to produce HTML.
@@ -58,6 +59,7 @@ import {
  */
 export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   const { engine, loadContext } = options;
+  const lang = options.lang as Locale | undefined;
 
   // 性能监控
   const perfMonitor = createPerformanceMonitor(options.performance);
@@ -195,19 +197,18 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       }
       default: {
         const _exhaustive: never = engine;
-        throw new Error(`不支持的模板引擎: ${engine}`);
+        throw new Error($t("error.unsupportedEngine", { engine }, lang));
       }
     }
   } catch (error) {
-    // 处理错误
     const shouldContinue = await handleRenderError(
       error,
       { engine, component: options.component, phase: "ssr" },
       options.errorHandler,
+      lang,
     );
 
     if (shouldContinue && options.errorHandler?.fallbackComponent) {
-      // 使用降级组件重新渲染
       try {
         const fallbackOptions = {
           ...options,
@@ -224,23 +225,21 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
             result = await viewAdapter.renderSSR(fallbackOptions);
             break;
           default:
-            throw new Error(`不支持的模板引擎: ${engine}`);
+            throw new Error($t("error.unsupportedEngine", { engine }, lang));
         }
       } catch (_fallbackError) {
-        // 降级渲染也失败，生成错误 HTML
         result = {
           html: generateErrorHTML(
             error instanceof Error ? error : new Error(String(error)),
+            undefined,
+            lang,
           ),
           renderInfo: { engine, error: true },
         };
       }
     } else {
-      throw new Error(
-        `SSR 渲染失败 (${engine}): ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      );
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error($t("error.ssrFailed", { engine, message }, lang));
     }
   }
 
@@ -310,20 +309,17 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       }).join("\n  ")
       : "";
 
-  // 处理 HTML，自动注入元数据和数据脚本
-  // 确保 result.html 是字符串类型
+  // Ensure result.html is string before injection
   if (typeof result.html !== "string") {
+    const type = typeof result.html;
     console.error(
-      `SSR 错误: result.html 不是字符串类型，类型: ${typeof result.html}，值:`,
+      $t("error.ssrResultNotString", { type }, lang),
       result.html,
     );
-    // 尝试转换为字符串
     result.html = String(result.html);
-    // 如果转换后是 "[object Object]"，说明转换失败，抛出错误
     if (result.html === "[object Object]") {
       throw new Error(
-        `SSR 错误: 无法将 result.html 转换为字符串，类型: ${typeof result
-          .html}，值: ${JSON.stringify(result.html)}`,
+        $t("error.ssrCannotStringify", { type }, lang),
       );
     }
   }
