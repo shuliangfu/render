@@ -5,6 +5,7 @@
  */
 
 import type { Engine, ErrorHandler } from "../types.ts";
+import { $t, type Locale } from "../i18n.ts";
 
 /**
  * Handle render error: log, call onError, return whether to use fallback.
@@ -12,6 +13,7 @@ import type { Engine, ErrorHandler } from "../types.ts";
  * @param error - Error
  * @param context - Engine, component, phase
  * @param errorHandler - Optional handler
+ * @param lang - Optional locale for server-side i18n; omitted = auto-detect
  * @returns true if fallbackComponent is defined (caller may render fallback)
  */
 export async function handleRenderError(
@@ -22,12 +24,16 @@ export async function handleRenderError(
     phase: "ssr";
   },
   errorHandler?: ErrorHandler,
+  lang?: Locale,
 ): Promise<boolean> {
   const err = error instanceof Error ? error : new Error(String(error));
 
   if (errorHandler?.logError !== false) {
     console.error(
-      `[${context.engine}] ${context.phase.toUpperCase()} render error:`,
+      $t("log.renderError", {
+        engine: context.engine,
+        phase: context.phase.toUpperCase(),
+      }, lang),
       err,
     );
   }
@@ -36,7 +42,7 @@ export async function handleRenderError(
     try {
       await errorHandler.onError(err, context);
     } catch (handlerError) {
-      console.error("Error handler failed:", handlerError);
+      console.error($t("error.handlerFailed", undefined, lang), handlerError);
     }
   }
 
@@ -48,19 +54,22 @@ export async function handleRenderError(
  *
  * @param error - Error
  * @param fallbackComponent - If set, returns placeholder; adapter renders fallback
+ * @param lang - Optional locale for server-side i18n; omitted = auto-detect
  * @returns Error HTML string
  */
 export function generateErrorHTML(
   error: Error,
   fallbackComponent?: unknown,
+  lang?: Locale,
 ): string {
   if (fallbackComponent) {
     return "<!--error-boundary-fallback-->";
   }
 
+  const title = $t("error.renderErrorTitle", undefined, lang);
   return `
     <div style="padding: 20px; font-family: sans-serif;">
-      <h1>Render Error</h1>
+      <h1>${title}</h1>
       <p>${error.message}</p>
       <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">${
     error.stack || ""

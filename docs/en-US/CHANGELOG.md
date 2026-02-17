@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.28] - 2026-02-17
+
+### Added
+
+- **Server-side i18n:** Optional `lang` on `SSROptions` and `SSGOptions`; when
+  omitted, locale is auto-detected from env (LANGUAGE/LC_ALL/LANG). New
+  `i18n.ts`, `detectLocale()`, `ensureRenderI18n()`, `$t()`; locales
+  `en-US.json` and `zh-CN.json` for error and log messages.
+- **Error/log translation:** SSR/SSG errors, error-handler messages,
+  generateErrorHTML title, server-data/performance/compression console messages,
+  and View/Preact adapter fallback-failure messages use `$t`.
+
+### Changed
+
+- **Error handler:** `handleRenderError` and `generateErrorHTML` accept optional
+  `lang`; all user-facing strings use locale keys.
+- **Adapters (View, Preact):** Fallback render failure throws use
+  `$t("error.viewSsrFailed" | "error.preactSsrFailed", { message }, locale)`;
+  `handleRenderError` is called with `options.lang`.
+
+---
+
 ## [1.0.27] - 2026-02-17
 
 ### Added

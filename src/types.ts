@@ -232,6 +232,11 @@ export interface SSROptions {
   skipDataInjection?: boolean;
   /** Enable debug logging */
   debug?: boolean;
+  /**
+   * Optional locale for server-side i18n (e.g. "en-US", "zh-CN").
+   * When omitted, locale is auto-detected from env (LANGUAGE/LC_ALL/LANG).
+   */
+  lang?: string;
   /** Engine-specific options */
   options?: Record<string, unknown>;
 }
@@ -272,6 +277,11 @@ export interface SSGOptions {
   onFileGenerated?: (filePath: string) => void;
   /** Debug logging */
   debug?: boolean;
+  /**
+   * Optional locale for server-side i18n (e.g. "en-US", "zh-CN").
+   * When omitted, locale is auto-detected from env.
+   */
+  lang?: string;
   /** Custom options */
   options?: Record<string, unknown>;
 }

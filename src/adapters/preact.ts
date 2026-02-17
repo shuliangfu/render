@@ -10,6 +10,7 @@
 import { createElement } from "preact";
 import { renderToString } from "preact-render-to-string";
 import type { RenderResult, SSROptions } from "../types.ts";
+import { $t, type Locale } from "../i18n.ts";
 import { handleRenderError } from "../utils/error-handler.ts";
 import { injectComponentHtml } from "../utils/html-inject.ts";
 import {
@@ -102,7 +103,10 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     errorHandler,
     performance: perfOptions,
     debug,
+    lang,
   } = options;
+
+  const locale = lang as Locale | undefined;
 
   debugLog(debug, "preact", "start", {
     stream,
@@ -184,15 +188,14 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       performance: performanceMetrics,
     };
   } catch (error) {
-    // 处理错误
     const shouldContinue = await handleRenderError(
       error,
       { engine: "preact", component, phase: "ssr" },
       errorHandler,
+      locale,
     );
 
     if (shouldContinue && errorHandler?.fallbackComponent) {
-      // 使用降级组件重新渲染
       try {
         const fallbackOptions = {
           ...options,
@@ -200,12 +203,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         };
         return await renderSSR(fallbackOptions);
       } catch (_fallbackError) {
-        // 降级渲染也失败，抛出错误
-        throw new Error(
-          `Preact SSR 渲染失败（包括降级组件）: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-        );
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error($t("error.preactSsrFailed", { message }, locale));
       }
     }
 

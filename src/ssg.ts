@@ -3,6 +3,7 @@
  */
 
 import { dirname, join, mkdir, writeTextFile } from "@dreamer/runtime-adapter";
+import { $t, type Locale } from "./i18n.ts";
 import { renderSSR } from "./ssr.ts";
 import type { SSGOptions } from "./types.ts";
 
@@ -163,8 +164,11 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
     generateSitemap: shouldGenerateSitemap = false,
     generateRobots: shouldGenerateRobots = false,
     onFileGenerated,
+    lang,
     options: customOptions = {},
   } = options;
+
+  const locale = lang as Locale | undefined;
 
   await mkdir(outputDir, { recursive: true });
 
@@ -194,6 +198,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
           url: route,
           params: {},
         },
+        lang,
       };
 
       const result = await renderSSR(ssrOptions);
@@ -207,7 +212,9 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       }
 
       if (!result || typeof result !== "object" || !("html" in result)) {
-        throw new Error(`SSG: invalid result, type: ${typeof result}`);
+        throw new Error(
+          $t("error.ssgInvalidResult", { type: typeof result }, locale),
+        );
       }
 
       const resultHtml = result.html;
@@ -216,14 +223,15 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       if (typeof resultHtml === "string") {
         html = resultHtml;
       } else {
+        const type = typeof resultHtml;
         console.error(
-          `SSG: result.html not string, type: ${typeof resultHtml}`,
+          $t("error.ssgResultNotString", { type }, locale),
           resultHtml,
         );
         html = String(resultHtml);
         if (html === "[object Object]") {
           throw new Error(
-            `SSG: cannot stringify result.html, type: ${typeof resultHtml}`,
+            $t("error.ssgCannotStringify", { type }, locale),
           );
         }
       }
@@ -238,7 +246,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
 
       if (typeof html !== "string") {
         throw new Error(
-          `SSG: html not string before write, type: ${typeof html}`,
+          $t("error.ssgHtmlNotString", { type: typeof html }, locale),
         );
       }
 
