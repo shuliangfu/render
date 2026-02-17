@@ -692,12 +692,8 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.28** (2026-02-17)
-
-- **Added**: Server-side i18n with optional `lang` on SSROptions/SSGOptions;
-  auto-detect from env when omitted; en-US/zh-CN locales for errors and logs.
-- **Changed**: All server-side error and log messages use `$t`; View/Preact
-  adapter fallback failure messages translated.
+**v1.0.29** (2026-02-18): i18n init at entry only (`initRenderI18n()` in mod);
+`$t()` no longer calls ensure/init internally.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
