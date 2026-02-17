@@ -1,10 +1,11 @@
 /**
- * React 客户端渲染适配器
+ * React client adapter: CSR and Hydration.
  *
- * 仅包含浏览器端渲染功能（CSR、Hydration）
- * 支持错误处理、性能监控、布局组合
+ * @module @dreamer/render/client/react
+ * @packageDocumentation
  *
- * 使用具名导入 createElement，避免 default 互操作导致的 "_.default.createElement is not a function"
+ * Browser-only render; supports error handling, performance, layouts. **Exports:** renderCSR, hydrate.
+ * Uses named createElement to avoid "_.default.createElement is not a function" interop issues.
  */
 
 import { createElement, type ReactNode } from "react";
@@ -29,8 +30,7 @@ import {
 } from "../utils/performance.ts";
 
 /**
- * 若错误为 "(void 0) is not a function"，包装为带诊断提示的新错误
- * 常见于：路由/layout 组件的 react/jsx-runtime 导入失败，或组件为 undefined
+ * Wrap "(void 0) is not a function" with a hint (e.g. react/jsx-runtime import failed or component undefined).
  */
 function enhanceVoidError(error: unknown, phase: string): Error {
   const err = error instanceof Error ? error : new Error(String(error));
@@ -111,10 +111,11 @@ function debugLog(
 }
 
 /**
- * React 客户端渲染
+ * Render component to container in browser with React (CSR).
  *
- * @param options CSR 选项
- * @returns 渲染结果，包含卸载函数
+ * @param options - CSR options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug
+ * @returns Result with unmount, update, instance, performance; on error returns object with unmount, instance
+ * @throws If component invalid or container not found
  */
 export function renderCSR(options: CSROptions): CSRRenderResult {
   const {
@@ -260,10 +261,11 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
 }
 
 /**
- * React Hydration
+ * Hydrate server-rendered HTML with React.
  *
- * @param options Hydration 选项
- * @returns Hydration 结果
+ * @param options - Hydration options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug
+ * @returns Result with unmount, update, instance, performance; on error returns object with unmount, instance
+ * @throws If component invalid or container not found
  */
 export function hydrate(options: HydrationOptions): CSRRenderResult {
   const {

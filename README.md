@@ -692,9 +692,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.25** (2026-02-16)
+**v1.0.26** (2026-02-17)
 
-- **Changed**: Bump `@dreamer/view` to `^1.0.14`.
+- **Changed**: JSDoc and comments rewritten in English; `@dreamer/view`
+  `^1.0.15`.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.26] - 2026-02-17
+
+### Changed
+
+- **Docs:** JSDoc and all comments rewritten in English across the package.
+- **Dependencies:** `@dreamer/view` set to `^1.0.15`.
+
+---
+
 ## [1.0.25] - 2026-02-16
 
 ### Changed

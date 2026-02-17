@@ -1,7 +1,7 @@
 /**
- * 性能监控工具函数
+ * Performance monitoring utilities for render (SSR/CSR).
  *
- * 用于监控渲染性能
+ * @packageDocumentation
  */
 
 import type {
@@ -10,30 +10,22 @@ import type {
   PerformanceOptions,
 } from "../types.ts";
 
-/**
- * 获取高精度时间戳（兼容 Deno 和 Bun）
- */
+/** High-resolution timestamp (performance.now() or Date.now()). */
 function getNow(): number {
-  // 优先使用 performance.now()（浏览器和 Node.js）
   if (
     typeof performance !== "undefined" && typeof performance.now === "function"
   ) {
     return performance.now();
   }
-  // 降级到 Date.now()
   return Date.now();
 }
 
-/**
- * 性能监控器
- */
+/** Tracks start/end and custom metrics for a render phase. */
 export class PerformanceMonitor {
   private startTime: number = 0;
   private metrics: Partial<PerformanceMetrics> = {};
 
-  /**
-   * 开始监控
-   */
+  /** Start monitoring. */
   start(engine: Engine, phase: "ssr"): void {
     this.startTime = getNow();
     this.metrics = {
@@ -43,9 +35,7 @@ export class PerformanceMonitor {
     };
   }
 
-  /**
-   * 结束监控
-   */
+  /** End monitoring and return metrics. */
   end(): PerformanceMetrics {
     const endTime = getNow();
     const duration = endTime - this.startTime;
@@ -60,19 +50,17 @@ export class PerformanceMonitor {
     return metrics;
   }
 
-  /**
-   * 添加自定义指标
-   */
+  /** Add custom metric. */
   addMetric(key: string, value: unknown): void {
     this.metrics[key] = value;
   }
 }
 
 /**
- * 创建性能监控器
+ * Create performance monitor when options.enabled is true.
  *
- * @param options 性能监控选项
- * @returns 性能监控器实例，如果未启用则返回 null
+ * @param options - Performance options
+ * @returns Monitor instance or null if disabled
  */
 export function createPerformanceMonitor(
   options?: PerformanceOptions,
@@ -85,10 +73,10 @@ export function createPerformanceMonitor(
 }
 
 /**
- * 记录性能指标
+ * Record metrics via options.onMetrics if provided.
  *
- * @param metrics 性能指标
- * @param options 性能监控选项
+ * @param metrics - Measured metrics
+ * @param options - Performance options
  */
 export function recordPerformanceMetrics(
   metrics: PerformanceMetrics,
@@ -98,7 +86,7 @@ export function recordPerformanceMetrics(
     try {
       options.onMetrics(metrics);
     } catch (error) {
-      console.error("性能指标回调执行失败:", error);
+      console.error("Performance metrics callback failed:", error);
     }
   }
 }

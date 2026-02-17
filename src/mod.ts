@@ -1,28 +1,25 @@
 /**
- * @dreamer/render 主入口（服务端）
+ * @dreamer/render main entry (server): SSR, SSG, and utilities.
  *
- * 提供 SSR 和 SSG 功能，支持 React、Preact 两个模板引擎。
+ * @module @dreamer/render
+ * @packageDocumentation
  *
- * 注意：客户端渲染（CSR）和 Hydration 功能请使用 @dreamer/render/client
+ * Provides SSR and SSG with React, Preact, and View engines. For CSR and Hydration use `@dreamer/render/client`.
+ *
+ * **Exports:** renderSSR, renderSSG, expandDynamicRoute, generateRobots, generateSitemap; cache, compression,
+ * context, error-handler, html-inject, layout, lazy-loading, metadata, performance, scripts, server-data utils;
+ * types: SSROptions, RenderResult, Engine, Metadata, CacheOptions, etc.
  *
  * @example
  * ```typescript
- * // 服务端渲染
  * import { renderSSR } from "@dreamer/render";
- *
- * const result = await renderSSR({
- *   engine: "preact",
- *   component: MyComponent,
- *   props: { name: "World" },
- * });
+ * const result = await renderSSR({ engine: "preact", component: MyComponent, props: { name: "World" } });
  * console.log(result.html);
- *
- * // 客户端渲染（请使用 client 子模块）
  * import { renderCSR, hydrate } from "@dreamer/render/client";
  * ```
  */
 
-// 导出类型定义（服务端相关）
+// Server-related type exports
 export type {
   CacheOptions,
   CompressionOptions,
@@ -52,10 +49,9 @@ export {
 } from "./ssg.ts";
 export { renderSSR } from "./ssr.ts";
 
-// 注意：适配器不再从此处导出，避免加载 react/preact 导致版本冲突。
-// 服务端/客户端均按 engine 动态加载对应适配器。高级用法请直接引用具体路径。
+// Adapters are not re-exported here to avoid version conflicts; server/client load by engine. Use subpaths for advanced usage.
 
-// 导出工具函数（供高级用法）
+// Utility exports (advanced usage)
 export {
   cacheMetadata,
   deleteCache,
@@ -114,5 +110,4 @@ export {
   loadServerData,
 } from "./utils/server-data.ts";
 
-// 注意：客户端 DOM 操作（applyMetadata、updateTitle 等）
-// 已移至 @dreamer/render/client
+// Client DOM helpers (applyMetadata, updateTitle, etc.) live in @dreamer/render/client

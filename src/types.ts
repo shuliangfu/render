@@ -1,25 +1,27 @@
 /**
- * 渲染库类型定义
+ * Render library type definitions (server SSR/SSG and shared types).
+ *
+ * @packageDocumentation
  */
 
 /**
- * 支持的模板引擎类型
+ * Supported template engines: react, preact, view.
  */
 export type Engine = "react" | "preact" | "view";
 
 /**
- * 元数据
+ * Page metadata (title, description, og, etc.).
  */
 export interface Metadata {
-  /** 页面标题 */
+  /** Page title */
   title?: string;
-  /** 页面描述 */
+  /** Page description */
   description?: string;
-  /** 关键词 */
+  /** Keywords */
   keywords?: string;
-  /** 作者 */
+  /** Author */
   author?: string;
-  /** Open Graph 元数据 */
+  /** Open Graph metadata */
   og?: {
     title?: string;
     description?: string;
@@ -27,47 +29,47 @@ export interface Metadata {
     url?: string;
     type?: string;
   };
-  /** Twitter Card 元数据 */
+  /** Twitter Card metadata */
   twitter?: {
     card?: string;
     title?: string;
     description?: string;
     image?: string;
   };
-  /** 自定义 meta 标签 */
+  /** Custom meta tags */
   custom?: Record<string, string>;
 }
 
 /**
- * Load 方法的上下文
+ * Context passed to Load and metadata functions.
  */
 export interface LoadContext {
-  /** 请求 URL */
+  /** Request URL */
   url: string;
-  /** 路由参数 */
+  /** Route params */
   params: Record<string, string>;
-  /** 原始请求对象（可选） */
+  /** Raw request (optional) */
   request?: Request;
-  /** 其他上下文信息 */
+  /** Other context */
   [key: string]: unknown;
 }
 
 /**
- * 服务端数据
+ * Server data (load result).
  */
 export interface ServerData {
   [key: string]: unknown;
 }
 
 /**
- * Load 方法函数签名
+ * Load function signature.
  */
 export type LoadFunction = (
   context: LoadContext,
 ) => Promise<ServerData> | ServerData;
 
 /**
- * Metadata 值类型（可以是静态对象、同步函数或异步函数）
+ * Metadata value: static object, or sync/async function.
  */
 export type MetadataValue =
   | Metadata
@@ -75,234 +77,231 @@ export type MetadataValue =
   | ((context: LoadContext) => Promise<Metadata>);
 
 /**
- * 布局组件定义
+ * Layout component definition.
  */
 export interface LayoutComponent {
-  /** 布局组件 */
+  /** Layout component */
   component: unknown;
-  /** 布局组件属性 */
+  /** Layout props */
   props?: Record<string, unknown>;
-  /** 是否跳过此布局（如果为 true，此布局不会被应用） */
+  /** If true, this layout is not applied */
   skip?: boolean;
 }
 
 /**
- * 脚本定义
+ * Script definition (src, content, async, defer, priority, etc.).
  */
 export interface ScriptDefinition {
-  /** 脚本路径或内联脚本 */
+  /** Script URL or inline */
   src?: string;
-  /** 内联脚本内容 */
+  /** Inline script content */
   content?: string;
-  /** 是否异步加载 */
+  /** Async load */
   async?: boolean;
-  /** 是否延迟加载 */
+  /** Defer load */
   defer?: boolean;
-  /** 脚本优先级（数字越小优先级越高） */
+  /** Priority (lower = higher priority) */
   priority?: number;
-  /** 脚本类型 */
+  /** Script type */
   type?: string;
-  /** 其他属性 */
+  /** Other attributes */
   [key: string]: unknown;
 }
 
 /**
- * 错误处理选项
+ * Error handling options.
  */
 export interface ErrorHandler {
-  /** 错误处理函数 */
+  /** Error callback */
   onError?: (error: Error, context: {
     engine: Engine;
     component: unknown;
     phase: "ssr";
   }) => void | Promise<void>;
-  /** 错误降级组件（用于 SSR 错误时显示） */
+  /** Fallback component when SSR errors */
   fallbackComponent?: unknown;
-  /** 是否在控制台输出错误 */
+  /** Whether to log errors to console */
   logError?: boolean;
 }
 
 /**
- * 性能监控选项
+ * Performance monitoring options.
  */
 export interface PerformanceOptions {
-  /** 是否启用性能监控 */
+  /** Enable performance monitoring */
   enabled?: boolean;
-  /** 性能指标回调 */
+  /** Metrics callback */
   onMetrics?: (metrics: PerformanceMetrics) => void;
 }
 
 /**
- * 性能指标
+ * Performance metrics (startTime, endTime, duration, engine, phase).
  */
 export interface PerformanceMetrics {
-  /** 渲染开始时间 */
+  /** Render start time */
   startTime: number;
-  /** 渲染结束时间 */
+  /** Render end time */
   endTime: number;
-  /** 总渲染时间（毫秒） */
+  /** Total duration (ms) */
   duration: number;
-  /** 引擎类型 */
+  /** Engine type */
   engine: Engine;
-  /** 渲染阶段 */
+  /** Phase (e.g. ssr) */
   phase: "ssr";
-  /** 其他指标 */
+  /** Other metrics */
   [key: string]: unknown;
 }
 
 /**
- * 缓存选项
+ * Cache options (enabled, getCacheKey, storage, ttl).
  */
 export interface CacheOptions {
-  /** 是否启用缓存 */
+  /** Enable cache */
   enabled?: boolean;
-  /** 缓存键生成函数 */
+  /** Cache key generator */
   getCacheKey?: (context: LoadContext) => string;
-  /** 缓存存储接口 */
+  /** Storage (get/set/delete) */
   storage?: {
     get: (key: string) => Promise<unknown> | unknown;
     set: (key: string, value: unknown) => Promise<void> | void;
     delete: (key: string) => Promise<void> | void;
   };
-  /** 缓存过期时间（毫秒） */
+  /** TTL in ms */
   ttl?: number;
 }
 
 /**
- * 数据压缩选项
+ * Compression options (enabled, threshold, algorithm).
  */
 export interface CompressionOptions {
-  /** 是否启用压缩 */
+  /** Enable compression */
   enabled?: boolean;
-  /** 压缩阈值（数据大小超过此值才压缩，字节） */
+  /** Min size in bytes to compress */
   threshold?: number;
-  /** 压缩算法 */
+  /** Algorithm: gzip, deflate, brotli */
   algorithm?: "gzip" | "deflate" | "brotli";
 }
 
 /**
- * Context API 数据
+ * Context API data (metadata + serverData).
  */
 export interface ContextData {
-  /** 元数据 */
+  /** Metadata */
   metadata?: Metadata;
-  /** 服务端数据 */
+  /** Server data */
   serverData?: ServerData;
 }
 
 /**
- * 服务端渲染选项
+ * Server-side rendering options.
  */
 export interface SSROptions {
-  /** 模板引擎类型 */
+  /** Template engine */
   engine: Engine;
-  /** 组件（React/Preact 组件） */
+  /** Root component */
   component: unknown;
-  /** 组件属性 */
+  /** Component props */
   props?: Record<string, unknown>;
-  /** 布局组件列表（从外到内，支持多层嵌套） */
+  /** Layouts (outer to inner) */
   layouts?: LayoutComponent[];
-  /** 是否跳过所有布局（如果组件导出了 inheritLayout = false） */
+  /** Skip all layouts (e.g. when component has inheritLayout = false) */
   skipLayouts?: boolean;
-  /** HTML 模板（可选，用于包装渲染结果） */
+  /** HTML template wrapping the result */
   template?: string;
-  /** 是否启用流式渲染（React 原生流式；Preact 为模拟分块） */
+  /** Enable streaming (React native; Preact simulated chunks) */
   stream?: boolean;
-  /** Load Context（用于传递给组件的 load 方法和 metadata 函数） */
+  /** Load context for load() and metadata */
   loadContext?: LoadContext;
-  /** 客户端脚本（用于水合或 CSR，可以是脚本路径或内联脚本） */
+  /** Client script URLs or inline for hydration/CSR */
   clientScripts?: string[];
-  /** 脚本定义列表（更高级的脚本注入，支持优先级、异步等） */
+  /** Script definitions (priority, async, etc.) */
   scripts?: ScriptDefinition[];
-  /** 错误处理选项 */
+  /** Error handling */
   errorHandler?: ErrorHandler;
-  /** 性能监控选项 */
+  /** Performance options */
   performance?: PerformanceOptions;
-  /** 元数据缓存选项 */
+  /** Metadata cache */
   metadataCache?: CacheOptions;
-  /** 数据压缩选项 */
+  /** Compression options */
   compression?: CompressionOptions;
-  /** Context API 数据（动态设置元数据和数据） */
+  /** Context API data */
   contextData?: ContextData;
-  /** 是否启用数据懒加载 */
+  /** Enable lazy data loading */
   lazyData?: boolean;
-  /**
-   * 是否跳过数据注入
-   * @internal 内部使用，SSG 会自动设置，用户不应直接使用此选项
-   */
+  /** @internal Skip data injection (used by SSG) */
   skipDataInjection?: boolean;
-  /** 是否启用详细调试日志（默认：false） */
+  /** Enable debug logging */
   debug?: boolean;
-  /** 自定义渲染选项（模板引擎特定） */
+  /** Engine-specific options */
   options?: Record<string, unknown>;
 }
 
-// 注意：CSROptions、HydrationOptions、CSRRenderResult 已移至 @dreamer/render/client
+/** CSROptions, HydrationOptions, CSRRenderResult are in @dreamer/render/client */
 
 /**
- * 静态站点生成选项
+ * Static site generation options.
  */
 export interface SSGOptions {
-  /** 模板引擎类型 */
+  /** Template engine */
   engine: Engine;
-  /** 路由列表 */
+  /** Route list */
   routes: string[];
-  /** 输出目录 */
+  /** Output directory */
   outputDir: string;
-  /** 路由组件加载函数 */
+  /** Load route component */
   loadRouteComponent: (route: string) => Promise<unknown>;
-  /** 路由布局加载函数（可选，用于加载 _app、_layout 等，从外到内） */
+  /** Load route layouts (_app, _layout, etc., outer to inner) */
   loadRouteLayouts?: (
     route: string,
   ) => Promise<Array<{ component: unknown; props?: Record<string, unknown> }>>;
-  /** 路由数据加载函数（可选，用于预取数据） */
+  /** Load route data (prefetch) */
   loadRouteData?: (route: string) => Promise<Record<string, unknown>>;
-  /** HTML 模板（不传则直接使用 _app 等布局的输出） */
+  /** HTML template (optional) */
   template?: string;
-  /** 注入到 </head> 前的内容（如 link 标签），用于在 _app 输出的 head 中插入 */
+  /** HTML to inject before </head> */
   headInject?: string;
-  /** 是否生成纯静态 HTML（无 JavaScript） */
+  /** Pure static HTML (no scripts) */
   pureHTML?: boolean;
-  /** 是否注入数据到 HTML（用于 Hydration，默认 false） */
+  /** Inject data into HTML for hydration */
   enableDataInjection?: boolean;
-  /** 是否生成 sitemap.xml */
+  /** Generate sitemap.xml */
   generateSitemap?: boolean;
-  /** 是否生成 robots.txt */
+  /** Generate robots.txt */
   generateRobots?: boolean;
-  /** 每生成一个文件时回调（用于构建时实时输出进度，避免大量路由时长时间无输出） */
+  /** Callback per generated file (progress) */
   onFileGenerated?: (filePath: string) => void;
-  /** 是否启用详细调试日志（默认：false） */
+  /** Debug logging */
   debug?: boolean;
-  /** 自定义选项 */
+  /** Custom options */
   options?: Record<string, unknown>;
 }
 
 /**
- * 渲染结果
+ * SSR render result (html, styles, scripts, metadata, performance, etc.).
  */
 export interface RenderResult {
-  /** 渲染的 HTML 字符串 */
+  /** Rendered HTML */
   html: string;
-  /** 提取的样式（如果有） */
+  /** Extracted styles */
   styles?: string[];
-  /** 提取的脚本（如果有） */
+  /** Extracted scripts */
   scripts?: string[];
-  /** 渲染信息（模板引擎特定，如使用的引擎、是否流式渲染等） */
+  /** Engine-specific render info */
   renderInfo?: Record<string, unknown>;
-  /** 合并后的元数据（用于生成 HTML meta 标签） */
+  /** Merged metadata */
   metadata?: Metadata;
-  /** 布局的 load 方法返回的数据 */
+  /** Layout load data */
   layoutData?: ServerData;
-  /** 页面的 load 方法返回的数据 */
+  /** Page load data */
   pageData?: ServerData;
-  /** 性能指标（如果启用了性能监控） */
+  /** Performance metrics if enabled */
   performance?: PerformanceMetrics;
-  /** 是否使用了缓存 */
+  /** Whether result was from cache */
   fromCache?: boolean;
-  /** 压缩后的数据大小（如果启用了压缩） */
+  /** Compressed size (if compression used) */
   compressedSize?: number;
-  /** 原始数据大小（如果启用了压缩） */
+  /** Original size (if compression used) */
   originalSize?: number;
 }
 
-// 注意：CSRRenderResult 已移至 @dreamer/render/client
+/** CSRRenderResult is in @dreamer/render/client */

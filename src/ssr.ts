@@ -1,7 +1,5 @@
 /**
- * 服务端渲染（SSR）核心函数
- *
- * 适配器统一使用静态导入，保证在 dweb 等服务端打包场景下模块解析正确。
+ * Server-side rendering (SSR) entry. Adapters are statically imported for correct resolution in dweb/server bundles.
  */
 
 import * as preactAdapter from "./adapters/preact.ts";
@@ -52,23 +50,11 @@ import {
 } from "./utils/server-data.ts";
 
 /**
- * 服务端渲染函数
+ * Server-side render: call the adapter for the given engine to produce HTML.
  *
- * 根据指定的模板引擎类型，调用对应的适配器进行服务端渲染
- *
- * @param options SSR 选项
- * @returns 渲染结果
- * @throws 如果模板引擎不支持或渲染失败
- *
- * @example
- * ```typescript
- * const result = await renderSSR({
- *   engine: "react",
- *   component: MyComponent,
- *   props: { name: "World" },
- *   template: "<html><body></body></html>"
- * });
- * ```
+ * @param options - SSR options (engine, component, props, template, loadContext, etc.)
+ * @returns Render result (html, styles, scripts, metadata, performance, etc.)
+ * @throws If engine is unsupported or render fails
  */
 export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   const { engine, loadContext } = options;

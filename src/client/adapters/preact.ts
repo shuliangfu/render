@@ -1,8 +1,10 @@
 /**
- * Preact 客户端渲染适配器
+ * Preact client adapter: CSR and Hydration.
  *
- * 仅包含浏览器端渲染功能（CSR、Hydration）
- * 支持错误处理、性能监控、布局组合
+ * @module @dreamer/render/client/preact
+ * @packageDocumentation
+ *
+ * Browser-only render; supports error handling, performance, layouts. **Exports:** renderCSR, hydrate.
  */
 
 import { createElement, hydrate as preactHydrate, render } from "preact";
@@ -26,8 +28,7 @@ import {
 } from "../utils/performance.ts";
 
 /**
- * 若错误为 "(void 0) is not a function"，包装为带诊断提示的新错误
- * 常见于：路由/layout 组件的 preact/jsx-runtime 导入失败，或组件为 undefined
+ * Wrap "(void 0) is not a function" with a hint (e.g. preact/jsx-runtime import failed or component undefined).
  */
 function enhanceVoidError(error: unknown, phase: string): Error {
   const err = error instanceof Error ? error : new Error(String(error));
@@ -40,13 +41,11 @@ function enhanceVoidError(error: unknown, phase: string): Error {
 }
 
 /**
- * Preact 客户端渲染
+ * Render component to container in browser with Preact (CSR).
  *
- * @param options CSR 选项
- * @returns 渲染结果，包含卸载函数
- */
-/**
- * 调试日志：仅当 debug 为 true 时输出
+ * @param options - CSR options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug
+ * @returns Result with unmount, update, instance, performance; on error still returns object with unmount/instance, error handled via errorHandler or fallback
+ * @throws If component invalid (not function/object) or container not found
  */
 function debugLog(
   debug: boolean | undefined,
@@ -197,10 +196,11 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
 }
 
 /**
- * Preact Hydration
+ * Hydrate server-rendered HTML with Preact.
  *
- * @param options Hydration 选项
- * @returns Hydration 结果
+ * @param options - Hydration options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug
+ * @returns Result with unmount, update, instance, performance; on error returns object with unmount, instance
+ * @throws If component invalid or container not found
  */
 export function hydrate(options: HydrationOptions): CSRRenderResult {
   const {

@@ -1,19 +1,16 @@
 /**
- * 数据压缩工具函数
+ * Data compression utilities for HTML-injected data.
  *
- * 用于压缩注入到 HTML 中的数据
+ * @packageDocumentation
  */
 
 import type { CompressionOptions } from "../types.ts";
 
-/**
- * Base64 编码（简单实现，不依赖外部库）
- */
+/** Base64 encode (no external deps). */
 function encodeBase64(str: string): string {
   if (typeof btoa !== "undefined") {
     return btoa(str);
   }
-  // 手动实现 base64 编码
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   let output = "";
@@ -32,14 +29,11 @@ function encodeBase64(str: string): string {
   return output;
 }
 
-/**
- * Base64 解码（简单实现，不依赖外部库）
- */
+/** Base64 decode (no external deps). */
 function decodeBase64(str: string): string {
   if (typeof atob !== "undefined") {
     return atob(str);
   }
-  // 手动实现 base64 解码
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   let output = "";
@@ -58,11 +52,11 @@ function decodeBase64(str: string): string {
 }
 
 /**
- * 压缩数据（使用简单的 JSON 压缩，实际项目中可以使用更高级的压缩算法）
+ * Compress data (JSON + optional threshold); returns base64 string and sizes.
  *
- * @param data 要压缩的数据
- * @param options 压缩选项
- * @returns 压缩后的数据（base64 编码的 JSON 字符串）
+ * @param data - Data to compress
+ * @param options - Compression options (enabled, threshold)
+ * @returns { compressed, originalSize, compressedSize } or null if disabled/under threshold
  */
 export function compressData(
   data: unknown,
@@ -75,34 +69,25 @@ export function compressData(
   const json = JSON.stringify(data);
   const originalSize = new TextEncoder().encode(json).length;
 
-  // 检查是否超过阈值
   if (options.threshold && originalSize < options.threshold) {
     return null;
   }
 
-  // 简单的压缩：移除空格和换行，并尝试压缩重复字符
-  // 对于重复字符（如 "xxxxx"），可以简化为更短的表示
   let compressed = json.replace(/\s+/g, " ").trim();
 
-  // 尝试压缩长重复字符序列（简单的 RLE 压缩）
-  // 匹配 4 个或更多相同字符的序列
   compressed = compressed.replace(/(.)\1{3,}/g, (match, char) => {
-    // 如果重复超过 10 次，使用特殊标记（实际项目中可以使用更高级的压缩）
     if (match.length > 10) {
       return `[${char}*${match.length}]`;
     }
     return match;
   });
 
-  // 计算压缩后的大小
   const compressedSize = new TextEncoder().encode(compressed).length;
 
-  // 如果压缩后反而更大，不压缩
   if (compressedSize >= originalSize) {
     return null;
   }
 
-  // Base64 编码（兼容所有环境）
   const base64 = encodeBase64(compressed);
 
   return {
@@ -112,36 +97,33 @@ export function compressData(
   };
 }
 
-/**
- * Base64 解码（兼容所有环境）
- */
 function base64Decode(str: string): string {
   return decodeBase64(str);
 }
 
 /**
- * 解压数据
+ * Decompress data from base64 string.
  *
- * @param compressed 压缩后的数据（base64 编码的字符串）
- * @returns 解压后的数据
+ * @param compressed - Base64 compressed string
+ * @returns Parsed data or null on error
  */
 export function decompressData(compressed: string): unknown {
   try {
     const decompressed = base64Decode(compressed);
     return JSON.parse(decompressed);
   } catch (error) {
-    console.error("数据解压失败:", error);
+    console.error("Decompress failed:", error);
     return null;
   }
 }
 
 /**
- * 生成压缩数据的加载脚本
+ * Generate script tag that decompresses and assigns to window.__DATA__.
  *
- * @param compressed 压缩后的数据
- * @param originalSize 原始大小
- * @param compressedSize 压缩后大小
- * @returns 加载脚本 HTML
+ * @param compressed - Compressed base64 string
+ * @param originalSize - Original size in bytes
+ * @param compressedSize - Compressed size in bytes
+ * @returns Script HTML string
  */
 export function generateCompressedDataScript(
   compressed: string,
@@ -155,7 +137,7 @@ export function generateCompressedDataScript(
         const decompressed = atob(compressed);
         return JSON.parse(decompressed);
       } catch (error) {
-        console.error('数据解压失败:', error);
+        console.error('Decompress failed:', error);
         return null;
       }
     }
