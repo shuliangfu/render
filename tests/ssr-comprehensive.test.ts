@@ -624,9 +624,10 @@ describe(
         } catch (error) {
           const msg = (error as Error).message;
           expect(
-            /不支持的模板引擎|Unsupported template engine|error\.ssrFailed/.test(
-              msg,
-            ),
+            /不支持的模板引擎|Unsupported template engine|error\.ssrFailed/
+              .test(
+                msg,
+              ),
           ).toBe(true);
         }
       });
