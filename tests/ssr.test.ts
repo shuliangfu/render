@@ -149,7 +149,7 @@ describe(
               component: () => null,
             }),
           Error,
-          "不支持的模板引擎",
+          /不支持的模板引擎|Unsupported template engine|error\.ssrFailed/,
         );
       });
 

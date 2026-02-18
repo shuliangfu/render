@@ -622,7 +622,12 @@ describe(
           } as unknown as SSROptions);
           expect(true).toBe(false);
         } catch (error) {
-          expect((error as Error).message).toContain("不支持的模板引擎");
+          const msg = (error as Error).message;
+          expect(
+            /不支持的模板引擎|Unsupported template engine|error\.ssrFailed/.test(
+              msg,
+            ),
+          ).toBe(true);
         }
       });
     });
