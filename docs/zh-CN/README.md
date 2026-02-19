@@ -706,7 +706,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.32**（2026-02-18）：变更 – 更新 `@dreamer/view` 至 ^1.0.21。
+**v1.0.33**（2026-02-19）：变更 – i18n `$t` → `$tr`。修复 – Bun 兼容：React
+fixture 与适配器共用同一 React 实例（适配器导出 `createElement`），View fixture
+使用 `@dreamer/view/jsx-runtime` 便于 Bun 解析。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

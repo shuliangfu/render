@@ -692,7 +692,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.32** (2026-02-18): Changed – Updated `@dreamer/view` to ^1.0.21.
+**v1.0.33** (2026-02-19): Changed – i18n `$t` → `$tr`. Fixed – Bun
+compatibility: single React instance in React fixture (adapter exports
+`createElement`), View fixture uses `@dreamer/view/jsx-runtime` for Bun
+resolver.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

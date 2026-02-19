@@ -11,7 +11,15 @@
 
 ### 变更
 
-- **i18n**：翻译方法由 `$t` 重命名为 `$tr`，避免与全局 `$t` 冲突。请将现有代码中本包消息改为使用 `$tr`。
+- **i18n**：翻译方法由 `$t` 重命名为 `$tr`，避免与全局 `$t`
+  冲突。请将现有代码中本包消息改为使用 `$tr`。
+
+### 修复
+
+- **Bun 兼容**：React fixture 改为从 client 适配器导入 `createElement`，与 root
+  共用同一 React 实例（避免 Bun 下双 React 导致 `root.render()` 不更新 DOM）。
+  适配器对外导出 `createElement`。View fixture 使用 `@dreamer/view/jsx-runtime`
+  替代 jsr: URL，便于 Bun 解析。
 
 ---
 
