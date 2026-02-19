@@ -7,6 +7,16 @@
 
 ---
 
+## [1.0.34] - 2026-02-19
+
+### 变更
+
+- **i18n**：i18n 在加载 i18n 模块时自动初始化；`initRenderI18n` 不再导出。已从
+  `mod.ts` 中移除显式 `initRenderI18n()` 调用；`$tr` 调用时仍会确保完成初始化。
+- **依赖**：升级 @dreamer/runtime-adapter、@dreamer/test、@dreamer/view。
+
+---
+
 ## [1.0.33] - 2026-02-19
 
 ### 变更

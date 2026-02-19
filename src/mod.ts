@@ -19,11 +19,6 @@
  * ```
  */
 
-import { initRenderI18n } from "./i18n.ts";
-
-// 入口处初始化 render i18n（加载翻译并设置当前 locale，$t 内不再做 ensure/init）
-initRenderI18n();
-
 // Server-related type exports
 export type {
   CacheOptions,

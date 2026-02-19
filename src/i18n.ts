@@ -54,11 +54,8 @@ export function detectLocale(): Locale {
   return "en-US";
 }
 
-/**
- * Create render i18n instance and set locale. Call once at entry (e.g. mod).
- * Does not call install(); uses module instance only.
- */
-export function initRenderI18n(): void {
+/** 内部初始化，导入 i18n 时自动执行，不导出 */
+function initRenderI18n(): void {
   if (renderI18n) return;
   const i18n = createI18n({
     defaultLocale: DEFAULT_LOCALE,
@@ -69,6 +66,8 @@ export function initRenderI18n(): void {
   i18n.setLocale(detectLocale());
   renderI18n = i18n;
 }
+
+initRenderI18n();
 
 /**
  * Translate by key (server-side). Uses module instance; when lang is not passed, uses current locale.
@@ -83,6 +82,7 @@ export function $tr(
   params?: Record<string, string | number>,
   lang?: Locale,
 ): string {
+  if (!renderI18n) initRenderI18n();
   if (!renderI18n) return key;
   if (lang !== undefined) {
     const prev = renderI18n.getLocale();
