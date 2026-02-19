@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.34] - 2026-02-19
+
+### Changed
+
+- **i18n**: i18n now initializes automatically when the i18n module is loaded;
+  `initRenderI18n` is no longer exported. Removed explicit `initRenderI18n()`
+  call from `mod.ts`. `$tr` still ensures init when called.
+- **Dependencies**: Bumped @dreamer/runtime-adapter, @dreamer/test,
+  @dreamer/view.
+
+---
+
 ## [1.0.33] - 2026-02-19
 
 ### Changed

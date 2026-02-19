@@ -706,9 +706,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.33**（2026-02-19）：变更 – i18n `$t` → `$tr`。修复 – Bun 兼容：React
-fixture 与适配器共用同一 React 实例（适配器导出 `createElement`），View fixture
-使用 `@dreamer/view/jsx-runtime` 便于 Bun 解析。
+**v1.0.34**（2026-02-19）：变更 – i18n 在模块加载时自动初始化；`initRenderI18n`
+不再导出；已从 `mod.ts`
+移除显式初始化。依赖升级（runtime-adapter、test、view）。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
