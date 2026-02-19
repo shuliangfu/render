@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **i18n**: Renamed translation method from `$t` to `$tr` to avoid conflict with
   global `$t`. Update existing code to use `$tr` for package messages.
 
+### Fixed
+
+- **Bun compatibility**: React fixture now imports `createElement` from the
+  client adapter so the same React instance is used (avoids double-React under
+  Bun where `root.render()` would not update DOM). React adapter re-exports
+  `createElement` for fixture and callers. View fixture uses
+  `@dreamer/view/jsx-runtime` instead of `jsr:` URL so Bun resolver can resolve.
+
 ---
 
 ## [1.0.32] - 2026-02-18
