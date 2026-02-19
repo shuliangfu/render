@@ -1,15 +1,14 @@
 /**
  * @module @dreamer/render/i18n
  *
- * Server-side i18n for @dreamer/render: uses @dreamer/i18n $t for error messages
- * and logs. Optional `lang`; when not passed, locale is auto-detected from env
- * (LANGUAGE / LC_ALL / LANG). Client-side translation is not implemented yet.
+ * Server-side i18n for @dreamer/render: error and log messages.
+ * Uses $tr + module instance, no install(); locale auto-detected from env
+ * (LANGUAGE/LC_ALL/LANG) when not set.
  */
 
 import {
-  $i18n,
-  getGlobalI18n,
-  getI18n,
+  createI18n,
+  type I18n,
   type TranslationData,
   type TranslationParams,
 } from "@dreamer/i18n";
@@ -25,7 +24,13 @@ export const DEFAULT_LOCALE: Locale = "en-US";
 
 const RENDER_LOCALES: Locale[] = ["en-US", "zh-CN"];
 
-let renderTranslationsLoaded = false;
+const LOCALE_DATA: Record<string, TranslationData> = {
+  "en-US": enUS as TranslationData,
+  "zh-CN": zhCN as TranslationData,
+};
+
+/** Module-scoped i18n instance for render; not installed globally. */
+let renderI18n: I18n | null = null;
 
 /**
  * Detect locale (server-side only): LANGUAGE > LC_ALL > LANG.
@@ -50,45 +55,43 @@ export function detectLocale(): Locale {
 }
 
 /**
- * Load render translations into the current I18n instance (once).
- */
-export function ensureRenderI18n(): void {
-  if (renderTranslationsLoaded) return;
-  const i18n = getGlobalI18n() ?? getI18n();
-  i18n.loadTranslations("en-US", enUS as TranslationData);
-  i18n.loadTranslations("zh-CN", zhCN as TranslationData);
-  renderTranslationsLoaded = true;
-}
-
-/**
- * Load translations and set current locale. Call once at entry (e.g. mod).
+ * Create render i18n instance and set locale. Call once at entry (e.g. mod).
+ * Does not call install(); uses module instance only.
  */
 export function initRenderI18n(): void {
-  ensureRenderI18n();
-  $i18n.setLocale(detectLocale());
+  if (renderI18n) return;
+  const i18n = createI18n({
+    defaultLocale: DEFAULT_LOCALE,
+    fallbackBehavior: "default",
+    locales: [...RENDER_LOCALES],
+    translations: LOCALE_DATA as Record<string, TranslationData>,
+  });
+  i18n.setLocale(detectLocale());
+  renderI18n = i18n;
 }
 
 /**
- * Translate by key (server-side). When lang is not passed, uses current locale (set at entry).
- * Do not call ensure/init inside $t; call initRenderI18n() at entry.
+ * Translate by key (server-side). Uses module instance; when lang is not passed, uses current locale.
+ * When init not called, returns key.
  *
  * @param key - Message key (e.g. "error.renderErrorTitle")
  * @param params - Placeholders (e.g. { engine: "react" })
  * @param lang - Optional locale; omitted = current locale
  */
-export function $t(
+export function $tr(
   key: string,
-  params?: TranslationParams,
+  params?: Record<string, string | number>,
   lang?: Locale,
 ): string {
+  if (!renderI18n) return key;
   if (lang !== undefined) {
-    const prev = $i18n.getLocale();
-    $i18n.setLocale(lang);
+    const prev = renderI18n.getLocale();
+    renderI18n.setLocale(lang);
     try {
-      return $i18n.t(key, params);
+      return renderI18n.t(key, params as TranslationParams);
     } finally {
-      $i18n.setLocale(prev);
+      renderI18n.setLocale(prev);
     }
   }
-  return $i18n.t(key, params);
+  return renderI18n.t(key, params as TranslationParams);
 }

@@ -3,7 +3,7 @@
  */
 
 import { dirname, join, mkdir, writeTextFile } from "@dreamer/runtime-adapter";
-import { $t, type Locale } from "./i18n.ts";
+import { $tr, type Locale } from "./i18n.ts";
 import { renderSSR } from "./ssr.ts";
 import type { SSGOptions } from "./types.ts";
 
@@ -213,7 +213,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
 
       if (!result || typeof result !== "object" || !("html" in result)) {
         throw new Error(
-          $t("error.ssgInvalidResult", { type: typeof result }, locale),
+          $tr("error.ssgInvalidResult", { type: typeof result }, locale),
         );
       }
 
@@ -225,13 +225,13 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
       } else {
         const type = typeof resultHtml;
         console.error(
-          $t("error.ssgResultNotString", { type }, locale),
+          $tr("error.ssgResultNotString", { type }, locale),
           resultHtml,
         );
         html = String(resultHtml);
         if (html === "[object Object]") {
           throw new Error(
-            $t("error.ssgCannotStringify", { type }, locale),
+            $tr("error.ssgCannotStringify", { type }, locale),
           );
         }
       }
@@ -246,7 +246,7 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
 
       if (typeof html !== "string") {
         throw new Error(
-          $t("error.ssgHtmlNotString", { type: typeof html }, locale),
+          $tr("error.ssgHtmlNotString", { type: typeof html }, locale),
         );
       }
 

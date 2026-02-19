@@ -10,6 +10,10 @@
 
 import { createElement, type ReactNode } from "react";
 import { createRoot, hydrateRoot, type Root } from "react-dom/client";
+import { flushSync } from "react-dom";
+
+/** 对外导出，供测试 fixture 等与 root 使用同一 React 实例，避免双 React 导致 DOM 不更新 */
+export { createElement };
 import type {
   CSROptions,
   CSRRenderResult,
@@ -189,7 +193,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
 
     // 使用缓存的 root 或创建新的（会自动清理旧 root）
     root = getOrCreateRoot(containerElement);
-    root.render(element);
+    // 使用 flushSync 确保本次渲染同步提交，便于测试与调用方在返回后立即读取 DOM
+    flushSync(() => {
+      root.render(element);
+    });
 
     debugLog(debug, "CSR", "react render complete");
 

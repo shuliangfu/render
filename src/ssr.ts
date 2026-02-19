@@ -48,7 +48,7 @@ import {
   generateDataScript,
   loadServerData,
 } from "./utils/server-data.ts";
-import { $t, type Locale } from "./i18n.ts";
+import { $tr, type Locale } from "./i18n.ts";
 
 /**
  * Server-side render: call the adapter for the given engine to produce HTML.
@@ -197,7 +197,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       }
       default: {
         const _exhaustive: never = engine;
-        throw new Error($t("error.unsupportedEngine", { engine }, lang));
+        throw new Error($tr("error.unsupportedEngine", { engine }, lang));
       }
     }
   } catch (error) {
@@ -225,7 +225,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
             result = await viewAdapter.renderSSR(fallbackOptions);
             break;
           default:
-            throw new Error($t("error.unsupportedEngine", { engine }, lang));
+            throw new Error($tr("error.unsupportedEngine", { engine }, lang));
         }
       } catch (_fallbackError) {
         result = {
@@ -239,7 +239,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       }
     } else {
       const message = error instanceof Error ? error.message : String(error);
-      throw new Error($t("error.ssrFailed", { engine, message }, lang));
+      throw new Error($tr("error.ssrFailed", { engine, message }, lang));
     }
   }
 
@@ -313,13 +313,13 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   if (typeof result.html !== "string") {
     const type = typeof result.html;
     console.error(
-      $t("error.ssrResultNotString", { type }, lang),
+      $tr("error.ssrResultNotString", { type }, lang),
       result.html,
     );
     result.html = String(result.html);
     if (result.html === "[object Object]") {
       throw new Error(
-        $t("error.ssrCannotStringify", { type }, lang),
+        $tr("error.ssrCannotStringify", { type }, lang),
       );
     }
   }

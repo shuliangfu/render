@@ -5,7 +5,7 @@
  */
 
 import type { Engine, ErrorHandler } from "../types.ts";
-import { $t, type Locale } from "../i18n.ts";
+import { $tr, type Locale } from "../i18n.ts";
 
 /**
  * Handle render error: log, call onError, return whether to use fallback.
@@ -30,7 +30,7 @@ export async function handleRenderError(
 
   if (errorHandler?.logError !== false) {
     console.error(
-      $t("log.renderError", {
+      $tr("log.renderError", {
         engine: context.engine,
         phase: context.phase.toUpperCase(),
       }, lang),
@@ -42,7 +42,7 @@ export async function handleRenderError(
     try {
       await errorHandler.onError(err, context);
     } catch (handlerError) {
-      console.error($t("error.handlerFailed", undefined, lang), handlerError);
+      console.error($tr("error.handlerFailed", undefined, lang), handlerError);
     }
   }
 
@@ -66,7 +66,7 @@ export function generateErrorHTML(
     return "<!--error-boundary-fallback-->";
   }
 
-  const title = $t("error.renderErrorTitle", undefined, lang);
+  const title = $tr("error.renderErrorTitle", undefined, lang);
   return `
     <div style="padding: 20px; font-family: sans-serif;">
       <h1>${title}</h1>

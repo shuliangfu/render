@@ -12,7 +12,7 @@ import { renderToString } from "@dreamer/view";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import { renderToStream } from "@dreamer/view/stream";
 import type { RenderResult, SSROptions } from "../types.ts";
-import { $t, type Locale } from "../i18n.ts";
+import { $tr, type Locale } from "../i18n.ts";
 import { handleRenderError } from "../utils/error-handler.ts";
 import { injectComponentHtml } from "../utils/html-inject.ts";
 import {
@@ -190,7 +190,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         return await renderSSR(fallbackOptions);
       } catch (_fallbackError) {
         const message = error instanceof Error ? error.message : String(error);
-        throw new Error($t("error.viewSsrFailed", { message }, locale));
+        throw new Error($tr("error.viewSsrFailed", { message }, locale));
       }
     }
 

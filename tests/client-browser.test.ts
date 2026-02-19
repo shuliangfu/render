@@ -987,8 +987,7 @@ describe("React 实际渲染（React 入口）", () => {
         component: Comp,
         container: "#app",
       });
-      // React 18 root.render() 异步提交，等待一帧再读 DOM
-      await new Promise((r) => setTimeout(r, 0));
+      // 适配器内已用 flushSync，返回后 DOM 已更新；fixture 与适配器共用同一 React 实例避免 Bun 下双 React 导致不渲染
       const textAfterRender = app?.innerText?.trim() ?? "";
       res.unmount();
       await new Promise((r) => setTimeout(r, 0));
