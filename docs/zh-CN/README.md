@@ -706,9 +706,7 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.34**（2026-02-19）：变更 – i18n 在模块加载时自动初始化；`initRenderI18n`
-不再导出；已从 `mod.ts`
-移除显式初始化。依赖升级（runtime-adapter、test、view）。
+**v1.0.35**（2026-02-19）：变更 – 依赖：更新 @dreamer/view 至 ^1.0.27。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

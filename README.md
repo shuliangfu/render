@@ -692,9 +692,8 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.34** (2026-02-19): Changed – i18n auto-initializes on module load;
-`initRenderI18n` no longer exported; removed explicit init from `mod.ts`.
-Dependency bumps (runtime-adapter, test, view).
+**v1.0.35** (2026-02-19): Changed – Dependencies: Bumped @dreamer/view to
+^1.0.27.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
