@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.35] - 2026-02-19
+
+### Changed
+
+- **Dependencies**: Bumped @dreamer/view to ^1.0.27.
+
+---
+
 ## [1.0.34] - 2026-02-19
 
 ### Changed
