@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import { $t } from "../i18n.ts";
+import { $tr } from "../i18n.ts";
 import type {
   Engine,
   PerformanceMetrics,
@@ -87,7 +87,7 @@ export function recordPerformanceMetrics(
     try {
       options.onMetrics(metrics);
     } catch (error) {
-      console.error($t("error.performanceCallbackFailed"), error);
+      console.error($tr("error.performanceCallbackFailed"), error);
     }
   }
 }

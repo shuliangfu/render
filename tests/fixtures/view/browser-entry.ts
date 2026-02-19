@@ -12,7 +12,8 @@ import {
   renderErrorFallback,
 } from "../../../src/client/mod.ts";
 import { PerformanceMonitor } from "../../../src/client/utils/performance.ts";
-import { jsx } from "jsr:@dreamer/view@^1.0.1/jsx-runtime";
+// 使用 imports 映射路径，兼容 Deno(deno.json) 与 Bun(package.json)，避免 Bun 无法解析 jsr: 协议
+import { jsx } from "@dreamer/view/jsx-runtime";
 
 /** 挂到 globalName，供测试内通过 RenderClient 调用 renderCSR / hydrate；ViewJSX 用于构造 View 组件 */
 const RenderClient = {
