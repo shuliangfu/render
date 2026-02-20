@@ -692,8 +692,8 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.36** (2026-02-20): Changed – Dependencies: Bumped @dreamer/view to
-^1.0.28.
+**v1.0.37** (2026-02-20): Changed – Dependencies: Bumped @dreamer/view to
+^1.0.29.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
