@@ -706,7 +706,7 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.35**（2026-02-19）：变更 – 依赖：更新 @dreamer/view 至 ^1.0.27。
+**v1.0.36**（2026-02-20）：变更 – 依赖：更新 @dreamer/view 至 ^1.0.28。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
