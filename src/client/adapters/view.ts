@@ -7,11 +7,12 @@
  * Uses @dreamer/view createRoot/hydrate for CSR and Hydration. **Exports:** renderCSR, hydrate, buildViewTree, createReactiveRoot (for dweb state-driven patch roots).
  */
 
-import type { VNode } from "@dreamer/view";
 import {
   createReactiveRoot,
+  createReactiveRootHydrate,
   createRoot,
   hydrate as viewHydrate,
+  type VNode,
 } from "@dreamer/view";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import type {
@@ -92,9 +93,10 @@ export function buildViewTree(
 }
 
 /**
- * Re-export createReactiveRoot from @dreamer/view for state-driven patch roots (e.g. dweb).
+ * Re-export createReactiveRoot and createReactiveRootHydrate from @dreamer/view for state-driven patch roots (e.g. dweb).
+ * createReactiveRootHydrate: 首屏用 hydrate 激活，后续在同一根上 patch，避免先 hydrate 再卸根重建。
  */
-export { createReactiveRoot };
+export { createReactiveRoot, createReactiveRootHydrate };
 
 /**
  * Render component to container in browser with View engine (CSR).
@@ -228,6 +230,8 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
  * @throws If component invalid or container not found
  */
 export function hydrate(options: HydrationOptions): CSRRenderResult {
+  // 调试：无条件打印，便于确认首屏是否走了 render 的 hydrate 分支
+  console.log("[@dreamer/render] view hydrate() called");
   const {
     component,
     props = {},

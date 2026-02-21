@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.38] - 2026-02-21
+
+### Added
+
+- **Client exports**: New subpaths `@dreamer/render/client/view-csr` and
+  `@dreamer/render/client/view-hybrid`. `view-csr`: View adapter for CSR only
+  (imports from `@dreamer/view/csr`), smaller bundle when hydration is not
+  needed. `view-hybrid`: View adapter for hybrid apps (imports from
+  `@dreamer/view/hybrid`) with `hydrate` and `createReactiveRootHydrate` for
+  first-paint hydration and subsequent patch.
+- **view adapter**: Re-export `createReactiveRootHydrate` from `@dreamer/view`
+  for state-driven roots that hydrate on first paint then patch on the same
+  root. Debug: `hydrate()` logs once when called to confirm the hydration path.
+
+### Changed
+
+- **Dependencies**: Bumped @dreamer/view to ^1.0.30.
+
+---
+
 ## [1.0.37] - 2026-02-20
 
 ### Changed

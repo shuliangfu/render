@@ -7,6 +7,25 @@
 
 ---
 
+## [1.0.38] - 2026-02-21
+
+### 新增
+
+- **客户端导出**：新增子路径 `@dreamer/render/client/view-csr` 与
+  `@dreamer/render/client/view-hybrid`。`view-csr`：仅 CSR 的 View 适配器 （从
+  `@dreamer/view/csr` 导入），无需水合时 bundle 更小。`view-hybrid`： 混合应用
+  View 适配器（从 `@dreamer/view/hybrid` 导入），提供 `hydrate` 与
+  `createReactiveRootHydrate`，用于首屏水合及后续 patch。
+- **view 适配器**：从 `@dreamer/view` 再导出 `createReactiveRootHydrate`，供
+  首屏 hydrate、后续在同一根上 patch 的状态驱动场景。调试：`hydrate()` 被
+  调用时打印一次日志，便于确认走的是水合分支。
+
+### 变更
+
+- **依赖**：更新 @dreamer/view 至 ^1.0.30。
+
+---
+
 ## [1.0.37] - 2026-02-20
 
 ### 变更
