@@ -706,7 +706,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.37**（2026-02-20）：变更 – 依赖：更新 @dreamer/view 至 ^1.0.29。
+**v1.0.38**（2026-02-21）：新增 – 客户端子路径
+`@dreamer/render/client/view-csr`、`@dreamer/render/client/view-hybrid`；view
+适配器再导出 `createReactiveRootHydrate`。变更 – 依赖：@dreamer/view ^1.0.30。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
