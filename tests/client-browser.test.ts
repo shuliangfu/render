@@ -538,6 +538,129 @@ describe("客户端渲染 - View 入口", () => {
     expect(result.textAfterUnmount).toBe("");
   }, browserConfigView);
 
+  it("View: view-csr 适配器 renderCSR 应正确挂载并卸载", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.viewCsr?.renderCSR || !RenderClient.ViewJSX) {
+        return { error: "viewCsr or ViewJSX not available" };
+      }
+      const app = document.getElementById("app");
+      if (!app) return { error: "app not found" };
+      app.innerHTML = "";
+
+      const Comp = () =>
+        RenderClient.ViewJSX(
+          "div",
+          { children: "view-csr content" },
+          undefined,
+        );
+      const res = RenderClient.viewCsr.renderCSR({
+        component: Comp,
+        container: "#app",
+      });
+      const textAfter = app?.innerText?.trim() ?? "";
+      res.unmount();
+      const textAfterUnmount = app?.innerText?.trim() ?? "";
+      return {
+        textAfter,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfter).toContain("view-csr content");
+    expect(result.textAfterUnmount).toBe("");
+    expect(result.hasUnmount).toBe(true);
+  }, browserConfigView);
+
+  it("View: view-hybrid 适配器 hydrate 应激活并保留内容", async (ctx) => {
+    if ((ctx as any)._browserSetupError) return;
+    const browser = (ctx as any).browser;
+    if (!browser) return;
+
+    const result = await browser.evaluate(async () => {
+      const RenderClient = (globalThis as any).RenderClient;
+      if (!RenderClient?.viewHybrid?.hydrate || !RenderClient.ViewJSX) {
+        return { error: "viewHybrid or ViewJSX not available" };
+      }
+      const container = document.getElementById("hydrate-app");
+      if (!container) return { error: "hydrate-app not found" };
+      container.innerHTML = "<p>SSR content</p>";
+
+      const Comp = () =>
+        RenderClient.ViewJSX(
+          "div",
+          {
+            children: RenderClient.ViewJSX(
+              "p",
+              { children: "SSR content" },
+              undefined,
+            ),
+          },
+          undefined,
+        );
+      const res = RenderClient.viewHybrid.hydrate({
+        component: Comp,
+        container: "#hydrate-app",
+      });
+      const textAfter = container?.innerText?.trim() ?? "";
+      res.unmount();
+      const textAfterUnmount = container?.innerText?.trim() ?? "";
+      return {
+        textAfter,
+        textAfterUnmount,
+        hasUnmount: typeof res.unmount === "function",
+      };
+    });
+
+    if (result.error) {
+      console.warn("测试跳过:", result.error);
+      return;
+    }
+    expect(result.textAfter).toContain("SSR content");
+    expect(result.hasUnmount).toBe(true);
+    expect(result.textAfterUnmount).toBe("");
+  }, browserConfigView);
+
+  it(
+    "View: view-hybrid 应导出 createReactiveRoot 与 createReactiveRootHydrate",
+    async (ctx) => {
+      if ((ctx as any)._browserSetupError) return;
+      const browser = (ctx as any).browser;
+      if (!browser) return;
+
+      const result = await browser.evaluate(() => {
+        const RenderClient = (globalThis as any).RenderClient;
+        if (!RenderClient?.viewHybrid) {
+          return { error: "viewHybrid not available" };
+        }
+        return {
+          hasCreateReactiveRoot:
+            typeof RenderClient.viewHybrid.createReactiveRoot === "function",
+          hasCreateReactiveRootHydrate:
+            typeof RenderClient.viewHybrid.createReactiveRootHydrate ===
+              "function",
+        };
+      });
+
+      if (result.error) {
+        console.warn("测试跳过:", result.error);
+        return;
+      }
+      expect(result.hasCreateReactiveRoot).toBe(true);
+      expect(result.hasCreateReactiveRootHydrate).toBe(true);
+    },
+    browserConfigView,
+  );
+
   it(
     "View: Hybrid 流程（先 hydrate 再 unmount 再 CSR）主体区正确显示",
     async (ctx) => {
