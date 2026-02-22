@@ -7,7 +7,6 @@ deno.lock
 
 # 依赖
 node_modules
-package.json
 bun.lock
 
 # 构建输出
@@ -32,7 +31,6 @@ tests/data/
 tests/output/
 tests/**/data/
 .snapshots/
-.npmrc
 
 # 测试覆盖率
 coverage/
