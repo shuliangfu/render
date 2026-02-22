@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.39] - 2026-02-22
+
+### Added
+
+- **JSR publish**: Include `package.json` in published JSR package so Bun and
+  npm consumers can read `peerDependencies` (Preact, React, etc.) and avoid
+  duplicate runtime instances when using `bun add jsr:@dreamer/render` or future
+  npm installs.
+
+---
+
 ## [1.0.38] - 2026-02-21
 
 ### Added
