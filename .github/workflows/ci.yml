@@ -109,9 +109,13 @@ jobs:
       - name: Lint
         run: deno lint
 
-      # 串行运行避免多 suite 同时 bundle（esbuild "service is no longer running"）
-      - name: Test (Bun)
-        run: bun test tests/ --max-concurrency=1
+      # 非浏览器用例 + 浏览器用例分进程跑，避免同进程内 Preact/React 两次 bundle 导致 esbuild 停止
+      - name: Test (Bun, non-browser)
+        run: bun test $(ls tests/*.test.ts | grep -v client-browser) --max-concurrency=1
+      - name: Test (Bun, browser Preact)
+        run: bun test tests/client-browser.test.ts --test-name-pattern "Preact" --max-concurrency=1
+      - name: Test (Bun, browser React)
+        run: bun test tests/client-browser.test.ts --test-name-pattern "React" --max-concurrency=1
 
   # --- Bun: macOS ---
   test-macos-bun:
@@ -142,9 +146,13 @@ jobs:
       - name: Lint
         run: deno lint
 
-      # 串行运行避免多 suite 同时 bundle（esbuild "service is no longer running"）
-      - name: Test (Bun, macOS)
-        run: bun test tests/ --max-concurrency=1
+      # 非浏览器用例 + 浏览器用例分进程跑，避免同进程内 Preact/React 两次 bundle 导致 esbuild 停止
+      - name: Test (Bun, macOS, non-browser)
+        run: bun test $(ls tests/*.test.ts | grep -v client-browser) --max-concurrency=1
+      - name: Test (Bun, macOS, browser Preact)
+        run: bun test tests/client-browser.test.ts --test-name-pattern "Preact" --max-concurrency=1
+      - name: Test (Bun, macOS, browser React)
+        run: bun test tests/client-browser.test.ts --test-name-pattern "React" --max-concurrency=1
 
   # --- Bun: Windows ---
   # Windows 上浏览器测试由 test-windows (Deno) 覆盖；Bun 在 Windows 存在已知 bug（chromium.launch 卡住，见 oven-sh/bun#15679），此处仅跑非 browser 用例
