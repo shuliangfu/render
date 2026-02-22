@@ -31,7 +31,7 @@
     "scheduler": "npm:scheduler@0.27.0"
   },
   "devDependencies": {
-    "@dreamer/test": "npm:@jsr/dreamer__test@^1.0.14"
+    "@dreamer/test": "npm:@jsr/dreamer__test@^1.0.15"
   },
   "engines": {
     "bun": ">=1.3"
