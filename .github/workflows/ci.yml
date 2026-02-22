@@ -79,3 +79,100 @@ jobs:
 
       - name: Test (Deno, Windows)
         run: deno test -A --no-check tests/
+
+  # --- Bun: Linux ---
+  test-linux-bun:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies (Bun)
+        run: bun install
+
+      - name: Install Playwright Chromium
+        run: npx -y playwright@latest install chromium
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.5
+
+      - name: Cache Deno dependencies
+        run: deno cache src/mod.ts tests/ 2>/dev/null || true
+
+      - name: Check
+        run: deno check src/ tests/
+
+      - name: Lint
+        run: deno lint
+
+      - name: Test (Bun)
+        run: bun test tests/
+
+  # --- Bun: macOS ---
+  test-macos-bun:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies (Bun)
+        run: bun install
+
+      - name: Install Playwright Chromium
+        run: npx -y playwright@latest install chromium
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.5
+
+      - name: Cache Deno dependencies
+        run: deno cache src/mod.ts tests/ 2>/dev/null || true
+
+      - name: Check
+        run: deno check src/ tests/
+
+      - name: Lint
+        run: deno lint
+
+      - name: Test (Bun, macOS)
+        run: bun test tests/
+
+  # --- Bun: Windows ---
+  # Windows 上浏览器测试由 test-windows (Deno) 覆盖；Bun 在 Windows 存在已知 bug（chromium.launch 卡住，见 oven-sh/bun#15679），此处仅跑非 browser 用例
+  test-windows-bun:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies (Bun)
+        run: bun install
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.5
+
+      - name: Cache Deno dependencies
+        run: deno cache src/mod.ts tests/
+
+      - name: Check
+        run: deno check src/ tests/
+
+      - name: Lint
+        run: deno lint
+
+      - name: Test (Bun, Windows, exclude browser)
+        shell: pwsh
+        run: |
+          $nonBrowser = Get-ChildItem -Path tests -Filter "*.test.ts" -File | Where-Object { $_.Name -notlike "*browser*" } | ForEach-Object { "tests/" + $_.Name }
+          bun test @nonBrowser
