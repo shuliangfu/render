@@ -706,9 +706,8 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.0.38**（2026-02-21）：新增 – 客户端子路径
-`@dreamer/render/client/view-csr`、`@dreamer/render/client/view-hybrid`；view
-适配器再导出 `createReactiveRootHydrate`。变更 – 依赖：@dreamer/view ^1.0.30。
+**v1.0.39**（2026-02-22）：新增 – JSR 发布包含 `package.json`，便于 Bun 与 npm
+消费者读取 `peerDependencies`，避免 Preact/React 双实例。
 
 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

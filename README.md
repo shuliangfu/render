@@ -692,10 +692,9 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.38** (2026-02-21): Added – Client subpaths
-`@dreamer/render/client/view-csr` and `@dreamer/render/client/view-hybrid`; view
-adapter re-exports `createReactiveRootHydrate`. Changed – Dependencies:
-@dreamer/view ^1.0.30.
+**v1.0.39** (2026-02-22): Added – Include `package.json` in JSR publish so Bun
+and npm consumers get `peerDependencies` and avoid duplicate Preact/React
+instances.
 
 See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 

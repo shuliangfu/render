@@ -7,6 +7,16 @@
 
 ---
 
+## [1.0.39] - 2026-02-22
+
+### 新增
+
+- **JSR 发布**：将 `package.json` 纳入 JSR 发布内容，便于 Bun 与 npm 消费者读取
+  `peerDependencies`（Preact、React 等），在使用 `bun add jsr:@dreamer/render`
+  或未来 npm 安装时避免重复运行时实例。
+
+---
+
 ## [1.0.38] - 2026-02-21
 
 ### 新增
