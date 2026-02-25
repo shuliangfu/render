@@ -15,6 +15,7 @@ import {
   createComponentTree,
   shouldSkipLayouts,
 } from "../utils/layout.ts";
+import { type Locale, setRenderLocale } from "../i18n.ts";
 
 /**
  * 调试日志：仅当 debug 为 true 时输出
@@ -44,7 +45,12 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     template,
     stream = false,
     debug,
+    lang,
   } = options;
+
+  const locale = lang as Locale | undefined;
+
+  if (locale) setRenderLocale(locale);
 
   debugLog(debug, "react", "start", {
     stream,

@@ -12,7 +12,7 @@ import { renderToString } from "@dreamer/view";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import { renderToStream } from "@dreamer/view/stream";
 import type { RenderResult, SSROptions } from "../types.ts";
-import { $tr, type Locale } from "../i18n.ts";
+import { $tr, type Locale, setRenderLocale } from "../i18n.ts";
 import { handleRenderError } from "../utils/error-handler.ts";
 import { injectComponentHtml } from "../utils/html-inject.ts";
 import {
@@ -98,6 +98,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
   } = options;
 
   const locale = lang as Locale | undefined;
+
+  if (locale) setRenderLocale(locale);
 
   debugLog(debug, "view", "start", {
     stream,

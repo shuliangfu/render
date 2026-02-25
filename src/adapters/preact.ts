@@ -10,7 +10,7 @@
 import { createElement } from "preact";
 import { renderToString } from "preact-render-to-string";
 import type { RenderResult, SSROptions } from "../types.ts";
-import { $tr, type Locale } from "../i18n.ts";
+import { $tr, type Locale, setRenderLocale } from "../i18n.ts";
 import { handleRenderError } from "../utils/error-handler.ts";
 import { injectComponentHtml } from "../utils/html-inject.ts";
 import {
@@ -108,6 +108,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
 
   const locale = lang as Locale | undefined;
 
+  if (locale) setRenderLocale(locale);
+
   debugLog(debug, "preact", "start", {
     stream,
     layoutsCount: layouts?.length ?? 0,
@@ -157,7 +159,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     if (stream) {
       html = await renderToStream(element);
     } else {
-      html = renderToString(element);
+      html = await renderToString(element);
     }
 
     debugLog(debug, "preact", "renderToString complete", {
@@ -192,7 +194,6 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       error,
       { engine: "preact", component, phase: "ssr" },
       errorHandler,
-      locale,
     );
 
     if (shouldContinue && errorHandler?.fallbackComponent) {
@@ -204,7 +205,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         return await renderSSR(fallbackOptions);
       } catch (_fallbackError) {
         const message = error instanceof Error ? error.message : String(error);
-        throw new Error($tr("error.preactSsrFailed", { message }, locale));
+        throw new Error($tr("error.preactSsrFailed", { message }));
       }
     }
 

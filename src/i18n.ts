@@ -69,6 +69,10 @@ function initRenderI18n(): void {
 
 initRenderI18n();
 
+export function setRenderLocale(locale: Locale): void {
+  if (!renderI18n) initRenderI18n();
+  renderI18n?.setLocale(locale);
+}
 /**
  * Translate by key (server-side). Uses module instance; when lang is not passed, uses current locale.
  * When init not called, returns key.
