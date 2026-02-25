@@ -692,10 +692,8 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.0.40** (2026-02-25): Changed – Bumped @dreamer/view dependency for
-compatibility.
-
-See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
+**v1.0.41** (2026-02-25): Changed – Updated related dependencies for
+compatibility. See [CHANGELOG.md](./docs/en-US/CHANGELOG.md) for full history.
 
 ---
 

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.41] - 2026-02-25
+
+### Changed
+
+- **Dependencies**: Updated related dependencies for compatibility.
+
+---
+
 ## [1.0.40] - 2026-02-25
 
 ### Changed
