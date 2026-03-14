@@ -7,6 +7,15 @@
 
 ---
 
+## [1.1.1] - 2026-03-14
+
+### 变更
+
+- **依赖**：将 @dreamer/view 更新至 ^1.1.4，以兼容 view v1.1.4（统一 escape、
+  getCreateRootDeps、directive-name、性能优化及 store/proxy 订阅者清理修复）。
+
+---
+
 ## [1.1.0] - 2026-03-12
 
 ### 变更

@@ -706,8 +706,8 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.1.0**（2026-03-12）：变更 – 将 @dreamer/view 更新至 ^1.1.3，兼容 view
-动态子节点单节点优化。完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
+**v1.1.1**（2026-03-14）：变更 – 将 @dreamer/view 更新至 ^1.1.4，兼容 view
+v1.1.4。完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 
