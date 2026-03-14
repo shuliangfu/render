@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.1] - 2026-03-14
+
+### Changed
+
+- **Dependencies**: Bumped @dreamer/view to ^1.1.4 for compatibility with view
+  v1.1.4 (unified escape, getCreateRootDeps, directive-name, performance
+  optimizations, and store/proxy subscriber cleanup fix).
+
+---
+
 ## [1.1.0] - 2026-03-12
 
 ### Changed
