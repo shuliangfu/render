@@ -8,6 +8,7 @@
  * **导出：** renderCSR、buildViewTree（mount/createReactiveRoot 由使用方从 @dreamer/view/csr 直接导入）
  */
 
+import { insert } from "@dreamer/view";
 import { createRoot, type VNode } from "@dreamer/view/csr";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import type { CSROptions, CSRRenderResult } from "../types.ts";
@@ -142,7 +143,11 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
-    let currentRoot = createRoot(() => rootVNode, containerElement);
+    /** 与主 view 适配器一致：createRoot 要求 fn(container)，内部 insert(container, getter) 挂载 VNode */
+    let currentRoot = createRoot(
+      (el) => insert(el, () => rootVNode),
+      containerElement,
+    );
 
     debugLog(debug, "CSR", "view render complete");
 
@@ -162,7 +167,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
           viewCreateElement,
           { component, props: newProps },
         ) as VNode;
-        currentRoot = createRoot(() => newVNode, containerElement);
+        currentRoot = createRoot(
+          (el) => insert(el, () => newVNode),
+          containerElement,
+        );
       },
       instance: containerElement,
       performance: performanceMetrics,
@@ -182,7 +190,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
               props: { error },
             },
           ) as VNode;
-          createRoot(() => fallbackVNode, containerElement);
+          createRoot(
+            (el) => insert(el, () => fallbackVNode),
+            containerElement,
+          );
         } catch {
           renderErrorFallback(
             containerElement,

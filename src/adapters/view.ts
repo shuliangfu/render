@@ -7,10 +7,9 @@
  * 注意：客户端 CSR 和 Hydration 在 @dreamer/render/client 的 view 适配器中。
  */
 
-import type { VNode } from "@dreamer/view";
-import { renderToString } from "@dreamer/view";
+import { insert, type VNode } from "@dreamer/view";
+import { renderToStream, renderToString } from "@dreamer/view/ssr";
 import { jsx } from "@dreamer/view/jsx-runtime";
-import { renderToStream } from "@dreamer/view/stream";
 import type { RenderResult, SSROptions } from "../types.ts";
 import { $tr, type Locale, setRenderLocale } from "../i18n.ts";
 import { handleRenderError } from "../utils/error-handler.ts";
@@ -51,11 +50,13 @@ function viewCreateElement(
  * View 流式渲染：使用 renderToStream 生成器，读完后拼接为字符串
  * （与 Preact 适配器行为一致，便于 injectMultiple 等后续处理）。
  */
-async function viewStreamToHtml(
-  fn: () => VNode,
-  options?: { allowRawHtml?: boolean },
-): Promise<string> {
-  const gen = renderToStream(fn, options);
+async function viewStreamToHtml(fn: () => VNode): Promise<string> {
+  /** renderToStream 的 container 与 insert 父节点在运行时为同一 SSR 文档模型；断言避免 JSR 与 node 双份类型冲突 */
+  type InsertParent = Parameters<typeof insert>[0];
+  const gen = renderToStream(
+    (container) => insert(container as InsertParent, fn),
+    {},
+  );
   const chunks: string[] = [];
   for await (const chunk of gen) {
     chunks.push(chunk);
@@ -93,7 +94,6 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     errorHandler,
     performance: perfOptions,
     debug,
-    options: viewOptions,
     lang,
   } = options;
 
@@ -141,13 +141,18 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     ) as VNode;
 
     const rootFn = () => rootVNode;
-    const ssrOpts = viewOptions as { allowRawHtml?: boolean } | undefined;
+    /** renderToString 要求 (container: SSRElement)=>void；与 insert 父节点一致，断言消除双解析路径下的类型不兼容 */
+    type InsertParent = Parameters<typeof insert>[0];
+    const mountFn = (container: InsertParent) => insert(container, rootFn);
 
     let html: string;
     if (stream) {
-      html = await viewStreamToHtml(rootFn, ssrOpts);
+      html = await viewStreamToHtml(rootFn);
     } else {
-      html = renderToString(rootFn, ssrOpts);
+      html = renderToString(
+        mountFn as Parameters<typeof renderToString>[0],
+        {},
+      );
     }
 
     debugLog(debug, "view", "renderToString complete", {

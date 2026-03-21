@@ -7,6 +7,44 @@
 
 ---
 
+## [1.1.2] - 2026-03-21
+
+### 变更
+
+- **@dreamer/view（v1.3.x）**：对等依赖与 `deno.json` 锁定为 **`^1.3.1`**，对齐
+  view **v1.3** 的 **`fn(container) + insert`** 根挂载模型：**`createRoot`**、
+  **`hydrate`**、**`renderToString`** 均要求挂载函数 **`(container) => void`**，
+  并在其内调用 **`insert(container, () => VNode)`**，不再传入「直接返回 VNode」
+  的旧形态。
+
+### 重构
+
+- **View 服务端**（`src/adapters/view.ts`）：自 **`@dreamer/view/ssr`** 引入
+  **`renderToString` / `renderToStream`**，自 **`@dreamer/view`** 引入
+  **`insert`**。流式与非流式均通过 **`(c) => insert(c, rootFn)`** 挂载；在 JSR
+  与 npm 类型图不一致处使用 **`Parameters<typeof insert>[0]`** 收窄断言。
+
+### 修复
+
+- **View 客户端**（`view.ts`、`view-csr.ts`、`view-hybrid.ts`）：CSR / 水合 / 热
+  替换 / 错误回退均使用挂载函数 + **`insert`**；**`hydrate`** 来自
+  **`@dreamer/view/compiler`**。
+- **`createReactiveRoot` / `createReactiveRootHydrate`**：在
+  **`client/adapters/view.ts`** 内用 **`createRoot` / `hydrate` + `insert`**
+  实现（view 已移除内置 API）；**`view-hybrid`** 自 **`./view.ts`** 再导出以
+  保持对外表面一致。
+- 移除 view 水合路径上的调试 **`console.log`**。
+- **测试**：水合 HTML 夹具增加包裹 **`div`**；**`hydrate().unmount()`** 断言与
+  view 语义一致（**回收 effect，保留 SSR 标记**）。
+
+### 说明
+
+- **View 引擎下的 `SSROptions.options`**：不再向下游 **`renderToString` /
+  `renderToStream`** 透传。若曾依赖该字段传递 view 专有选项，请按 **view 1.3.x**
+  支持方式迁移。
+
+---
+
 ## [1.1.1] - 2026-03-14
 
 ### 变更

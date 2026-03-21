@@ -692,9 +692,12 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.1.1** (2026-03-14): Changed – Bumped @dreamer/view to ^1.1.4 for
-compatibility with view v1.1.4. See [CHANGELOG.md](./docs/en-US/CHANGELOG.md)
-for full history.
+**v1.1.2** (2026-03-21): **Changed** **@dreamer/view ^1.3.1**; View **mount fn +
+`insert`** for SSR/CSR/hydrate (view v1.3). **Refactored** SSR via
+**`@dreamer/view/ssr`**, hydrate via **`@dreamer/view/compiler`**. **Fixed**
+local **`createReactiveRoot*`**, hydrate tests / **unmount** semantics.
+**Note:** View **`SSROptions.options`** not forwarded. Full history:
+[CHANGELOG.md](./docs/en-US/CHANGELOG.md).
 
 ---
 

@@ -706,8 +706,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.1.1**（2026-03-14）：变更 – 将 @dreamer/view 更新至 ^1.1.4，兼容 view
-v1.1.4。完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
+**v1.1.2**（2026-03-21）：**变更** **@dreamer/view ^1.3.1**；View 端
+**挂载函数 + `insert`**（view v1.3）。**重构** SSR 走
+**`@dreamer/view/ssr`**，**`hydrate`** 自 **`@dreamer/view/compiler`**。**修复**
+本地 **`createReactiveRoot*`**、水合 测试与 **unmount** 语义。**说明** View 下
+**`SSROptions.options`** 不透传。完整 历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 

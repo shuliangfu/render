@@ -10,7 +10,7 @@ import { afterAll, describe, expect, it } from "@dreamer/test";
 /** 通用 body，三个入口共用 */
 const sharedBodyContent = `
   <div id="app"></div>
-  <div id="hydrate-app"><p>Server rendered content</p></div>
+  <div id="hydrate-app"><div><p>Server rendered content</p></div></div>
   <div id="error-app"></div>
 `;
 
@@ -522,6 +522,7 @@ describe("客户端渲染 - View 入口", () => {
       const container = document.getElementById("hydrate-app");
       if (!container) return { error: "hydrate-app not found" };
       // 服务端 HTML：<p>Server rendered content</p>
+      /** 与 fixture 中 #hydrate-app 内结构一致：div > p > 文本 */
       const ViewComp = () =>
         RenderClient.ViewJSX(
           "div",
@@ -553,7 +554,8 @@ describe("客户端渲染 - View 入口", () => {
     }
     expect(result.textAfterHydrate).toContain("Server rendered content");
     expect(result.hasUnmount).toBe(true);
-    expect(result.textAfterUnmount).toBe("");
+    /** hydrate 的 unmount 仅回收 effect，保留服务端 HTML（与 view 的 hydrate.unmount 语义一致） */
+    expect(result.textAfterUnmount).toContain("Server rendered content");
   }, browserConfigView);
 
   it("View: view-csr 适配器 renderCSR 应正确挂载并卸载", async (ctx) => {
@@ -611,7 +613,7 @@ describe("客户端渲染 - View 入口", () => {
       }
       const container = document.getElementById("hydrate-app");
       if (!container) return { error: "hydrate-app not found" };
-      container.innerHTML = "<p>SSR content</p>";
+      container.innerHTML = "<div><p>SSR content</p></div>";
 
       const Comp = () =>
         RenderClient.ViewJSX(
@@ -645,7 +647,8 @@ describe("客户端渲染 - View 入口", () => {
     }
     expect(result.textAfter).toContain("SSR content");
     expect(result.hasUnmount).toBe(true);
-    expect(result.textAfterUnmount).toBe("");
+    /** hydrate 的 unmount 仅回收 effect，保留服务端 HTML（与 view 的 hydrate.unmount 语义一致） */
+    expect(result.textAfterUnmount).toContain("SSR content");
   }, browserConfigView);
 
   it(
