@@ -4,16 +4,11 @@
  * @module @dreamer/render/client/view
  * @packageDocumentation
  *
- * Uses @dreamer/view createRoot/hydrate for CSR and Hydration. **Exports:** renderCSR, hydrate, buildViewTree, createReactiveRoot (for dweb state-driven patch roots).
+ * Uses @dreamer/view createRoot + insert 与 @dreamer/view/compiler hydrate。重构后 view 的 createRoot(fn, container) 要求 fn 为 (container)=>void，内部用 insert(container, getter) 挂载；hydrate 从 compiler 子路径导入。createReactiveRoot 由本适配器用 createRoot + insert(getter) 实现。
  */
 
-import {
-  createReactiveRoot,
-  createReactiveRootHydrate,
-  createRoot,
-  hydrate as viewHydrate,
-  type VNode,
-} from "@dreamer/view";
+import { createRoot, insert, type VNode } from "@dreamer/view";
+import { hydrate as viewHydrate } from "@dreamer/view/compiler";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import type {
   CSROptions,
@@ -93,10 +88,41 @@ export function buildViewTree(
 }
 
 /**
- * Re-export createReactiveRoot and createReactiveRootHydrate from @dreamer/view for state-driven patch roots (e.g. dweb).
- * createReactiveRootHydrate: 首屏用 hydrate 激活，后续在同一根上 patch，避免先 hydrate 再卸根重建。
+ * 状态驱动根：用 createRoot + insert(container, () => buildTree(getState())) 实现，getState 变化时 insertReactive 会重新挂载。
+ * 重构后 view 已移除 createReactiveRoot，由本适配器基于 createRoot 实现以兼容 dweb 等调用方。
  */
-export { createReactiveRoot, createReactiveRootHydrate };
+export function createReactiveRoot<T>(
+  container: Element,
+  getState: () => T,
+  buildTree: (state: T) => VNode,
+): { unmount: () => void; container: Element } {
+  const root = createRoot(
+    (el) => insert(el, () => buildTree(getState())),
+    container,
+  );
+  return {
+    unmount: root.unmount,
+    container: root.container ?? container,
+  };
+}
+
+/**
+ * 首屏水合 + 状态驱动：用 hydrate + insert(container, () => buildTree(getState()))，避免先 hydrate 再卸根重建。
+ */
+export function createReactiveRootHydrate<T>(
+  container: Element,
+  getState: () => T,
+  buildTree: (state: T) => VNode,
+): { unmount: () => void; container: Element } {
+  const root = viewHydrate(
+    (el) => insert(el, () => buildTree(getState())),
+    container,
+  );
+  return {
+    unmount: root.unmount,
+    container: root.container ?? container,
+  };
+}
 
 /**
  * Render component to container in browser with View engine (CSR).
@@ -158,7 +184,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
-    let currentRoot = createRoot(() => rootVNode, containerElement);
+    let currentRoot = createRoot(
+      (el) => insert(el, () => rootVNode),
+      containerElement,
+    );
 
     debugLog(debug, "CSR", "view render complete");
 
@@ -178,7 +207,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
           viewCreateElement,
           { component, props: newProps },
         ) as VNode;
-        currentRoot = createRoot(() => newVNode, containerElement);
+        currentRoot = createRoot(
+          (el) => insert(el, () => newVNode),
+          containerElement,
+        );
       },
       instance: containerElement,
       performance: performanceMetrics,
@@ -198,7 +230,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
               props: { error },
             },
           ) as VNode;
-          createRoot(() => fallbackVNode, containerElement);
+          createRoot(
+            (el) => insert(el, () => fallbackVNode),
+            containerElement,
+          );
         } catch {
           renderErrorFallback(
             containerElement,
@@ -230,8 +265,6 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
  * @throws If component invalid or container not found
  */
 export function hydrate(options: HydrationOptions): CSRRenderResult {
-  // 调试：无条件打印，便于确认首屏是否走了 render 的 hydrate 分支
-  console.log("[@dreamer/render] view hydrate() called");
   const {
     component,
     props = {},
@@ -285,7 +318,10 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
-    let currentRoot = viewHydrate(() => rootVNode, containerElement);
+    let currentRoot = viewHydrate(
+      (el) => insert(el, () => rootVNode),
+      containerElement,
+    );
 
     debugLog(debug, "hydrate", "view hydrate complete");
 
@@ -305,7 +341,10 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
           viewCreateElement,
           { component, props: newProps },
         ) as VNode;
-        currentRoot = createRoot(() => newVNode, containerElement);
+        currentRoot = createRoot(
+          (el) => insert(el, () => newVNode),
+          containerElement,
+        );
       },
       instance: containerElement,
       performance: performanceMetrics,
@@ -326,7 +365,10 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
               props: { error },
             },
           ) as VNode;
-          createRoot(() => fallbackVNode, containerElement);
+          createRoot(
+            (el) => insert(el, () => fallbackVNode),
+            containerElement,
+          );
         } catch {
           renderErrorFallback(
             containerElement,

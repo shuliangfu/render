@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.2] - 2026-03-21
+
+### Changed
+
+- **@dreamer/view (v1.3.x)**: Require **`^1.3.1`** (`peerDependencies` and
+  `deno.json` imports). Aligns with view **v1.3** **`fn(container) + insert`**
+  roots: **`createRoot`**, **`hydrate`**, and **`renderToString`** expect a
+  **mount function** **`(container) => void`** that calls
+  **`insert(container, () => VNode)`**, not a bare VNode factory.
+
+### Refactored
+
+- **View SSR** (`src/adapters/view.ts`): Use **`renderToString`** /
+  **`renderToStream`** from **`@dreamer/view/ssr`**, **`insert`** from
+  **`@dreamer/view`**. Stream and string paths wrap
+  **`(c) => insert(c,
+  rootFn)`**; narrow casts use
+  **`Parameters<typeof insert>[0]`** where JSR vs npm type graphs would
+  otherwise disagree.
+
+### Fixed
+
+- **View client** (`view.ts`, `view-csr.ts`, `view-hybrid.ts`): CSR / hydrate /
+  hot-swap / error fallbacks use mount-fn + **`insert`**; **`hydrate`** from
+  **`@dreamer/view/compiler`**.
+- **`createReactiveRoot` / `createReactiveRootHydrate`**: Implemented in
+  **`client/adapters/view.ts`** with **`createRoot`/`hydrate` + insert** (view
+  removed built-ins); **`view-hybrid`** re-exports from **`./view.ts`**.
+- Removed debug **`console.log`** from view hydrate paths.
+- **Tests**: Hydration fixtures use wrapper **`div`**; **`hydrate().unmount()`**
+  expectations match view (**effects off, SSR HTML kept**).
+
+### Note
+
+- **`SSROptions.options` (View)**: No longer forwarded into view
+  **`renderToString` / `renderToStream`**. Migrate if you relied on that.
+
+---
+
 ## [1.1.1] - 2026-03-14
 
 ### Changed
