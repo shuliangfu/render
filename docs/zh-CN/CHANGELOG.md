@@ -7,6 +7,24 @@
 
 ---
 
+## [1.1.3] - 2026-03-26
+
+### 变更
+
+- **@dreamer/view**：在 **`deno.json`**（**`jsr:@dreamer/view@^1.3.7`**）与
+  **`package.json`**（**`npm:@jsr/dreamer__view@^1.3.7`**）中升至 **`^1.3.7`**，
+  与 **@dreamer/view v1.3.7** 对齐（上游编译器/运行时更新详见 view 变更日志）。
+- **`package.json`（npm）**：将 **`@dreamer/view`**、**React**、**Preact**、
+  **`preact-render-to-string`**、**`react-dom`**、**`scheduler`** 归入
+  **`dependencies`**；移除原 **`peerDependencies`** 块，**`npm install`**
+  时由传递依赖直接解析，无需单独安装 peer。**`@dreamer/view`** 不再放在
+  **`devDependencies`** 重复声明。
+- **CI**（`.github/workflows/ci.yml`）：设置工作流级
+  **`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`**，供基于 Node 的 Actions 使用 Node
+  24。
+
+---
+
 ## [1.1.2] - 2026-03-21
 
 ### 变更

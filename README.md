@@ -692,11 +692,9 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.1.2** (2026-03-21): **Changed** **@dreamer/view ^1.3.1**; View **mount fn +
-`insert`** for SSR/CSR/hydrate (view v1.3). **Refactored** SSR via
-**`@dreamer/view/ssr`**, hydrate via **`@dreamer/view/compiler`**. **Fixed**
-local **`createReactiveRoot*`**, hydrate tests / **unmount** semantics.
-**Note:** View **`SSROptions.options`** not forwarded. Full history:
+**v1.1.3** (2026-03-26): **Changed** **@dreamer/view ^1.3.7**; **npm**
+**`package.json`** lists View/React/Preact as **`dependencies`** (removed
+**`peerDependencies`**). **CI** Node 24 flag for Actions. Full history:
 [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
 
 ---

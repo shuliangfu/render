@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.3] - 2026-03-26
+
+### Changed
+
+- **@dreamer/view**: Bumped to **`^1.3.7`** in **`deno.json`**
+  (`jsr:@dreamer/view@^1.3.7`) and **`package.json`**
+  (`npm:@jsr/dreamer__view@^1.3.7`), aligned with **@dreamer/view v1.3.7**
+  (upstream compiler/runtime fixes and features; see the view changelog).
+- **`package.json` (npm)**: **`@dreamer/view`**, **React**, **Preact**,
+  **`preact-render-to-string`**, **`react-dom`**, and **`scheduler`** are listed
+  under **`dependencies`**; the previous **`peerDependencies`** block was
+  removed so **`npm install`** resolves these without a separate peer step.
+  **`@dreamer/view`** is no longer duplicated under **`devDependencies`**.
+- **CI** (`.github/workflows/ci.yml`): Set workflow
+  **`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`** for Actions using Node 24.
+
+---
+
 ## [1.1.2] - 2026-03-21
 
 ### Changed
