@@ -2,6 +2,7 @@
  * SSR 渲染测试
  */
 
+import "./dom-setup-happy-dom.ts";
 import { assertRejects, describe, expect, it } from "@dreamer/test";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import { renderSSR } from "../src/ssr.ts";

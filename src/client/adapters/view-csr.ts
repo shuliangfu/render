@@ -1,17 +1,16 @@
 /**
- * View 客户端适配器 — 仅 CSR（createRoot、render、createReactiveRoot）。
- * 从 @dreamer/view/csr 导入，不含 hydrate，bundle 更小。
+ * View 客户端适配器 — 仅 CSR（mount、render、createReactiveRoot）。
+ * 从主包导入 `mount`，不含 `hydrate`，便于 tree-shaking。
  *
  * @module @dreamer/render/client/view-csr
  * @packageDocumentation
  *
- * **导出：** renderCSR、buildViewTree（mount/createReactiveRoot 由使用方从 @dreamer/view/csr 直接导入）
+ * **导出：** renderCSR、buildViewTree（createReactiveRoot 见 @dreamer/render/client/view）
  */
 
-import { insert } from "@dreamer/view";
-import { createRoot, type VNode } from "@dreamer/view/csr";
+import { type JSXElementType, mount, type VNode } from "@dreamer/view";
 import { jsx } from "@dreamer/view/jsx-runtime";
-import type { CSROptions, CSRRenderResult } from "../types.ts";
+import type { CSROptions, CSRRenderResult, LayoutComponent } from "../types.ts";
 import {
   handleRenderError,
   renderErrorFallback,
@@ -25,7 +24,9 @@ import {
   createPerformanceMonitor,
   recordPerformanceMetrics,
 } from "../utils/performance.ts";
-import type { LayoutComponent } from "../types.ts";
+
+/** mount 返回的根 dispose，与 owner.createRoot 约定一致 */
+type ViewRootDispose = () => void;
 
 /** View createElement 等价：用 jsx(type, props, key) 构建 VNode。createComponentTree 传入 (component, props)；children 来自 props.children。 */
 function viewCreateElement(
@@ -41,7 +42,7 @@ function viewCreateElement(
     : undefined;
   const resolvedChildren = fromArgs !== undefined ? fromArgs : rest.children;
   return jsx(
-    component as VNode["type"],
+    component as JSXElementType,
     { ...rest, children: resolvedChildren },
     undefined,
   );
@@ -65,7 +66,7 @@ function debugLog(
  * @param props - 组件 props
  * @param layouts - 可选布局（外到内）
  * @param skipLayouts - 是否跳过布局
- * @returns 供 createRoot / createReactiveRoot 使用的根 VNode
+ * @returns 供 mount / createReactiveRoot 使用的根 VNode
  */
 export function buildViewTree(
   component: unknown,
@@ -143,11 +144,10 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
-    /** 与主 view 适配器一致：createRoot 要求 fn(container)，内部 insert(container, getter) 挂载 VNode */
-    let currentRoot = createRoot(
-      (el) => insert(el, () => rootVNode),
+    let currentDispose = mount(
+      () => rootVNode,
       containerElement,
-    );
+    ) as ViewRootDispose;
 
     debugLog(debug, "CSR", "view render complete");
 
@@ -159,18 +159,18 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
 
     return {
       unmount: () => {
-        currentRoot.unmount();
+        currentDispose();
       },
       update: (newProps: Record<string, unknown>) => {
-        currentRoot.unmount();
+        currentDispose();
         const newVNode = createComponentTree(
           viewCreateElement,
           { component, props: newProps },
         ) as VNode;
-        currentRoot = createRoot(
-          (el) => insert(el, () => newVNode),
+        currentDispose = mount(
+          () => newVNode,
           containerElement,
-        );
+        ) as ViewRootDispose;
       },
       instance: containerElement,
       performance: performanceMetrics,
@@ -190,10 +190,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
               props: { error },
             },
           ) as VNode;
-          createRoot(
-            (el) => insert(el, () => fallbackVNode),
-            containerElement,
-          );
+          mount(() => fallbackVNode, containerElement);
         } catch {
           renderErrorFallback(
             containerElement,

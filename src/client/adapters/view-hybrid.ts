@@ -1,7 +1,6 @@
 /**
  * View 客户端适配器 — Hybrid（含 hydrate、createReactiveRootHydrate）。
- * createRoot、insert 从 @dreamer/view/hybrid，hydrate 从 @dreamer/view/compiler；
- * createReactiveRoot/createReactiveRootHydrate 由主 view 适配器实现并在此 re-export。
+ * `hydrate` / `mount` 均来自 @dreamer/view 主入口；createReactiveRoot* 由主 view 适配器实现并在此 re-export。
  *
  * @module @dreamer/render/client/view-hybrid
  * @packageDocumentation
@@ -9,12 +8,19 @@
  * **导出：** hydrate、buildViewTree、createReactiveRoot、createReactiveRootHydrate
  */
 
-import { createRoot, type VNode } from "@dreamer/view/hybrid";
-import { insert } from "@dreamer/view";
-import { hydrate as viewHydrate } from "@dreamer/view/compiler";
+import {
+  hydrate as viewHydrate,
+  type JSXElementType,
+  mount,
+  type VNode,
+} from "@dreamer/view";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import { createReactiveRoot, createReactiveRootHydrate } from "./view.ts";
-import type { CSRRenderResult, HydrationOptions } from "../types.ts";
+import type {
+  CSRRenderResult,
+  HydrationOptions,
+  LayoutComponent,
+} from "../types.ts";
 import {
   handleRenderError,
   renderErrorFallback,
@@ -28,7 +34,9 @@ import {
   createPerformanceMonitor,
   recordPerformanceMetrics,
 } from "../utils/performance.ts";
-import type { LayoutComponent } from "../types.ts";
+
+/** mount / hydrate 返回的根 dispose */
+type ViewRootDispose = () => void;
 
 /** View createElement 等价：用 jsx(type, props, key) 构建 VNode。createComponentTree 传入 (component, props)；children 来自 props.children。 */
 function viewCreateElement(
@@ -44,7 +52,7 @@ function viewCreateElement(
     : undefined;
   const resolvedChildren = fromArgs !== undefined ? fromArgs : rest.children;
   return jsx(
-    component as VNode["type"],
+    component as JSXElementType,
     { ...rest, children: resolvedChildren },
     undefined,
   );
@@ -68,7 +76,7 @@ function debugLog(
  * @param props - 组件 props
  * @param layouts - 可选布局（外到内）
  * @param skipLayouts - 是否跳过布局
- * @returns 供 createRoot / createReactiveRoot 使用的根 VNode
+ * @returns 供 hydrate / mount 使用的根 VNode
  */
 export function buildViewTree(
   component: unknown,
@@ -149,10 +157,11 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
-    let currentRoot = viewHydrate(
-      (el) => insert(el, () => rootVNode),
+    let currentDispose = viewHydrate(
+      () => rootVNode,
       containerElement,
-    );
+      [],
+    ) as ViewRootDispose;
 
     debugLog(debug, "hydrate", "view hydrate complete");
 
@@ -164,18 +173,18 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
 
     return {
       unmount: () => {
-        currentRoot.unmount();
+        currentDispose();
       },
       update: (newProps: Record<string, unknown>) => {
-        currentRoot.unmount();
+        currentDispose();
         const newVNode = createComponentTree(
           viewCreateElement,
           { component, props: newProps },
         ) as VNode;
-        currentRoot = createRoot(
-          (el) => insert(el, () => newVNode),
+        currentDispose = mount(
+          () => newVNode,
           containerElement,
-        );
+        ) as ViewRootDispose;
       },
       instance: containerElement,
       performance: performanceMetrics,
@@ -196,10 +205,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
               props: { error },
             },
           ) as VNode;
-          createRoot(
-            (el) => insert(el, () => fallbackVNode),
-            containerElement,
-          );
+          mount(() => fallbackVNode, containerElement);
         } catch {
           renderErrorFallback(
             containerElement,

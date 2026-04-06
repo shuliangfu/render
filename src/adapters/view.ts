@@ -4,10 +4,11 @@
  * 提供 @dreamer/view 模板引擎的 SSR 功能，支持布局组合、流式渲染（renderToStream）、
  * 错误处理与性能监控。与 React/Preact 适配器共用同一套 SSROptions。
  *
- * 注意：客户端 CSR 和 Hydration 在 @dreamer/render/client 的 view 适配器中。
+ * 注意：当前 view 的 `renderToString` / `renderToStream` 接收 `() => VNode`，不再传入 container；
+ * 客户端 CSR 和 Hydration 在 @dreamer/render/client 的 view 适配器中。
  */
 
-import { insert, type VNode } from "@dreamer/view";
+import type { JSXElementType, VNode } from "@dreamer/view";
 import { renderToStream, renderToString } from "@dreamer/view/ssr";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import type { RenderResult, SSROptions } from "../types.ts";
@@ -40,28 +41,32 @@ function viewCreateElement(
     ? children
     : undefined;
   return jsx(
-    component as VNode["type"],
+    component as JSXElementType,
     { ...rest, children: child },
     undefined,
   );
 }
 
 /**
- * View 流式渲染：使用 renderToStream 生成器，读完后拼接为字符串
- * （与 Preact 适配器行为一致，便于 injectMultiple 等后续处理）。
+ * 将 `renderToStream` 产出的 ReadableStream 解码为完整 HTML 字符串，
+ * 便于与 `injectMultiple` 等非流式后续处理对齐。
  */
-async function viewStreamToHtml(fn: () => VNode): Promise<string> {
-  /** renderToStream 的 container 与 insert 父节点在运行时为同一 SSR 文档模型；断言避免 JSR 与 node 双份类型冲突 */
-  type InsertParent = Parameters<typeof insert>[0];
-  const gen = renderToStream(
-    (container) => insert(container as InsertParent, fn),
-    {},
-  );
-  const chunks: string[] = [];
-  for await (const chunk of gen) {
-    chunks.push(chunk);
+async function viewStreamToHtml(rootFn: () => VNode): Promise<string> {
+  const stream = renderToStream(rootFn);
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let out = "";
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) out += decoder.decode(value, { stream: true });
+    }
+    out += decoder.decode();
+  } finally {
+    reader.releaseLock();
   }
-  return chunks.join("");
+  return out;
 }
 
 /**
@@ -140,19 +145,14 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
+    /** view SSR：无 container 回调，直接传入返回根 VNode 的函数 */
     const rootFn = () => rootVNode;
-    /** renderToString 要求 (container: SSRElement)=>void；与 insert 父节点一致，断言消除双解析路径下的类型不兼容 */
-    type InsertParent = Parameters<typeof insert>[0];
-    const mountFn = (container: InsertParent) => insert(container, rootFn);
 
     let html: string;
     if (stream) {
       html = await viewStreamToHtml(rootFn);
     } else {
-      html = renderToString(
-        mountFn as Parameters<typeof renderToString>[0],
-        {},
-      );
+      html = renderToString(rootFn);
     }
 
     debugLog(debug, "view", "renderToString complete", {

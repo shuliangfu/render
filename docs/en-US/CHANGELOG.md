@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.4] - 2026-04-06
+
+### Changed
+
+- **@dreamer/view**: Bumped to **`^2.0.0`** in **`deno.json`**
+  (`jsr:@dreamer/view@^2.0.0`) and **`package.json`**
+  (`npm:@jsr/dreamer__view@^2.0.0`). View **v2** drops npm **`./csr`** /
+  **`./hybrid`** convenience exports; this package now imports **`mount`**,
+  **`hydrate`**, **`createRoot`**, **`insert`**, **`internalHydrate`**, and
+  **`stopHydration`** from the **main** `@dreamer/view` entry where required.
+- **@dreamer/test**: **`^1.1.1`** in **`deno.json`** and **`package.json`**
+  **`devDependencies`**.
+- **View SSR** (`src/adapters/view.ts`): **`renderToString`** /
+  **`renderToStream`** (`@dreamer/view/ssr`) now receive a **root thunk**
+  **`() => VNode`** (no **`(container) => void`** mount callback). Streaming
+  HTML is assembled by reading the **`ReadableStream`** from
+  **`renderToStream(rootFn)`** with **`TextDecoder`**.
+- **View client — full** (`src/client/adapters/view.ts`): CSR uses
+  **`mount(() => VNode, container)`** (returns **dispose**); hydration uses
+  **`hydrate(() => VNode, container, bindings)`** with **`[]`** when no binding
+  map. **`createReactiveRoot`** uses **`createRoot`** + **`insert`**.
+  **`createReactiveRootHydrate`** uses **`stopHydration`**,
+  **`internalHydrate(container, [])`**, then **`insert`**.
+  **`viewCreateElement`** types use **`JSXElementType`**.
+- **View client — CSR** (`src/client/adapters/view-csr.ts`): **`mount`** from
+  **`@dreamer/view`** replaces **`@dreamer/view/csr`** **`createRoot`** +
+  **`insert`** wrapper pattern.
+- **View client — hybrid** (`src/client/adapters/view-hybrid.ts`): **`hydrate`**
+  / **`mount`** from **`@dreamer/view`**; removes **`@dreamer/view/hybrid`** and
+  **`@dreamer/view/compiler`** **hydrate** imports for this path.
+- **`deno.json`**: **`compilerOptions.jsx`**: **`react-jsx`**,
+  **`jsxImportSource`**: **`@dreamer/view`**; **`happy-dom`** in **`imports`**
+  for test DOM shims.
+
+### Tests
+
+- **`tests/dom-setup-happy-dom.ts`**: Installs **happy-dom** **`Window`** /
+  **`document`** (and common DOM globals) so Deno can run SSR tests that
+  evaluate View **Thunk**s calling **`document.createElement`**.
+- **`tests/adapters-view.test.ts`**, **`tests/ssr.test.ts`**: Import the DOM
+  setup module; relax sanitizer options on the View adapter suite where needed.
+- **`tests/adapters-view-client.test.ts`**: Expect **`buildViewTree`** roots to
+  be **Thunk**s (**`typeof vnode === "function"`**); assert layout nesting via
+  **`composeLayouts`** instead of **`{ type, props }`** VNode shape.
+
+### Breaking (integration)
+
+- **Downstream View apps** must depend on **@dreamer/view ≥ 2.0.0** with this
+  release. If you pinned **view 1.x** mount APIs (**`fn(container) + insert`**
+  for **`renderToString`**), migrate to **view 2** SSR/client signatures as
+  reflected in the adapters above.
+
+---
+
 ## [1.1.3] - 2026-03-26
 
 ### Changed

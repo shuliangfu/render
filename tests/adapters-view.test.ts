@@ -5,6 +5,7 @@
  * 使用 @dreamer/view 的 jsx 构建 VNode，与适配器内部 createComponentTree 行为一致
  */
 
+import "./dom-setup-happy-dom.ts";
 import { assertRejects, describe, expect, it } from "@dreamer/test";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import * as viewAdapter from "../src/adapters/view.ts";
@@ -205,5 +206,5 @@ describe("View 适配器", () => {
       expect(metrics?.["engine"]).toBe("view");
       expect(metrics?.["phase"]).toBe("ssr");
     });
-  });
+  }, { sanitizeOps: false, sanitizeResources: false });
 });

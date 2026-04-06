@@ -706,10 +706,12 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.1.3**（2026-03-26）：**变更** **@dreamer/view ^1.3.7**；**npm** 侧
-**`package.json`** 将 View/React/Preact 等写入 **`dependencies`**（移除
-**`peerDependencies`**）。**CI** 启用 Node 24 Actions 相关环境变量。完整历史见
-[CHANGELOG.md](./CHANGELOG.md)。
+**v1.1.4**（2026-04-06）：**变更** **@dreamer/view ^2.0.0**、**@dreamer/test
+^1.1.1**；View SSR/客户端适配器对齐 **view v2**（**`mount`/`hydrate`**、
+**`renderToString`/`renderToStream`(`() => VNode`)**）；**Deno** 配置 **`jsx` +
+`jsxImportSource`**，测试用 **happy-dom**；新增 **`dom-setup-happy-dom`** 与基于
+**Thunk**/**`composeLayouts`** 的用例调整。**对接注意：** 业务须 **view ≥
+2.0.0**。 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 

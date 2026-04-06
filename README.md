@@ -692,9 +692,12 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.1.3** (2026-03-26): **Changed** **@dreamer/view ^1.3.7**; **npm**
-**`package.json`** lists View/React/Preact as **`dependencies`** (removed
-**`peerDependencies`**). **CI** Node 24 flag for Actions. Full history:
+**v1.1.4** (2026-04-06): **Changed** **@dreamer/view ^2.0.0**, **@dreamer/test
+^1.1.1**; View SSR/client adapters aligned with **view v2** (**`mount`** /
+**`hydrate`**, **`renderToString`/`renderToStream`(`() => VNode`)**); **Deno**
+**`jsx` + `jsxImportSource`**, **happy-dom** for tests; new
+**`dom-setup-happy-dom`** and Thunk/**`composeLayouts`** test updates.
+**Breaking (integration):** apps need **view ≥ 2.0.0**. Full history:
 [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
 
 ---

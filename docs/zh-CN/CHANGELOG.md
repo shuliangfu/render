@@ -7,6 +7,60 @@
 
 ---
 
+## [1.1.4] - 2026-04-06
+
+### 变更
+
+- **@dreamer/view**：在 **`deno.json`**（**`jsr:@dreamer/view@^2.0.0`**）与
+  **`package.json`**（**`npm:@jsr/dreamer__view@^2.0.0`**）中升至 **`^2.0.0`**。
+  View **v2** 在 npm 侧不再提供 **`./csr`**、**`./hybrid`**
+  便捷子路径；本包改为从 **`@dreamer/view` 主入口**按需导入
+  **`mount`**、**`hydrate`**、**`createRoot`**、
+  **`insert`**、**`internalHydrate`**、**`stopHydration`** 等。
+- **@dreamer/test**：**`deno.json`** 与 **`package.json` 的
+  devDependencies`** 使用
+  **`^1.1.1`**。
+- **View 服务端**（`src/adapters/view.ts`）：**`renderToString`** /
+  **`renderToStream`**（**`@dreamer/view/ssr`**）改为传入根工厂
+  **`() => VNode`**， 不再使用 **`(container) => void`** 挂载回调；流式路径通过
+  **`renderToStream` 返回的 `ReadableStream`** 配合 **`TextDecoder`** 拼出完整
+  HTML。
+- **View 客户端（完整）**（`src/client/adapters/view.ts`）：CSR 使用
+  **`mount(() => VNode, container)`**（返回 **dispose**）；水合用
+  **`hydrate(() => VNode, container, bindings)`**，无编译器绑定表时传 **`[]`**。
+  **`createReactiveRoot`** 基于 **`createRoot` +
+  `insert`**；**`createReactiveRootHydrate`** 使用
+  **`stopHydration`**、**`internalHydrate(container, [])`** 再 **`insert`**。
+  元素类型使用 **`JSXElementType`**。
+- **View 客户端（仅 CSR）**（`src/client/adapters/view-csr.ts`）：以主包
+  **`mount`** 替代原 **`@dreamer/view/csr`** 的 **`createRoot` + `insert`**
+  包装写法。
+- **View
+  客户端（Hybrid）**（`src/client/adapters/view-hybrid.ts`）：**`hydrate`** /
+  **`mount`** 均来自 **`@dreamer/view`**，不再从 **`@dreamer/view/hybrid`**、
+  **`@dreamer/view/compiler`** 单独引 **hydrate**。
+- **`deno.json`**：**`compilerOptions.jsx`: `react-jsx`**、**`jsxImportSource`:
+  `@dreamer/view`**；**`imports`** 增加 **`happy-dom`** 供测试注入 DOM。
+
+### 测试
+
+- **`tests/dom-setup-happy-dom.ts`**：用 **happy-dom** 安装 **`Window`** /
+  **`document`** 等，使 Deno 下执行会调用 **`document.createElement`** 的 View
+  **Thunk** 单测可行。
+- **`tests/adapters-view.test.ts`**、**`tests/ssr.test.ts`**：预加载上述 DOM；
+  View 适配器 describe 按需关闭 **`sanitizeOps` / `sanitizeResources`**。
+- **`tests/adapters-view-client.test.ts`**：**`buildViewTree`** 根节点按
+  **Thunk** 断言（**`typeof vnode === "function"`**）；布局结构通过
+  **`composeLayouts`** 配置断言，不再假设 **`{ type, props }`** 形态。
+
+### 破坏性说明（对接方）
+
+- 使用本版本时，业务侧 **@dreamer/view** 须 **≥ 2.0.0**。若仍停留在 **view 1.x**
+  的 **`renderToString` 挂载函数 + insert** 模型，请按上文适配器实现迁移至
+  **view 2** 的 SSR/客户端签名。
+
+---
+
 ## [1.1.3] - 2026-03-26
 
 ### 变更
