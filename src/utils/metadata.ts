@@ -7,6 +7,30 @@
 import type { LoadContext, Metadata, MetadataValue } from "../types.ts";
 
 /**
+ * 标记由 {@link generateMetaTags} 注入的路由级 `<title>` / `<meta>`。
+ * Hybrid 客户端导航时应先移除带该属性的节点再插入新路由的 meta HTML，避免 og/twitter 与多条 description 残留。
+ */
+export const DWEB_ROUTE_META_ATTR = 'data-dweb-route-meta="1"';
+
+/**
+ * 生成带路由 meta 标记的 `<title>`（content 须已 HTML 转义）。
+ *
+ * @param escapedInner - 已转义的标题文本
+ */
+function metaTitleTagged(escapedInner: string): string {
+  return `<title ${DWEB_ROUTE_META_ATTR}>${escapedInner}</title>`;
+}
+
+/**
+ * 生成带路由 meta 标记的自闭合 `<meta ... />`（属性片段须已正确转义）。
+ *
+ * @param metaInner - name/property/content 等属性字符串（不含外层尖括号）
+ */
+function metaSelfClosingTagged(metaInner: string): string {
+  return `<meta ${metaInner} ${DWEB_ROUTE_META_ATTR} />`;
+}
+
+/**
  * Extract metadata from component (static object, sync function, or async function).
  *
  * @param component - Component (function or object with default)
@@ -163,92 +187,131 @@ function deepMerge(target: Metadata, source: Metadata): Metadata {
 }
 
 /**
- * Generate meta tag HTML from metadata.
+ * 仅生成路由级 `<meta>`（不含 `<title>`），供 SSR 与客户端分两步注入，保证 DOM 中 `<title>` 永远紧跟整组 meta 之后。
  *
  * @param metadata - Page metadata
- * @returns HTML string of meta tags
  */
-export function generateMetaTags(metadata: Metadata): string {
+export function generateRouteMetaTagsWithoutTitle(metadata: Metadata): string {
   const tags: string[] = [];
+  appendMetadataMetaTagsOnly(tags, metadata);
+  return tags.join("\n  ");
+}
 
+/**
+ * 仅生成带标记的 `<title>...</title>`；无 title 时返回空串。
+ *
+ * @param metadata - Page metadata
+ */
+export function generateRouteTitleTag(metadata: Metadata): string {
+  if (!metadata.title) return "";
+  return metaTitleTagged(escapeHtml(metadata.title));
+}
+
+/**
+ * 向 `tags` 追加除 `<title>` 外的全部路由级 `<meta>`（og/twitter/description 等）。
+ *
+ * @param tags - 输出数组
+ * @param metadata - Page metadata
+ */
+function appendMetadataMetaTagsOnly(
+  tags: string[],
+  metadata: Metadata,
+): void {
   if (metadata.title) {
-    tags.push(`<title>${escapeHtml(metadata.title)}</title>`);
     if (!metadata.og?.title) {
       tags.push(
-        `<meta property="og:title" content="${escapeHtml(metadata.title)}" />`,
+        metaSelfClosingTagged(
+          `property="og:title" content="${escapeHtml(metadata.title)}"`,
+        ),
       );
     }
     if (!metadata.twitter?.title) {
       tags.push(
-        `<meta name="twitter:title" content="${escapeHtml(metadata.title)}" />`,
+        metaSelfClosingTagged(
+          `name="twitter:title" content="${escapeHtml(metadata.title)}"`,
+        ),
       );
     }
   }
 
   if (metadata.description) {
     tags.push(
-      `<meta name="description" content="${
-        escapeHtml(metadata.description)
-      }" />`,
+      metaSelfClosingTagged(
+        `name="description" content="${escapeHtml(metadata.description)}"`,
+      ),
     );
     if (!metadata.og?.description) {
       tags.push(
-        `<meta property="og:description" content="${
-          escapeHtml(metadata.description)
-        }" />`,
+        metaSelfClosingTagged(
+          `property="og:description" content="${
+            escapeHtml(metadata.description)
+          }"`,
+        ),
       );
     }
     if (!metadata.twitter?.description) {
       tags.push(
-        `<meta name="twitter:description" content="${
-          escapeHtml(metadata.description)
-        }" />`,
+        metaSelfClosingTagged(
+          `name="twitter:description" content="${
+            escapeHtml(metadata.description)
+          }"`,
+        ),
       );
     }
   }
 
   if (metadata.keywords) {
     tags.push(
-      `<meta name="keywords" content="${escapeHtml(metadata.keywords)}" />`,
+      metaSelfClosingTagged(
+        `name="keywords" content="${escapeHtml(metadata.keywords)}"`,
+      ),
     );
   }
 
   if (metadata.author) {
     tags.push(
-      `<meta name="author" content="${escapeHtml(metadata.author)}" />`,
+      metaSelfClosingTagged(
+        `name="author" content="${escapeHtml(metadata.author)}"`,
+      ),
     );
   }
 
   if (metadata.og) {
     if (metadata.og.title) {
       tags.push(
-        `<meta property="og:title" content="${
-          escapeHtml(metadata.og.title)
-        }" />`,
+        metaSelfClosingTagged(
+          `property="og:title" content="${escapeHtml(metadata.og.title)}"`,
+        ),
       );
     }
     if (metadata.og.description) {
       tags.push(
-        `<meta property="og:description" content="${
-          escapeHtml(metadata.og.description)
-        }" />`,
+        metaSelfClosingTagged(
+          `property="og:description" content="${
+            escapeHtml(metadata.og.description)
+          }"`,
+        ),
       );
     }
     if (metadata.og.image) {
       tags.push(
-        `<meta property="og:image" content="${
-          escapeHtml(metadata.og.image)
-        }" />`,
+        metaSelfClosingTagged(
+          `property="og:image" content="${escapeHtml(metadata.og.image)}"`,
+        ),
       );
     }
     if (metadata.og.url) {
       tags.push(
-        `<meta property="og:url" content="${escapeHtml(metadata.og.url)}" />`,
+        metaSelfClosingTagged(
+          `property="og:url" content="${escapeHtml(metadata.og.url)}"`,
+        ),
       );
     }
     if (metadata.og.type) {
       tags.push(
-        `<meta property="og:type" content="${escapeHtml(metadata.og.type)}" />`,
+        metaSelfClosingTagged(
+          `property="og:type" content="${escapeHtml(metadata.og.type)}"`,
+        ),
       );
     }
   }
@@ -256,30 +319,36 @@ export function generateMetaTags(metadata: Metadata): string {
   if (metadata.twitter) {
     if (metadata.twitter.card) {
       tags.push(
-        `<meta name="twitter:card" content="${
-          escapeHtml(metadata.twitter.card)
-        }" />`,
+        metaSelfClosingTagged(
+          `name="twitter:card" content="${escapeHtml(metadata.twitter.card)}"`,
+        ),
       );
     }
     if (metadata.twitter.title) {
       tags.push(
-        `<meta name="twitter:title" content="${
-          escapeHtml(metadata.twitter.title)
-        }" />`,
+        metaSelfClosingTagged(
+          `name="twitter:title" content="${
+            escapeHtml(metadata.twitter.title)
+          }"`,
+        ),
       );
     }
     if (metadata.twitter.description) {
       tags.push(
-        `<meta name="twitter:description" content="${
-          escapeHtml(metadata.twitter.description)
-        }" />`,
+        metaSelfClosingTagged(
+          `name="twitter:description" content="${
+            escapeHtml(metadata.twitter.description)
+          }"`,
+        ),
       );
     }
     if (metadata.twitter.image) {
       tags.push(
-        `<meta name="twitter:image" content="${
-          escapeHtml(metadata.twitter.image)
-        }" />`,
+        metaSelfClosingTagged(
+          `name="twitter:image" content="${
+            escapeHtml(metadata.twitter.image)
+          }"`,
+        ),
       );
     }
   }
@@ -287,10 +356,22 @@ export function generateMetaTags(metadata: Metadata): string {
   if (metadata.custom) {
     for (const [key, value] of Object.entries(metadata.custom)) {
       tags.push(
-        `<meta name="${escapeHtml(key)}" content="${escapeHtml(value)}" />`,
+        metaSelfClosingTagged(
+          `name="${escapeHtml(key)}" content="${escapeHtml(value)}"`,
+        ),
       );
     }
   }
+}
 
-  return tags.join("\n  ");
+/**
+ * Generate meta tag HTML from metadata（`<meta>` 连续块 + 末尾 `<title>`，与 {@link generateRouteMetaTagsWithoutTitle} + {@link generateRouteTitleTag} 拼接结果一致）。
+ *
+ * @param metadata - Page metadata
+ * @returns HTML string of meta tags
+ */
+export function generateMetaTags(metadata: Metadata): string {
+  const meta = generateRouteMetaTagsWithoutTitle(metadata);
+  const tit = generateRouteTitleTag(metadata);
+  return [meta, tit].filter(Boolean).join("\n  ");
 }

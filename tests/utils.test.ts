@@ -114,7 +114,12 @@ describe("工具函数测试", () => {
 
       const html = generateMetaTags(metadata);
 
-      expect(html).toContain("<title>测试</title>");
+      expect(html).toContain("data-dweb-route-meta");
+      expect(html).toContain(">测试</title>");
+      /** `<title>` 应在全部 `<meta>` 之后生成 */
+      expect(html.indexOf(">测试</title>")).toBeGreaterThan(
+        html.indexOf('name="keywords"'),
+      );
       expect(html).toContain('name="description"');
       expect(html).toContain('name="keywords"');
       expect(html).toContain('property="og:title"');

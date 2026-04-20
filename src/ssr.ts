@@ -29,7 +29,8 @@ import {
 } from "./utils/lazy-loading.ts";
 import {
   extractMetadata,
-  generateMetaTags,
+  generateRouteMetaTagsWithoutTitle,
+  generateRouteTitleTag,
   mergeMetadata,
   resolveMetadata,
 } from "./utils/metadata.ts";
@@ -243,8 +244,11 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   }
 
-  // 生成 meta 标签 HTML
-  const metaTagsHtml = generateMetaTags(mergedMetadata);
+  /** 路由 SEO：分两针注入，确保 `<title>` DOM 在所有 `<meta>` 之后（injectHtml 第二针插在最后一个 meta 后） */
+  const routeMetaWithoutTitleHtml = generateRouteMetaTagsWithoutTitle(
+    mergedMetadata,
+  );
+  const routeTitleHtml = generateRouteTitleTag(mergedMetadata);
 
   // 合并所有脚本（布局脚本 + 页面脚本 + 选项中的脚本）
   const allScripts = mergeScripts(
@@ -332,10 +336,16 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   > = [];
 
-  // 1. 注入 meta 标签到 head（会集中在一起）
-  if (metaTagsHtml) {
+  // 1a. 先注入除 `<title>` 外的路由 meta；1b. 再注入 `<title>`（紧跟上一针最后一个 meta）
+  if (routeMetaWithoutTitleHtml) {
     injections.push({
-      content: metaTagsHtml,
+      content: routeMetaWithoutTitleHtml,
+      options: { type: "meta", inHead: true },
+    });
+  }
+  if (routeTitleHtml) {
+    injections.push({
+      content: routeTitleHtml,
       options: { type: "meta", inHead: true },
     });
   }

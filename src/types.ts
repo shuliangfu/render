@@ -49,7 +49,7 @@ export interface LoadContext {
   /** Route params */
   params: Record<string, string>;
   /** Raw request (optional) */
-  request?: Request;
+  req?: Request;
   /** Other context */
   [key: string]: unknown;
 }

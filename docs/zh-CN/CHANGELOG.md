@@ -7,6 +7,32 @@
 
 ---
 
+## [1.1.5] - 2026-04-20
+
+### 新增
+
+- **主入口（`src/mod.ts`）**：从 **`./utils/metadata.ts`** 导出
+  **`DWEB_ROUTE_META_ATTR`**、**`generateRouteMetaTagsWithoutTitle`**、
+  **`generateRouteTitleTag`**，便于 Bun/npm 等从包入口解析依赖。
+
+### 变更
+
+- **SSR（`src/ssr.ts`）**：向 head 分两步注入 —— 先注入不含 `<title>` 的路由
+  **`<meta>`**，再注入带标记的 **`<title>`**，保证 DOM 中整组 meta 位于 title
+  之前（与 Hybrid 客户端导航一致）。
+- **Metadata（`src/utils/metadata.ts`）**：路由级 **`<meta>` / `<title>`** 带
+  **`data-dweb-route-meta="1"`**，便于客户端导航时替换；新增拆分 API
+  **`generateRouteMetaTagsWithoutTitle`** / **`generateRouteTitleTag`**；
+  **`generateMetaTags`** 保留，语义仍为二者拼接后的完整字符串。
+
+### 破坏性变更
+
+- **`LoadContext`**（`src/types.ts`）：字段 **`request`** 重命名为 **`req`**
+  （可选 **`Request`**），与 **@dreamer/dweb** 及文件路由命名一致；请将
+  **`loadContext.request`** 的用法改为 **`loadContext.req`**。
+
+---
+
 ## [1.1.4] - 2026-04-06
 
 ### 变更

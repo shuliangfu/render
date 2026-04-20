@@ -90,8 +90,11 @@ export {
   shouldLazyLoad,
 } from "./utils/lazy-loading.ts";
 export {
+  DWEB_ROUTE_META_ATTR,
   extractMetadata,
   generateMetaTags,
+  generateRouteMetaTagsWithoutTitle,
+  generateRouteTitleTag,
   mergeMetadata,
   resolveMetadata,
 } from "./utils/metadata.ts";

@@ -692,13 +692,12 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.1.4** (2026-04-06): **Changed** **@dreamer/view ^2.0.0**, **@dreamer/test
-^1.1.1**; View SSR/client adapters aligned with **view v2** (**`mount`** /
-**`hydrate`**, **`renderToString`/`renderToStream`(`() => VNode`)**); **Deno**
-**`jsx` + `jsxImportSource`**, **happy-dom** for tests; new
-**`dom-setup-happy-dom`** and Thunk/**`composeLayouts`** test updates.
-**Breaking (integration):** apps need **view ≥ 2.0.0**. Full history:
-[CHANGELOG.md](./docs/en-US/CHANGELOG.md).
+**v1.1.5** (2026-04-20): **Added** main-entry exports
+**`DWEB_ROUTE_META_ATTR`**, **`generateRouteMetaTagsWithoutTitle`**,
+**`generateRouteTitleTag`**; **Changed** SSR head injection order (route metas
+then tagged **`<title>`**); route meta HTML uses **`data-dweb-route-meta`**.
+**Breaking:** **`LoadContext.request`** renamed to **`LoadContext.req`**. Full
+history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
 
 ---
 

@@ -706,12 +706,11 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.1.4**（2026-04-06）：**变更** **@dreamer/view ^2.0.0**、**@dreamer/test
-^1.1.1**；View SSR/客户端适配器对齐 **view v2**（**`mount`/`hydrate`**、
-**`renderToString`/`renderToStream`(`() => VNode`)**）；**Deno** 配置 **`jsx` +
-`jsxImportSource`**，测试用 **happy-dom**；新增 **`dom-setup-happy-dom`** 与基于
-**Thunk**/**`composeLayouts`** 的用例调整。**对接注意：** 业务须 **view ≥
-2.0.0**。 完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
+**v1.1.5**（2026-04-20）：**新增** 主入口导出 **`DWEB_ROUTE_META_ATTR`**、
+**`generateRouteMetaTagsWithoutTitle`**、**`generateRouteTitleTag`**；**变更**
+SSR head 注入顺序（先路由 **`<meta>`** 再带标记的 **`<title>`**）；路由 meta
+使用 **`data-dweb-route-meta`**。**破坏性：** **`LoadContext.request`** 重命名为
+**`LoadContext.req`**。完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 

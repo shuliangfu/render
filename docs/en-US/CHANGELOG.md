@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.5] - 2026-04-20
+
+### Added
+
+- **Main entry (`src/mod.ts`)**: Export **`DWEB_ROUTE_META_ATTR`**,
+  **`generateRouteMetaTagsWithoutTitle`**, and **`generateRouteTitleTag`** from
+  `./utils/metadata.ts` for downstream bundlers (Bun/npm) that resolve the
+  package entry.
+
+### Changed
+
+- **SSR (`src/ssr.ts`)**: Head injection uses two steps — route `<meta>` HTML
+  (without `<title>`) first, then the tagged `<title>`, so the DOM order keeps
+  all route metas before the title (aligned with hybrid client navigation).
+- **Metadata (`src/utils/metadata.ts`)**: Route-level `<meta>` / `<title>`
+  output includes **`data-dweb-route-meta="1"`** for replaceable route meta
+  during client-side navigation; split APIs
+  **`generateRouteMetaTagsWithoutTitle`** / **`generateRouteTitleTag`**;
+  **`generateMetaTags`** remains and composes the same combined string as
+  before.
+
+### Breaking
+
+- **`LoadContext`** (`src/types.ts`): **`request`** renamed to **`req`**
+  (optional **`Request`**), aligned with **@dreamer/dweb** and file-route
+  naming. Update call sites that read **`loadContext.request`**.
+
+---
+
 ## [1.1.4] - 2026-04-06
 
 ### Changed
