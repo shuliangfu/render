@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.6] - 2026-04-20
+
+### Changed
+
+- **Dependencies**: **`@dreamer/view`** **`^2.0.2`** in **`deno.json`** and
+  **`package.json`**; **`@dreamer/test`** **`^1.1.6`** in **`deno.json`**
+  (imports) and **`package.json`** (**`devDependencies`**).
+
+### Fixed
+
+- **`tests/ssr-comprehensive.test.ts`**: Expect tagged **`<title>`** HTML
+  (**`DWEB_ROUTE_META_ATTR`**) consistent with SSR metadata injection.
+- **`tests/client-browser.test.ts`**: Combine export checks and performance
+  monitor usage in **one** **`browser.evaluate`** to avoid intermittent **60s**
+  timeouts from a second evaluation when **`reuseBrowser`** is enabled
+  (Playwright/CDP).
+
+---
+
 ## [1.1.5] - 2026-04-20
 
 ### Added

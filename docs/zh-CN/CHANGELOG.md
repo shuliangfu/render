@@ -7,6 +7,24 @@
 
 ---
 
+## [1.1.6] - 2026-04-20
+
+### 变更
+
+- **依赖**：**`deno.json`** / **`package.json`** 将 **`@dreamer/view`** 升为
+  **`^2.0.2`**；**`@dreamer/test`** 升为 **`^1.1.6`**（**`deno.json`** 的
+  imports 与 **`package.json`** 的 devDependencies）。
+
+### 修复
+
+- **`tests/ssr-comprehensive.test.ts`**：断言与 SSR 注入的带
+  **`DWEB_ROUTE_META_ATTR`** 的 **`<title>`** 一致。
+- **`tests/client-browser.test.ts`**：将导出检查与性能监控合并为**一次**
+  **`browser.evaluate`**，避免 **`reuseBrowser`** 下第二次 evaluate 偶发卡在
+  CDP、直到用例 **60s** 超时。
+
+---
+
 ## [1.1.5] - 2026-04-20
 
 ### 新增

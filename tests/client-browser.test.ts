@@ -82,7 +82,11 @@ describe("客户端渲染 - View 入口", () => {
     }
   });
 
-  it("应该导出所有必要的函数", async (ctx) => {
+  /**
+   * 导出检查与性能监控放在同一次 `evaluate`：复用浏览器时连续两次 evaluate
+   * 在部分环境下会触发 CDP/Playwright 挂起直至用例超时，合并后可避免。
+   */
+  it("应该导出所有必要的函数且性能监控可用", async (ctx) => {
     // 检查是否有浏览器设置错误
     if ((ctx as any)._browserSetupError) {
       console.warn("浏览器测试跳过：无法启动浏览器");
@@ -102,7 +106,7 @@ describe("客户端渲染 - View 入口", () => {
         return { error: "RenderClient not available" };
       }
 
-      return {
+      const exports = {
         hasRenderCSR: typeof RenderClient.renderCSR === "function",
         hasHydrate: typeof RenderClient.hydrate === "function",
         hasHandleRenderError:
@@ -116,9 +120,30 @@ describe("客户端渲染 - View 入口", () => {
         hasRecordPerformanceMetrics:
           typeof RenderClient.recordPerformanceMetrics === "function",
       };
+
+      const monitor = RenderClient.createPerformanceMonitor({
+        enabled: true,
+        slowThreshold: 100,
+      });
+      if (!monitor) {
+        return { ...exports, perfError: "monitor_null" as const };
+      }
+      monitor.start("preact", "csr");
+      const metrics = monitor.end();
+
+      return {
+        ...exports,
+        perf: {
+          created: true,
+          hasMetrics: !!metrics,
+          engine: metrics.engine,
+          phase: metrics.phase,
+          hasDuration: typeof metrics.duration === "number",
+        },
+      };
     });
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       console.warn("测试跳过:", result.error);
       return;
     }
@@ -130,50 +155,25 @@ describe("客户端渲染 - View 入口", () => {
     expect(result.hasCreatePerformanceMonitor).toBe(true);
     expect(result.hasPerformanceMonitor).toBe(true);
     expect(result.hasRecordPerformanceMetrics).toBe(true);
-  }, browserConfigView);
 
-  it("应该创建性能监控实例", async (ctx) => {
-    if ((ctx as any)._browserSetupError) return;
-
-    const browser = (ctx as any).browser;
-    if (!browser) return;
-
-    const result = await browser.evaluate(() => {
-      const RenderClient = (globalThis as any).RenderClient;
-
-      if (!RenderClient) {
-        return { error: "RenderClient not available" };
-      }
-
-      const monitor = RenderClient.createPerformanceMonitor({
-        enabled: true,
-        slowThreshold: 100,
-      });
-
-      if (!monitor) return { created: false };
-
-      monitor.start("preact", "csr");
-      const metrics = monitor.end();
-
-      return {
-        created: true,
-        hasMetrics: !!metrics,
-        engine: metrics.engine,
-        phase: metrics.phase,
-        hasDuration: typeof metrics.duration === "number",
-      };
-    });
-
-    if (result.error) {
-      console.warn("测试跳过:", result.error);
-      return;
+    if ("perfError" in result && result.perfError === "monitor_null") {
+      throw new Error("createPerformanceMonitor(enabled:true) 返回了 null");
     }
 
-    expect(result.created).toBe(true);
-    expect(result.hasMetrics).toBe(true);
-    expect(result.engine).toBe("preact");
-    expect(result.phase).toBe("csr");
-    expect(result.hasDuration).toBe(true);
+    const r = result as typeof result & {
+      perf: {
+        created: boolean;
+        hasMetrics: boolean;
+        engine: string;
+        phase: string;
+        hasDuration: boolean;
+      };
+    };
+    expect(r.perf.created).toBe(true);
+    expect(r.perf.hasMetrics).toBe(true);
+    expect(r.perf.engine).toBe("preact");
+    expect(r.perf.phase).toBe("csr");
+    expect(r.perf.hasDuration).toBe(true);
   }, browserConfigView);
 
   it("应该在未启用时返回 null", async (ctx) => {

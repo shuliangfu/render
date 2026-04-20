@@ -7,6 +7,8 @@ import { assertRejects, describe, expect, it } from "@dreamer/test";
 import React from "react";
 import { renderSSR } from "../src/ssr.ts";
 import type { LoadContext, Metadata, SSROptions } from "../src/types.ts";
+// 路由级 `<title>` 与生产代码一致，带 DWEB_ROUTE_META_ATTR
+import { DWEB_ROUTE_META_ATTR } from "../src/utils/metadata.ts";
 
 describe(
   "SSR 全面测试",
@@ -27,7 +29,9 @@ describe(
 
         expect(result.metadata?.title).toBe("测试页面");
         expect(result.metadata?.description).toBe("这是一个测试页面");
-        expect(result.html).toContain("<title>测试页面</title>");
+        expect(result.html).toContain(
+          `<title ${DWEB_ROUTE_META_ATTR}>测试页面</title>`,
+        );
         expect(result.html).toContain('name="description"');
       });
 
@@ -112,7 +116,9 @@ describe(
             "<html><head><!--meta-tags-outlet--></head><body></body></html>",
         });
 
-        expect(result.html).toContain("<title>测试</title>");
+        expect(result.html).toContain(
+          `<title ${DWEB_ROUTE_META_ATTR}>测试</title>`,
+        );
         expect(result.html).toContain('property="og:title"');
         expect(result.html).toContain('name="twitter:card"');
       });
