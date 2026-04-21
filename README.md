@@ -692,10 +692,9 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.1.6** (2026-04-20): **Changed** **`@dreamer/view` `^2.0.2`**,
-**`@dreamer/test` `^1.1.6`**; **Fixed** SSR/browser tests for tagged
-**`<title>`** and merged View browser **evaluate** to avoid CDP timeouts. Full
-history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
+**v1.1.7** (2026-04-21): **Changed** **`@dreamer/test` `^1.1.8`** and caret
+ranges for React / Preact / scheduler / preact-render-to-string / happy-dom.
+Full history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
 
 ---
 

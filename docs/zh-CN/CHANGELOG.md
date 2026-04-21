@@ -7,6 +7,17 @@
 
 ---
 
+## [1.1.7] - 2026-04-21
+
+### 变更
+
+- **依赖**：将 `@dreamer/test` 升至 `^1.1.8`；React / react-dom `^19.2.5`；
+  scheduler `^0.27.0`；Preact `^10.29.1`；preact-render-to-string `^6.6.7`；
+  happy-dom `^20.9.0`（**`deno.json`** imports）；**`package.json`** 中同一 npm
+  栈 使用语义化 caret 范围对齐。
+
+---
+
 ## [1.1.6] - 2026-04-20
 
 ### 变更

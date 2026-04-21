@@ -706,10 +706,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.1.6**（2026-04-20）：**变更** 依赖 **`@dreamer/view`
-`^2.0.2`**、**`@dreamer/test` `^1.1.6`**；**修复** SSR/浏览器测试（带标记的
-**`<title>`**、合并 View 入口单次 **`evaluate`** 避免 CDP 超时）。完整历史见
-[CHANGELOG.md](./CHANGELOG.md)。
+**v1.1.7**（2026-04-21）：**变更** **`@dreamer/test` `^1.1.8`**，并为 React /
+Preact / scheduler / preact-render-to-string / happy-dom 使用 caret
+范围对齐。完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 
