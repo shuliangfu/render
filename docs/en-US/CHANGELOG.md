@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.8] - 2026-05-08
+
+### Fixed
+
+- **Dependencies**: align React and react-dom caret ranges to `^19.2.6` in
+  `deno.json` and `package.json`, preventing React 19 runtime version mismatch
+  errors when Deno resolves CLI or SSR dependency graphs.
+
+---
+
 ## [1.1.7] - 2026-04-21
 
 ### Changed

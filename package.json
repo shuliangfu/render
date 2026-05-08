@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/render",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "A rendering library for SSR, CSR, Hydration, and SSG, supporting React, Preact, and View.",
   "type": "module",
   "license": "Apache-2.0",
@@ -26,8 +26,8 @@
     "@dreamer/view": "npm:@jsr/dreamer__view@^2.0.2",
     "preact": "npm:preact@^10.29.1",
     "preact-render-to-string": "npm:preact-render-to-string@^6.6.7",
-    "react": "npm:react@^19.2.5",
-    "react-dom": "npm:react-dom@^19.2.5",
+    "react": "npm:react@^19.2.6",
+    "react-dom": "npm:react-dom@^19.2.6",
     "scheduler": "npm:scheduler@^0.27.0"
   },
   "devDependencies": {

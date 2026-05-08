@@ -692,9 +692,9 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.1.7** (2026-04-21): **Changed** **`@dreamer/test` `^1.1.8`** and caret
-ranges for React / Preact / scheduler / preact-render-to-string / happy-dom.
-Full history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
+**v1.1.8** (2026-05-08): **Fixed** React / react-dom caret ranges are aligned to
+`^19.2.6` to avoid React 19 runtime version mismatch during CLI or SSR
+dependency resolution. Full history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
 
 ---
 
