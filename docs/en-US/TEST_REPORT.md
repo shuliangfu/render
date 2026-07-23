@@ -1,33 +1,48 @@
 # @dreamer/render Test Report
 
+English | [中文](../zh-CN/TEST_REPORT.md)
+
 ## Test Overview
 
-| Item                 | Info                            |
-| -------------------- | ------------------------------- |
-| Test library version | @dreamer/render@1.0.26          |
-| Runtime adapter      | @dreamer/runtime-adapter@^1.0.5 |
-| Test framework       | @dreamer/test@^1.0.6            |
-| Test date            | 2026-02-17                      |
-| Test environment     | Deno 2.x+ / Bun 1.x+            |
+| Item                 | Info                                              |
+| -------------------- | ------------------------------------------------- |
+| Package              | `@dreamer/render`                                 |
+| Version              | **1.2.0** (aligned with `deno.json`/`package.json`) |
+| Runtime adapter      | @dreamer/runtime-adapter@^1.2.2                   |
+| Test framework       | @dreamer/test@^1.2.3                              |
+| Report date          | **2026-07-23**                                    |
+| Test environment     | Deno 2.9+ / Bun 1.3+ / Node.js 22+               |
+
+## How to Run
+
+From the **render package root**:
+
+```bash
+# Deno (unit + integration; browser tests excluded)
+deno task test
+
+# Bun
+bun test tests/
+
+# Node.js 22+ (browser tests excluded)
+npm install
+npm run test:node
+# equivalent: node --import tsx --test-force-exit test-node.mjs
+```
 
 ## Test Results
 
-### Overall Statistics
-
-| Metric         | Value                 |
-| -------------- | --------------------- |
-| Total tests    | 252                   |
-| Passed         | 252 ✅                |
-| Failed         | 0                     |
-| Pass rate      | 100%                  |
-| Execution time | ~46s (`deno test -A`) |
-
 ### Runtime Compatibility
 
-| Runtime | Version | Result        |
-| ------- | ------- | ------------- |
-| Deno    | 2.x+    | ✅ 252 passed |
-| Bun     | 1.x+    | ✅ 252 passed |
+| Runtime  | Version | Passed      | Failed | Files | Duration |
+| -------- | ------- | ----------- | ------ | ----- | -------- |
+| Deno     | 2.9+    | **266**     | **0**  | 14    | ~43s     |
+| Bun      | 1.3+    | **249**     | **0**  | 14    | ~44s     |
+| Node.js  | 22+     | **12/12**   | **0**  | 12    | ~60s     |
+
+> Browser tests (`client-browser.test.ts`, `adapters-view-client.test.ts`)
+> excluded from Node CI (require Playwright/Chromium). Deno/Bun counts differ
+> due to runner counting conventions — treat **0 failures** as the invariant.
 
 ### Test File Statistics
 
@@ -188,11 +203,11 @@ covers general API and engine-specific actual CSR/Hydration.
 
 ## Conclusion
 
-All features of `@dreamer/render` pass comprehensive testing with 100% coverage.
-All 252 tests pass on both Deno and Bun runtimes, with support for React,
-Preact, and View template engines.
+All features of `@dreamer/render` pass comprehensive testing. Tests pass on
+**Deno 2.9+** (266 passed), **Bun 1.3+** (249 passed), and **Node.js 22+**
+(12/12 files), with support for React, Preact, and View template engines.
 
 ---
 
-**Report generated**: 2026-02-17 **Test environment**: Deno 2.x+ / Bun 1.x+
-**Test framework**: @dreamer/test@^1.0.6
+**Report date**: 2026-07-23 **Test environment**: Deno 2.9+ / Bun 1.3+ / Node.js 22+
+**Test framework**: @dreamer/test@^1.2.3

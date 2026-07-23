@@ -7,7 +7,7 @@
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
-[![Tests](https://img.shields.io/badge/tests-252%20passed-brightgreen)](./TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-Deno%20266%20%7C%20Bun%20249%20%7C%20Node%2012--12-brightgreen)](./TEST_REPORT.md)
 
 ---
 
@@ -31,19 +31,26 @@ deno add jsr:@dreamer/render
 bunx jsr add @dreamer/render
 ```
 
+### Node.js 22+
+
+```bash
+npx jsr add @dreamer/render
+```
+
 ---
 
 ## 🌍 环境兼容性
 
-| 环境       | 版本要求              | 状态                                           |
-| ---------- | --------------------- | ---------------------------------------------- |
-| **Deno**   | 2.5+                  | ✅ 完全支持                                    |
-| **Bun**    | 1.0+                  | ✅ 完全支持                                    |
-| **浏览器** | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration）                      |
-| **React**  | 18+                   | ✅ 完全支持                                    |
-| **Preact** | 10+                   | ✅ 完全支持                                    |
-| **View**   | 1.0+                  | ✅ 完全支持（SSR、CSR、Hydration）             |
-| **依赖**   | -                     | 📦 需要对应的模板引擎包（React、Preact、View） |
+| 环境         | 版本要求              | 状态                                           |
+| ------------ | --------------------- | ---------------------------------------------- |
+| **Deno**     | 2.9+                  | ✅ 完全支持                                    |
+| **Bun**      | 1.3+                  | ✅ 完全支持                                    |
+| **Node.js**  | 22+                   | ✅ 完全支持                                    |
+| **浏览器**   | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration）                      |
+| **React**    | 18+                   | ✅ 完全支持                                    |
+| **Preact**   | 10+                   | ✅ 完全支持                                    |
+| **View**     | 1.0+                  | ✅ 完全支持（SSR、CSR、Hydration）             |
+| **依赖**     | -                     | 📦 需要对应的模板引擎包（React、Preact、View） |
 
 ---
 

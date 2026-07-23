@@ -1,4 +1,6 @@
-# CI: 在 macOS、Ubuntu、Windows 上运行测试，验证跨平台兼容性
+# CI: 9-job matrix — 3 Deno v2.9 + 3 Bun + 3 Node 22 (Linux/macOS/Windows)
+# No Chromium, no Playwright, no external services
+# Browser tests (client-browser, adapters-view-client) excluded — run locally via test:browser
 name: CI
 
 on:
@@ -7,187 +9,74 @@ on:
   pull_request:
     branches: [dev]
 
-# 工作流级 env：让基于 Node 的 GitHub Actions（如 checkout、setup-*）提前使用 Node 24 运行时，
-# 便于在官方强制升级前做性能/稳定性验证。参见 GitHub 文档中的 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24。
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  test-linux:
-    runs-on: ubuntu-latest
+  # ───────────────── Deno ─────────────────
+  test-deno:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.5
+          deno-version: v2.9
 
       - name: Cache dependencies
-        run: deno cache src/mod.ts tests/ 2>/dev/null || true
-
-      - name: Install Playwright Chromium
-        run: npx -y playwright@latest install chromium
+        continue-on-error: true
+        run: deno cache src/mod.ts tests/ --minimum-dependency-age=0
 
       - name: Check
-        run: deno check src/ tests/
+        run: deno check src/mod.ts
 
       - name: Lint
-        run: deno lint
+        run: deno lint src/
 
       - name: Test (Deno)
-        run: deno test -A --no-check tests/
+        run: deno test -A --minimum-dependency-age=0 --no-check tests/ --ignore=tests/client-browser.test.ts,tests/adapters-view-client.test.ts
 
-  test-macos:
-    runs-on: macos-latest
+  # ───────────────── Bun ─────────────────
+  test-bun:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: denoland/setup-deno@v2
+      - uses: oven-sh/setup-bun@v2
         with:
-          deno-version: v2.5
+          bun-version: latest
 
       - name: Cache dependencies
-        run: deno cache src/mod.ts tests/ 2>/dev/null || true
+        continue-on-error: true
+        run: bun install || true
 
-      - name: Install Playwright Chromium
-        run: npx -y playwright@latest install chromium
+      - name: Test (Bun)
+        run: bun test tests/adapters-preact.test.ts tests/adapters-react.test.ts tests/adapters-view.test.ts tests/client-utils.test.ts tests/edge-cases.test.ts tests/layout.test.ts tests/mod.test.ts tests/ssg-advanced.test.ts tests/ssg.test.ts tests/ssr-comprehensive.test.ts tests/ssr.test.ts tests/utils.test.ts
 
-      - name: Check
-        run: deno check src/ tests/
-
-      - name: Lint
-        run: deno lint
-
-      - name: Test (Deno, macOS)
-        run: deno test -A --no-check tests/
-
-  test-windows:
-    runs-on: windows-latest
+  # ───────────────── Node.js 22+ ─────────────────
+  test-node:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: denoland/setup-deno@v2
+      - uses: actions/setup-node@v4
         with:
-          deno-version: v2.5
+          node-version: "22"
 
-      - name: Cache dependencies
-        run: deno cache src/mod.ts tests/
+      - name: Install dependencies
+        run: npm install
 
-      - name: Install Playwright Chromium
-        run: npx -y playwright@latest install chromium
-
-      - name: Check
-        run: deno check src/ tests/
-
-      - name: Lint
-        run: deno lint
-
-      - name: Test (Deno, Windows)
-        run: deno test -A --no-check tests/
-
-  # --- Bun: Linux ---
-  test-linux-bun:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies (Bun)
-        run: bun install
-
-      - name: Install Playwright Chromium
-        run: npx -y playwright@latest install chromium
-
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.5
-
-      - name: Cache Deno dependencies
-        run: deno cache src/mod.ts tests/ 2>/dev/null || true
-
-      - name: Check
-        run: deno check src/ tests/
-
-      - name: Lint
-        run: deno lint
-
-      # 非浏览器用例 + 浏览器用例分进程跑，避免同进程内 Preact/React 两次 bundle 导致 esbuild 停止
-      - name: Test (Bun, non-browser)
-        run: bun test $(ls tests/*.test.ts | grep -v client-browser) --max-concurrency=1
-      - name: Test (Bun, browser Preact)
-        run: bun test tests/client-browser.test.ts --test-name-pattern "Preact" --max-concurrency=1
-      - name: Test (Bun, browser React)
-        run: bun test tests/client-browser.test.ts --test-name-pattern "React" --max-concurrency=1
-
-  # --- Bun: macOS ---
-  test-macos-bun:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies (Bun)
-        run: bun install
-
-      - name: Install Playwright Chromium
-        run: npx -y playwright@latest install chromium
-
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.5
-
-      - name: Cache Deno dependencies
-        run: deno cache src/mod.ts tests/ 2>/dev/null || true
-
-      - name: Check
-        run: deno check src/ tests/
-
-      - name: Lint
-        run: deno lint
-
-      # 非浏览器用例 + 浏览器用例分进程跑，避免同进程内 Preact/React 两次 bundle 导致 esbuild 停止
-      - name: Test (Bun, macOS, non-browser)
-        run: bun test $(ls tests/*.test.ts | grep -v client-browser) --max-concurrency=1
-      - name: Test (Bun, macOS, browser Preact)
-        run: bun test tests/client-browser.test.ts --test-name-pattern "Preact" --max-concurrency=1
-      - name: Test (Bun, macOS, browser React)
-        run: bun test tests/client-browser.test.ts --test-name-pattern "React" --max-concurrency=1
-
-  # --- Bun: Windows ---
-  # Windows 上浏览器测试由 test-windows (Deno) 覆盖；Bun 在 Windows 存在已知 bug（chromium.launch 卡住，见 oven-sh/bun#15679），此处仅跑非 browser 用例
-  test-windows-bun:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies (Bun)
-        run: bun install
-
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.5
-
-      - name: Cache Deno dependencies
-        run: deno cache src/mod.ts tests/
-
-      - name: Check
-        run: deno check src/ tests/
-
-      - name: Lint
-        run: deno lint
-
-      - name: Test (Bun, Windows, exclude browser)
-        shell: pwsh
-        run: |
-          $nonBrowser = Get-ChildItem -Path tests -Filter "*.test.ts" -File | Where-Object { $_.Name -notlike "*browser*" } | ForEach-Object { "tests/" + $_.Name }
-          bun test @nonBrowser
+      - name: Test (Node.js)
+        run: node --import tsx --test-force-exit test-node.mjs

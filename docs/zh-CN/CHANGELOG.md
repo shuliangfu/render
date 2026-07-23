@@ -7,6 +7,40 @@
 
 ---
 
+## [1.2.0] - 2026-07-23
+
+### 新增
+
+- **Node.js 22+ 兼容** — `@dreamer/render` 现可运行于 Deno 2.9+、Bun 1.3+、
+  Node.js 22+。
+  - `package.json`：`engines.node >= 22`，`test:node` 脚本经 tsx 执行。
+  - `test-node.mjs`：Node 测试运行器——每文件在主进程执行（无 `--test`
+    fork/IPC），规避测试向 stdout 输出时 "Unable to deserialize cloned data"
+    问题。排除浏览器测试。
+  - `tsconfig.json`：Bundler 模块解析 + `dom` lib，跨运行时类型一致。
+  - CI：9-job 矩阵（3 Deno v2.9 + 3 Bun + 3 Node 22，无 Chromium）。
+
+### 变更
+
+- **依赖**：`@dreamer/view` 从 `^2.1.0` 升至 `^2.2.0`（Node 兼容版本）；
+  `@dreamer/runtime-adapter` `^1.2.2`；`@dreamer/test` `^1.2.3`；
+  `@dreamer/i18n` `^1.1.2`——`deno.json` 与 `package.json` 同步。
+  向 `package.json` devDependencies 补充 `happy-dom`（此前缺失，导致 Node
+  测试失败）。
+- **`dom-setup-happy-dom.ts`**：将直接 `globalThis.X = value` 赋值替换为
+  `Object.defineProperty`。Node 21+ 的全局 `navigator` 为只读属性（仅有
+  getter），直接赋值会抛 `TypeError`。`defineProperty` 在 Deno / Bun / Node
+  三端行为一致。
+
+### 测试
+
+- **Deno** 266 通过 / 0 失败；**Bun** 249 通过 / 0 失败 / 14 文件；
+  **Node.js 22** 12/12 文件通过——三端 0 失败。
+- 浏览器测试（`client-browser.test.ts`、`adapters-view-client.test.ts`）
+  排除于 Node CI（需 Playwright/Chromium）。
+
+---
+
 ## [1.1.8] - 2026-05-08
 
 ### 修复

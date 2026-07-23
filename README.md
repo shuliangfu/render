@@ -7,7 +7,7 @@ English | [中文 (Chinese)](./docs/zh-CN/README.md)
 
 [![JSR](https://jsr.io/badges/@dreamer/render)](https://jsr.io/@dreamer/render)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Tests](https://img.shields.io/badge/tests-252%20passed-brightgreen)](./docs/en-US/TEST_REPORT.md)
+[![Tests](https://img.shields.io/badge/tests-Deno%20266%20%7C%20Bun%20249%20%7C%20Node%2012--12-brightgreen)](./docs/en-US/TEST_REPORT.md)
 
 ---
 
@@ -32,14 +32,21 @@ deno add jsr:@dreamer/render
 bunx jsr add @dreamer/render
 ```
 
+### Node.js 22+
+
+```bash
+npx jsr add @dreamer/render
+```
+
 ---
 
 ## 🌍 Environment Compatibility
 
 | Environment      | Version          | Status                                          |
 | ---------------- | ---------------- | ----------------------------------------------- |
-| **Deno**         | 2.5+             | ✅ Full support                                 |
-| **Bun**          | 1.0+             | ✅ Full support                                 |
+| **Deno**         | 2.9+             | ✅ Full support                                 |
+| **Bun**          | 1.3+             | ✅ Full support                                 |
+| **Node.js**      | 22+              | ✅ Full support                                 |
 | **Browser**      | Modern (ES2020+) | ✅ CSR, Hydration                               |
 | **React**        | 18+              | ✅ Full support                                 |
 | **Preact**       | 10+              | ✅ Full support                                 |

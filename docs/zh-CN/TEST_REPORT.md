@@ -1,33 +1,48 @@
 # @dreamer/render 测试报告
 
+[English](../en-US/TEST_REPORT.md) | 中文
+
 ## 测试概览
 
-| 项目         | 说明                            |
-| ------------ | ------------------------------- |
-| 被测库版本   | @dreamer/render@1.0.26          |
-| 运行时适配器 | @dreamer/runtime-adapter@^1.0.5 |
-| 测试框架     | @dreamer/test@^1.0.6            |
-| 测试日期     | 2026-02-17                      |
-| 测试环境     | Deno 2.x+ / Bun 1.x+            |
+| 项目         | 说明                                                |
+| ------------ | --------------------------------------------------- |
+| 包名         | `@dreamer/render`                                   |
+| 版本         | **1.2.0**（与 `deno.json`/`package.json` 一致）     |
+| 运行时适配器 | @dreamer/runtime-adapter@^1.2.2                     |
+| 测试框架     | @dreamer/test@^1.2.3                                |
+| 报告日期     | **2026-07-23**                                      |
+| 测试环境     | Deno 2.9+ / Bun 1.3+ / Node.js 22+                 |
+
+## 如何运行
+
+在 **render 包根目录** 执行：
+
+```bash
+# Deno（单元+集成；排除浏览器测试）
+deno task test
+
+# Bun
+bun test tests/
+
+# Node.js 22+（排除浏览器测试）
+npm install
+npm run test:node
+# 等价：node --import tsx --test-force-exit test-node.mjs
+```
 
 ## 测试结果
 
-### 总体统计
+### 运行时兼容性
 
-| 指标     | 数值                   |
-| -------- | ---------------------- |
-| 总测试数 | 252                    |
-| 通过     | 252 ✅                 |
-| 失败     | 0                      |
-| 通过率   | 100%                   |
-| 执行时间 | ~46s（`deno test -A`） |
+| 运行时  | 版本  | 通过      | 失败  | 文件   | 耗时   |
+| ------- | ----- | --------- | ----- | ------ | ------ |
+| Deno    | 2.9+  | **266**   | **0** | 14     | ~43s   |
+| Bun     | 1.3+  | **249**   | **0** | 14     | ~44s   |
+| Node.js | 22+   | **12/12** | **0** | 12     | ~60s   |
 
-### 运行兼容性
-
-| 运行时 | 版本 | 结果        |
-| ------ | ---- | ----------- |
-| Deno   | 2.x+ | ✅ 252 通过 |
-| Bun    | 1.x+ | ✅ 252 通过 |
+> 浏览器测试（`client-browser.test.ts`、`adapters-view-client.test.ts`）
+> 排除于 Node CI（需 Playwright/Chromium）。Deno/Bun 条数因运行器计数方式
+> 不同而异——以 **0 失败** 为准。
 
 ### 测试文件统计
 
@@ -185,10 +200,11 @@
 
 ## 结论
 
-`@dreamer/render` 各项功能均通过测试，覆盖完整。252 个测试在 Deno 与 Bun
-下全部通过，支持 React、Preact、View 三种模板引擎。
+`@dreamer/render` 各项功能均通过测试，覆盖完整。测试在 **Deno 2.9+**
+（266 通过）、**Bun 1.3+**（249 通过）和 **Node.js 22+**（12/12 文件）三端
+全部通过，支持 React、Preact、View 三种模板引擎。
 
 ---
 
-**报告生成时间**：2026-02-17 **测试环境**：Deno 2.x+ / Bun 1.x+
-**测试框架**：@dreamer/test@^1.0.6
+**报告日期**：2026-07-23 **测试环境**：Deno 2.9+ / Bun 1.3+ / Node.js 22+
+**测试框架**：@dreamer/test@^1.2.3

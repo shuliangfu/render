@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.2.0] - 2026-07-23
+
+### Added
+
+- **Node.js 22+ compatibility** — `@dreamer/render` now runs on Deno 2.9+,
+  Bun 1.3+, and Node.js 22+.
+  - `package.json`: `engines.node >= 22`, `test:node` script via tsx.
+  - `test-node.mjs`: Node test runner — each file runs in the main process
+    (no `--test` fork/IPC), avoiding "Unable to deserialize cloned data" when
+    tests write to stdout. Browser tests excluded.
+  - `tsconfig.json`: Bundler module resolution + `dom` lib for cross-runtime
+    type consistency.
+  - CI: 9-job matrix (3 Deno v2.9 + 3 Bun + 3 Node 22, no Chromium).
+
+### Changed
+
+- **Dependencies**: `@dreamer/view` bumped `^2.1.0` → `^2.2.0` (Node-compatible);
+  `@dreamer/runtime-adapter` `^1.2.2`; `@dreamer/test` `^1.2.3`;
+  `@dreamer/i18n` `^1.1.2` — synced across `deno.json` and `package.json`.
+  Added `happy-dom` to `package.json` devDependencies (was missing, caused
+  Node test failures).
+- **`dom-setup-happy-dom.ts`**: replaced direct `globalThis.X = value`
+  assignments with `Object.defineProperty`. Node 21+ has a read-only
+  `navigator` global (getter-only), so direct assignment throws `TypeError`.
+  `defineProperty` works uniformly across Deno / Bun / Node.
+
+### Tests
+
+- **Deno** 266 passed / 0 failed; **Bun** 249 pass / 0 fail / 14 files;
+  **Node.js 22** 12/12 files passed — 0 failures across all three runtimes.
+- Browser tests (`client-browser.test.ts`, `adapters-view-client.test.ts`)
+  excluded from Node CI (require Playwright/Chromium).
+
+---
+
 ## [1.1.8] - 2026-05-08
 
 ### Fixed
