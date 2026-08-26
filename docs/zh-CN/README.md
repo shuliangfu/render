@@ -716,9 +716,10 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.1.8**（2026-05-08）：**修复** React / react-dom 的 caret 范围统一为
-`^19.2.6`，避免 CLI 或 SSR 依赖解析时触发 React 19
-运行时版本不一致错误。完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
+**v1.3.0**（2026-08-26）：**新增** `renderSSRStream`（仅 view 的
+`ReadableStream` SSR）与 `StreamRenderResult`。`renderSSR` 的缓冲
+`stream: true` 不变。完整历史见 [CHANGELOG.md](./CHANGELOG.md)；测试报告见
+[TEST_REPORT.md](./TEST_REPORT.md)。
 
 ---
 
