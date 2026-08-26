@@ -64,7 +64,10 @@ npx jsr add @dreamer/render
   - Unified render API
 - **SSR**:
   - Render components to HTML on server
-  - Streaming (React, Preact, View)
+  - Buffered `stream: true` on `renderSSR` (all engines drain to `html: string`)
+  - **`renderSSRStream`** (view-only): true `ReadableStream<Uint8Array>`; View
+    stream is coarse (full snapshot then optional re-renders) — **not** Suspense
+    selective streaming. Use `renderSSR()` for react/preact.
   - HTML template wrapping
   - Metadata, server data injection, layout system
   - Script extraction and injection
@@ -699,9 +702,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.1.8** (2026-05-08): **Fixed** React / react-dom caret ranges are aligned to
-`^19.2.6` to avoid React 19 runtime version mismatch during CLI or SSR
-dependency resolution. Full history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md).
+**v1.3.0** (2026-08-26): **Added** `renderSSRStream` (view-only `ReadableStream`
+SSR) and `StreamRenderResult`. Buffered `stream: true` on `renderSSR` unchanged.
+Full history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md). Test report:
+[TEST_REPORT.md](./docs/en-US/TEST_REPORT.md).
 
 ---
 

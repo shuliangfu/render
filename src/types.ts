@@ -208,7 +208,11 @@ export interface SSROptions {
   skipLayouts?: boolean;
   /** HTML template wrapping the result */
   template?: string;
-  /** Enable streaming (React native; Preact simulated chunks) */
+  /**
+   * Buffered streaming for `renderSSR`: adapters may use a stream API then
+   * drain to `html: string`. Prefer `renderSSRStream` for a true
+   * `ReadableStream<Uint8Array>` (view-only).
+   */
   stream?: boolean;
   /** Load context for load() and metadata */
   loadContext?: LoadContext;
@@ -312,6 +316,31 @@ export interface RenderResult {
   compressedSize?: number;
   /** Original size (if compression used) */
   originalSize?: number;
+}
+
+/**
+ * Streaming SSR result from `renderSSRStream` (no `html` string).
+ */
+export interface StreamRenderResult {
+  /** UTF-8 HTML byte stream */
+  body: ReadableStream<Uint8Array>;
+  /** Merged metadata */
+  metadata?: Metadata;
+  /** Layout load data */
+  layoutData?: ServerData;
+  /** Page load data */
+  pageData?: ServerData;
+  /** Performance metrics if enabled */
+  performance?: PerformanceMetrics;
+  /** Whether metadata was from cache */
+  fromCache?: boolean;
+  /** Stream render info */
+  renderInfo: {
+    engine: Engine;
+    stream: true;
+    /** `pipe` = undrained engine stream; `buffer-fallback` reserved */
+    mode: "pipe" | "buffer-fallback";
+  };
 }
 
 /** CSRRenderResult is in @dreamer/render/client */

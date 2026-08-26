@@ -9,7 +9,9 @@ import type {
   LoadContext,
   Metadata,
   RenderResult,
+  ScriptDefinition,
   SSROptions,
+  StreamRenderResult,
 } from "./types.ts";
 import { cacheMetadata, getCachedMetadata } from "./utils/cache.ts";
 import {
@@ -22,6 +24,10 @@ import {
 } from "./utils/context.ts";
 import { generateErrorHTML, handleRenderError } from "./utils/error-handler.ts";
 import { injectMultiple } from "./utils/html-inject.ts";
+import {
+  createHtmlInjectTransform,
+  type StreamInjection,
+} from "./utils/html-stream-inject.ts";
 import { filterLayouts } from "./utils/layout.ts";
 import {
   generateLazyDataScript,
@@ -51,46 +57,44 @@ import {
 } from "./utils/server-data.ts";
 import { $tr, type Locale } from "./i18n.ts";
 
-/**
- * Server-side render: call the adapter for the given engine to produce HTML.
- *
- * @param options - SSR options (engine, component, props, template, loadContext, etc.)
- * @returns Render result (html, styles, scripts, metadata, performance, etc.)
- * @throws If engine is unsupported or render fails
- */
-export async function renderSSR(options: SSROptions): Promise<RenderResult> {
-  const { engine, loadContext } = options;
-  const lang = options.lang as Locale | undefined;
+/** Shared SSR prep: layouts/load/metadata/scripts/injections. */
+interface SSRPrepResult {
+  mergedMetadata: Metadata | null;
+  layoutData: Record<string, unknown>;
+  pageData: Record<string, unknown>;
+  fromCache: boolean;
+  injections: StreamInjection[];
+  compressedSize?: number;
+  originalSize?: number;
+  perfMonitor: ReturnType<typeof createPerformanceMonitor>;
+}
 
-  // 性能监控
+async function prepareSSR(options: SSROptions): Promise<SSRPrepResult> {
+  const { engine, loadContext } = options;
+
   const perfMonitor = createPerformanceMonitor(options.performance);
   if (perfMonitor) {
     perfMonitor.start(engine, "ssr");
   }
 
-  // 准备 LoadContext（如果没有提供，使用默认值）
   const context: LoadContext = loadContext || {
     url: "/",
     params: {},
   };
 
-  // 尝试从缓存获取元数据
   let cachedMetadata: Metadata | null = null;
   if (options.metadataCache?.enabled) {
     cachedMetadata = await getCachedMetadata(context, options.metadataCache);
   }
 
-  // 收集元数据和数据
   const layoutMetadataList: Metadata[] = [];
   let layoutData: Record<string, unknown> = {};
   const layoutRoutes: string[] = [];
-  const layoutScripts: Array<import("./types.ts").ScriptDefinition>[] = [];
+  const layoutScripts: ScriptDefinition[][] = [];
 
-  // 遍历布局组件（从外到内）
   if (options.layouts && options.layouts.length > 0) {
     const filteredLayouts = filterLayouts(options.layouts);
     for (const layout of filteredLayouts) {
-      // 提取并解析 metadata（如果缓存中没有）
       if (!cachedMetadata) {
         const metadataValue = extractMetadata(layout.component);
         if (metadataValue) {
@@ -104,23 +108,19 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
         }
       }
 
-      // 提取并调用 load 方法
       const loadFn = extractLoadFunction(layout.component);
       if (loadFn) {
         const data = await loadServerData(loadFn, context);
         if (data) {
-          // 布局数据合并（从外到内）
           layoutData = { ...layoutData, ...data };
         }
       }
 
-      // 提取脚本
       const scripts = extractScripts(layout.component);
       if (scripts.length > 0) {
         layoutScripts.push(scripts);
       }
 
-      // 收集布局路由信息（如果有）
       if (layout.component && typeof layout.component === "object") {
         const comp = layout.component as Record<string, unknown>;
         if (typeof comp.route === "string") {
@@ -130,13 +130,11 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   }
 
-  // 收集页面组件的元数据和数据
   let pageMetadata: Metadata | null = null;
   let pageData: Record<string, unknown> = {};
   let pageRoute: string | undefined;
-  let pageScripts: import("./types.ts").ScriptDefinition[] = [];
+  let pageScripts: ScriptDefinition[] = [];
 
-  // 提取并解析页面 metadata（如果缓存中没有）
   if (!cachedMetadata) {
     const pageMetadataValue = extractMetadata(options.component);
     if (pageMetadataValue) {
@@ -144,7 +142,6 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   }
 
-  // 提取并调用页面 load 方法
   const pageLoadFn = extractLoadFunction(options.component);
   if (pageLoadFn) {
     const data = await loadServerData(pageLoadFn, context);
@@ -153,10 +150,8 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   }
 
-  // 提取页面脚本
   pageScripts = extractScripts(options.component);
 
-  // 收集页面路由信息（如果有）
   if (options.component && typeof options.component === "object") {
     const comp = options.component as Record<string, unknown>;
     if (typeof comp.route === "string") {
@@ -164,23 +159,140 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   }
 
-  // 合并元数据（页面覆盖布局）
   let mergedMetadata = cachedMetadata ||
     mergeMetadata(layoutMetadataList, pageMetadata);
 
-  // 合并 Context 数据（如果提供）
   if (options.contextData) {
     mergedMetadata = mergeContextMetadata(mergedMetadata, options.contextData);
     layoutData = mergeContextServerData(layoutData, options.contextData);
     pageData = mergeContextServerData(pageData, options.contextData);
   }
 
-  // 缓存元数据（如果启用）
   if (options.metadataCache?.enabled && !cachedMetadata) {
     await cacheMetadata(context, mergedMetadata, options.metadataCache);
   }
 
-  // 调用适配器渲染
+  const routeMetaWithoutTitleHtml = generateRouteMetaTagsWithoutTitle(
+    mergedMetadata,
+  );
+  const routeTitleHtml = generateRouteTitleTag(mergedMetadata);
+
+  const allScripts = mergeScripts(
+    ...layoutScripts,
+    pageScripts,
+    options.scripts || [],
+  );
+
+  const scriptTagsHtml = generateScriptTags(allScripts);
+  const asyncScriptLoaderHtml = generateAsyncScriptLoader(allScripts);
+
+  let dataScript = "";
+  let compressedSize: number | undefined;
+  let originalSize: number | undefined;
+
+  if (!options.skipDataInjection) {
+    const dataToInject = {
+      metadata: mergedMetadata,
+      layoutData,
+      pageData,
+      route: context.url.split("?")[0],
+      url: context.url,
+      params: context.params,
+      layoutRoutes,
+      pageRoute,
+    };
+
+    if (options.compression?.enabled) {
+      const compressed = compressData(dataToInject, options.compression);
+      if (compressed) {
+        dataScript = generateCompressedDataScript(
+          compressed.compressed,
+          compressed.originalSize,
+          compressed.compressedSize,
+        );
+        compressedSize = compressed.compressedSize;
+        originalSize = compressed.originalSize;
+      } else {
+        dataScript = generateDataScript(dataToInject);
+      }
+    } else if (options.lazyData && shouldLazyLoad(dataToInject)) {
+      dataScript = generateLazyDataScript(dataToInject);
+    } else {
+      dataScript = generateDataScript(dataToInject);
+    }
+  }
+
+  const clientScriptsHtml =
+    options.clientScripts && options.clientScripts.length > 0
+      ? options.clientScripts.map((script) => {
+        if (script.trim().startsWith("<script")) {
+          return script;
+        }
+        return `<script src="${script}"></script>`;
+      }).join("\n  ")
+      : "";
+
+  const injections: StreamInjection[] = [];
+
+  if (routeMetaWithoutTitleHtml) {
+    injections.push({
+      content: routeMetaWithoutTitleHtml,
+      options: { type: "meta", inHead: true },
+    });
+  }
+  if (routeTitleHtml) {
+    injections.push({
+      content: routeTitleHtml,
+      options: { type: "meta", inHead: true },
+    });
+  }
+  if (dataScript) {
+    injections.push({
+      content: dataScript,
+      options: { type: "data-script", inHead: true },
+    });
+  }
+  if (scriptTagsHtml) {
+    injections.push({ content: scriptTagsHtml, options: { type: "script" } });
+  }
+  if (asyncScriptLoaderHtml) {
+    injections.push({
+      content: asyncScriptLoaderHtml,
+      options: { type: "script" },
+    });
+  }
+  if (clientScriptsHtml) {
+    injections.push({
+      content: clientScriptsHtml,
+      options: { type: "script" },
+    });
+  }
+
+  return {
+    mergedMetadata,
+    layoutData,
+    pageData,
+    fromCache: !!cachedMetadata,
+    injections,
+    compressedSize,
+    originalSize,
+    perfMonitor,
+  };
+}
+
+/**
+ * Server-side render: call the adapter for the given engine to produce HTML.
+ *
+ * @param options - SSR options (engine, component, props, template, loadContext, etc.)
+ * @returns Render result (html, styles, scripts, metadata, performance, etc.)
+ * @throws If engine is unsupported or render fails
+ */
+export async function renderSSR(options: SSROptions): Promise<RenderResult> {
+  const { engine } = options;
+  const lang = options.lang as Locale | undefined;
+
+  const prep = await prepareSSR(options);
+
   let result: RenderResult;
   try {
     switch (engine) {
@@ -244,76 +356,6 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   }
 
-  /** 路由 SEO：分两针注入，确保 `<title>` DOM 在所有 `<meta>` 之后（injectHtml 第二针插在最后一个 meta 后） */
-  const routeMetaWithoutTitleHtml = generateRouteMetaTagsWithoutTitle(
-    mergedMetadata,
-  );
-  const routeTitleHtml = generateRouteTitleTag(mergedMetadata);
-
-  // 合并所有脚本（布局脚本 + 页面脚本 + 选项中的脚本）
-  const allScripts = mergeScripts(
-    ...layoutScripts,
-    pageScripts,
-    options.scripts || [],
-  );
-
-  // 生成脚本标签 HTML
-  const scriptTagsHtml = generateScriptTags(allScripts);
-  const asyncScriptLoaderHtml = generateAsyncScriptLoader(allScripts);
-
-  // 生成统一的数据注入脚本（如果未跳过）
-  let dataScript: string = "";
-  let compressedSize: number | undefined;
-  let originalSize: number | undefined;
-
-  if (!options.skipDataInjection) {
-    const dataToInject = {
-      metadata: mergedMetadata,
-      layoutData,
-      pageData,
-      route: context.url.split("?")[0], // 路由路径（不含查询字符串）
-      url: context.url, // 完整 URL
-      params: context.params,
-      layoutRoutes,
-      pageRoute,
-    };
-
-    // 数据压缩（如果启用）
-    if (options.compression?.enabled) {
-      const compressed = compressData(dataToInject, options.compression);
-      if (compressed) {
-        dataScript = generateCompressedDataScript(
-          compressed.compressed,
-          compressed.originalSize,
-          compressed.compressedSize,
-        );
-        compressedSize = compressed.compressedSize;
-        originalSize = compressed.originalSize;
-      } else {
-        dataScript = generateDataScript(dataToInject);
-      }
-    } else if (options.lazyData && shouldLazyLoad(dataToInject)) {
-      // 数据懒加载
-      dataScript = generateLazyDataScript(dataToInject);
-    } else {
-      dataScript = generateDataScript(dataToInject);
-    }
-  }
-
-  // 生成客户端脚本标签（兼容旧 API）
-  const clientScriptsHtml =
-    options.clientScripts && options.clientScripts.length > 0
-      ? options.clientScripts.map((script) => {
-        // 如果是内联脚本（以 <script 开头），直接使用
-        if (script.trim().startsWith("<script")) {
-          return script;
-        }
-        // 否则作为外部脚本路径
-        return `<script src="${script}"></script>`;
-      }).join("\n  ")
-      : "";
-
-  // Ensure result.html is string before injection
   if (typeof result.html !== "string") {
     const type = typeof result.html;
     console.error(
@@ -328,77 +370,91 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     }
   }
 
-  // 使用自动注入工具批量注入所有内容（相同类型会集中在一起）
-  const injections: Array<
-    {
-      content: string;
-      options?: { type?: "meta" | "script" | "data-script"; inHead?: boolean };
-    }
-  > = [];
+  const finalHtml = injectMultiple(result.html, prep.injections);
 
-  // 1a. 先注入除 `<title>` 外的路由 meta；1b. 再注入 `<title>`（紧跟上一针最后一个 meta）
-  if (routeMetaWithoutTitleHtml) {
-    injections.push({
-      content: routeMetaWithoutTitleHtml,
-      options: { type: "meta", inHead: true },
-    });
-  }
-  if (routeTitleHtml) {
-    injections.push({
-      content: routeTitleHtml,
-      options: { type: "meta", inHead: true },
-    });
-  }
-
-  // 2. 注入数据脚本到 head（会集中在一起）
-  if (dataScript) {
-    injections.push({
-      content: dataScript,
-      options: { type: "data-script", inHead: true },
-    });
-  }
-
-  // 3. 注入脚本标签到 body（会集中在一起）
-  if (scriptTagsHtml) {
-    injections.push({ content: scriptTagsHtml, options: { type: "script" } });
-  }
-
-  // 4. 注入异步脚本加载器到 body（会集中在一起）
-  if (asyncScriptLoaderHtml) {
-    injections.push({
-      content: asyncScriptLoaderHtml,
-      options: { type: "script" },
-    });
-  }
-
-  // 5. 注入客户端脚本到 body（会集中在一起，兼容旧 API）
-  if (clientScriptsHtml) {
-    injections.push({
-      content: clientScriptsHtml,
-      options: { type: "script" },
-    });
-  }
-
-  // 批量注入（相同类型会集中在一起）
-  const finalHtml = injectMultiple(result.html, injections);
-
-  // 结束性能监控
   let performanceMetrics: import("./types.ts").PerformanceMetrics | undefined;
-  if (perfMonitor) {
-    performanceMetrics = perfMonitor.end();
+  if (prep.perfMonitor) {
+    performanceMetrics = prep.perfMonitor.end();
     recordPerformanceMetrics(performanceMetrics, options.performance);
   }
 
-  // 返回结果，包含元数据和数据
   return {
     ...result,
     html: finalHtml,
-    metadata: mergedMetadata,
-    layoutData,
-    pageData,
+    metadata: prep.mergedMetadata ?? undefined,
+    layoutData: prep.layoutData,
+    pageData: prep.pageData,
     performance: performanceMetrics,
-    fromCache: !!cachedMetadata,
-    compressedSize,
-    originalSize,
+    fromCache: prep.fromCache,
+    compressedSize: prep.compressedSize,
+    originalSize: prep.originalSize,
+  };
+}
+
+/**
+ * Streaming SSR for view: returns an undrained `ReadableStream` of HTML bytes.
+ * React/Preact must use `renderSSR()` (buffered `stream: true` if needed).
+ *
+ * View streaming is coarse (full snapshot, then optional re-render chunks) —
+ * not Suspense selective streaming.
+ *
+ * @param options - SSR options (`engine` must be `"view"`)
+ */
+export async function renderSSRStream(
+  options: SSROptions,
+): Promise<StreamRenderResult> {
+  const { engine } = options;
+  const lang = options.lang as Locale | undefined;
+
+  if (engine !== "view") {
+    throw new Error($tr("error.streamViewOnly", {}, lang));
+  }
+
+  const prep = await prepareSSR(options);
+
+  let adapterResult: Awaited<ReturnType<typeof viewAdapter.renderSSRToStream>>;
+  try {
+    adapterResult = await viewAdapter.renderSSRToStream(options);
+  } catch (error) {
+    const shouldContinue = await handleRenderError(
+      error,
+      { engine, component: options.component, phase: "ssr" },
+      options.errorHandler,
+      lang,
+    );
+
+    if (shouldContinue && options.errorHandler?.fallbackComponent) {
+      adapterResult = await viewAdapter.renderSSRToStream({
+        ...options,
+        component: options.errorHandler.fallbackComponent,
+      });
+    } else {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error($tr("error.ssrFailed", { engine, message }, lang));
+    }
+  }
+
+  const body = adapterResult.body.pipeThrough(
+    createHtmlInjectTransform(prep.injections),
+  );
+
+  let performanceMetrics: import("./types.ts").PerformanceMetrics | undefined;
+  if (prep.perfMonitor) {
+    performanceMetrics = prep.perfMonitor.end();
+    recordPerformanceMetrics(performanceMetrics, options.performance);
+  }
+
+  return {
+    body,
+    metadata: prep.mergedMetadata ?? undefined,
+    layoutData: prep.layoutData,
+    pageData: prep.pageData,
+    performance: performanceMetrics,
+    fromCache: prep.fromCache,
+    renderInfo: {
+      engine: "view",
+      stream: true,
+      mode: "pipe",
+    },
   };
 }

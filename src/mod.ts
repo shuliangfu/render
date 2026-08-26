@@ -6,15 +6,17 @@
  *
  * Provides SSR and SSG with React, Preact, and View engines. For CSR and Hydration use `@dreamer/render/client`.
  *
- * **Exports:** renderSSR, renderSSG, expandDynamicRoute, generateRobots, generateSitemap; cache, compression,
- * context, error-handler, html-inject, layout, lazy-loading, metadata, performance, scripts, server-data utils;
- * types: SSROptions, RenderResult, Engine, Metadata, CacheOptions, etc.
+ * **Exports:** renderSSR, renderSSRStream, renderSSG, expandDynamicRoute, generateRobots, generateSitemap;
+ * cache, compression, context, error-handler, html-inject, layout, lazy-loading, metadata, performance,
+ * scripts, server-data utils; types: SSROptions, RenderResult, StreamRenderResult, Engine, Metadata, etc.
  *
  * @example
  * ```typescript
- * import { renderSSR } from "@dreamer/render";
+ * import { renderSSR, renderSSRStream } from "@dreamer/render";
  * const result = await renderSSR({ engine: "preact", component: MyComponent, props: { name: "World" } });
  * console.log(result.html);
+ * // View-only true stream (ReadableStream); not Suspense selective streaming
+ * const stream = await renderSSRStream({ engine: "view", component: ViewPage });
  * import { renderCSR, hydrate } from "@dreamer/render/client";
  * ```
  */
@@ -38,6 +40,7 @@ export type {
   ServerData,
   SSGOptions,
   SSROptions,
+  StreamRenderResult,
 } from "./types.ts";
 
 // 导出核心渲染函数（服务端）
@@ -49,7 +52,7 @@ export {
   renderSSG,
   routeToFilePath,
 } from "./ssg.ts";
-export { renderSSR } from "./ssr.ts";
+export { renderSSR, renderSSRStream } from "./ssr.ts";
 
 // Adapters are not re-exported here to avoid version conflicts; server/client load by engine. Use subpaths for advanced usage.
 
@@ -79,6 +82,8 @@ export {
   injectMultiple,
 } from "./utils/html-inject.ts";
 export type { InjectOptions } from "./utils/html-inject.ts";
+export { createHtmlInjectTransform } from "./utils/html-stream-inject.ts";
+export type { StreamInjection } from "./utils/html-stream-inject.ts";
 export {
   composeLayouts,
   createComponentTree,

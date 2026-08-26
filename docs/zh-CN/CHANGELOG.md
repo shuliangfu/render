@@ -7,6 +7,28 @@
 
 ---
 
+## [1.3.0] - 2026-08-26
+
+### 新增
+
+- **`renderSSRStream`** — 仅 view 的真流式 SSR，返回
+  `StreamRenderResult { body: ReadableStream<Uint8Array> }`（无 `html`
+  字符串）。 头注入在 `</head>` 处刷出；body 脚本在 `</body>` 前拼接
+  （`utils/html-stream-inject.ts`）。React/Preact 请继续使用 `renderSSR()`。
+- 导出 **`StreamRenderResult`** 类型。
+- View 适配器 **`renderSSRToStream`**：不 drain 的 `renderToStream` 路径（可选
+  template outlet / body 包装）；现有 `renderSSR` + `stream: true`
+  仍缓冲为字符串。
+
+### 变更
+
+- **`SSROptions.stream` JSDoc**：标明为缓冲后拼字符串；需要 ReadableStream
+  时请用 `renderSSRStream`。
+- README：流式说明 — 仅 view pipe；View 流为粗粒度（整页快照 + 可选再渲染）；
+  **不**宣称 Suspense 选择性流式。
+
+---
+
 ## [1.2.0] - 2026-07-23
 
 ### 新增
@@ -24,8 +46,8 @@
 
 - **依赖**：`@dreamer/view` 从 `^2.1.0` 升至 `^2.2.0`（Node 兼容版本）；
   `@dreamer/runtime-adapter` `^1.2.2`；`@dreamer/test` `^1.2.3`；
-  `@dreamer/i18n` `^1.1.2`——`deno.json` 与 `package.json` 同步。
-  向 `package.json` devDependencies 补充 `happy-dom`（此前缺失，导致 Node
+  `@dreamer/i18n` `^1.1.2`——`deno.json` 与 `package.json` 同步。 向
+  `package.json` devDependencies 补充 `happy-dom`（此前缺失，导致 Node
   测试失败）。
 - **`dom-setup-happy-dom.ts`**：将直接 `globalThis.X = value` 赋值替换为
   `Object.defineProperty`。Node 21+ 的全局 `navigator` 为只读属性（仅有
@@ -34,10 +56,10 @@
 
 ### 测试
 
-- **Deno** 266 通过 / 0 失败；**Bun** 249 通过 / 0 失败 / 14 文件；
-  **Node.js 22** 12/12 文件通过——三端 0 失败。
-- 浏览器测试（`client-browser.test.ts`、`adapters-view-client.test.ts`）
-  排除于 Node CI（需 Playwright/Chromium）。
+- **Deno** 266 通过 / 0 失败；**Bun** 249 通过 / 0 失败 / 14 文件； **Node.js
+  22** 12/12 文件通过——三端 0 失败。
+- 浏览器测试（`client-browser.test.ts`、`adapters-view-client.test.ts`） 排除于
+  Node CI（需 Playwright/Chromium）。
 
 ---
 

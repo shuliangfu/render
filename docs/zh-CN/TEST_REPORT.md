@@ -4,14 +4,14 @@
 
 ## 测试概览
 
-| 项目         | 说明                                                |
-| ------------ | --------------------------------------------------- |
-| 包名         | `@dreamer/render`                                   |
-| 版本         | **1.2.0**（与 `deno.json`/`package.json` 一致）     |
-| 运行时适配器 | @dreamer/runtime-adapter@^1.2.2                     |
-| 测试框架     | @dreamer/test@^1.2.3                                |
-| 报告日期     | **2026-07-23**                                      |
-| 测试环境     | Deno 2.9+ / Bun 1.3+ / Node.js 22+                 |
+| 项目         | 说明                                            |
+| ------------ | ----------------------------------------------- |
+| 包名         | `@dreamer/render`                               |
+| 版本         | **1.3.0**（与 `deno.json`/`package.json` 一致） |
+| 运行时适配器 | @dreamer/runtime-adapter@^1.2.2                 |
+| 测试框架     | @dreamer/test@^1.2.3                            |
+| 报告日期     | **2026-08-26**                                  |
+| 测试环境     | Deno 2.9+ / Bun 1.3+ / Node.js 22+              |
 
 ## 如何运行
 
@@ -34,15 +34,15 @@ npm run test:node
 
 ### 运行时兼容性
 
-| 运行时  | 版本  | 通过      | 失败  | 文件   | 耗时   |
-| ------- | ----- | --------- | ----- | ------ | ------ |
-| Deno    | 2.9+  | **266**   | **0** | 14     | ~43s   |
-| Bun     | 1.3+  | **249**   | **0** | 14     | ~44s   |
-| Node.js | 22+   | **12/12** | **0** | 12     | ~60s   |
+| 运行时  | 版本 | 通过      | 失败  | 文件 | 耗时 |
+| ------- | ---- | --------- | ----- | ---- | ---- |
+| Deno    | 2.9+ | **274**   | **0** | 15   | ~43s |
+| Bun     | 1.3+ | **216**   | **0** | 13   | ~1s  |
+| Node.js | 22+  | **13/13** | **0** | 13   | ~60s |
 
-> 浏览器测试（`client-browser.test.ts`、`adapters-view-client.test.ts`）
-> 排除于 Node CI（需 Playwright/Chromium）。Deno/Bun 条数因运行器计数方式
-> 不同而异——以 **0 失败** 为准。
+> 浏览器测试（`client-browser.test.ts`、`adapters-view-client.test.ts`） 排除于
+> Node CI（需 Playwright/Chromium）。Deno/Bun 条数因运行器计数方式 不同而异——以
+> **0 失败** 为准。
 
 ### 测试文件统计
 
@@ -59,6 +59,7 @@ npm run test:node
 | `ssg-advanced.test.ts`      | 13   | ✅ 全部通过 |
 | `ssg.test.ts`               | 25   | ✅ 全部通过 |
 | `ssr-comprehensive.test.ts` | 32   | ✅ 全部通过 |
+| `ssr-stream.test.ts`        | 8    | ✅ 全部通过 |
 | `ssr.test.ts`               | 11   | ✅ 全部通过 |
 | `utils.test.ts`             | 23   | ✅ 全部通过 |
 
@@ -200,8 +201,8 @@ npm run test:node
 
 ## 结论
 
-`@dreamer/render` 各项功能均通过测试，覆盖完整。测试在 **Deno 2.9+**
-（266 通过）、**Bun 1.3+**（249 通过）和 **Node.js 22+**（12/12 文件）三端
+`@dreamer/render` 各项功能均通过测试，覆盖完整。测试在 **Deno 2.9+** （266
+通过）、**Bun 1.3+**（249 通过）和 **Node.js 22+**（12/12 文件）三端
 全部通过，支持 React、Preact、View 三种模板引擎。
 
 ---

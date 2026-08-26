@@ -14,7 +14,8 @@
     "ssgCannotStringify": "SSG: cannot stringify result.html, type: {type}",
     "ssgHtmlNotString": "SSG: html not string before write, type: {type}",
     "viewSsrFailed": "View SSR render failed (including fallback): {message}",
-    "preactSsrFailed": "Preact SSR render failed (including fallback): {message}"
+    "preactSsrFailed": "Preact SSR render failed (including fallback): {message}",
+    "streamViewOnly": "Streaming SSR (renderSSRStream) currently supports engine: \"view\" only. Use renderSSR() for react/preact."
   },
   "log": {
     "renderError": "[{engine}] {phase} render error:"

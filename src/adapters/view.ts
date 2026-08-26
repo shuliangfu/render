@@ -69,6 +69,88 @@ async function viewStreamToHtml(rootFn: () => VNode): Promise<string> {
   return out;
 }
 
+function encodeTextStream(text: string): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder();
+  return new ReadableStream({
+    start(controller) {
+      if (text.length > 0) controller.enqueue(encoder.encode(text));
+      controller.close();
+    },
+  });
+}
+
+/** Concatenate ReadableStreams in order. */
+function concatUint8Streams(
+  streams: ReadableStream<Uint8Array>[],
+): ReadableStream<Uint8Array> {
+  return new ReadableStream({
+    async start(controller) {
+      try {
+        for (const stream of streams) {
+          const reader = stream.getReader();
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              if (value) controller.enqueue(value);
+            }
+          } finally {
+            reader.releaseLock();
+          }
+        }
+        controller.close();
+      } catch (e) {
+        controller.error(e);
+      }
+    },
+  });
+}
+
+/**
+ * Wrap component bytes with an HTML template (outlet or body insert).
+ */
+function wrapStreamWithTemplate(
+  componentStream: ReadableStream<Uint8Array>,
+  template: string,
+): ReadableStream<Uint8Array> {
+  if (template.includes("<!--ssr-outlet-->")) {
+    const parts = template.split("<!--ssr-outlet-->");
+    const prefix = parts[0] ?? "";
+    const suffix = parts.slice(1).join("<!--ssr-outlet-->");
+    return concatUint8Streams([
+      encodeTextStream(prefix),
+      componentStream,
+      encodeTextStream(suffix),
+    ]);
+  }
+
+  const bodyStartIndex = template.indexOf("<body>");
+  const bodyEndIndex = template.indexOf("</body>");
+  if (bodyStartIndex !== -1 && bodyEndIndex !== -1) {
+    return concatUint8Streams([
+      encodeTextStream(template.slice(0, bodyStartIndex + 6) + "\n  "),
+      componentStream,
+      encodeTextStream("\n" + template.slice(bodyEndIndex)),
+    ]);
+  }
+  if (bodyEndIndex !== -1) {
+    return concatUint8Streams([
+      encodeTextStream(template.slice(0, bodyEndIndex) + "\n  "),
+      componentStream,
+      encodeTextStream("\n" + template.slice(bodyEndIndex)),
+    ]);
+  }
+  return componentStream;
+}
+
+/** Undrained stream result from the view adapter. */
+export interface ViewStreamRenderResult {
+  body: ReadableStream<Uint8Array>;
+  styles: string[];
+  scripts: string[];
+  renderInfo: { engine: "view"; stream: true };
+}
+
 /**
  * 调试日志：仅当 debug 为 true 时输出
  */
@@ -195,6 +277,82 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
           component: errorHandler.fallbackComponent,
         };
         return await renderSSR(fallbackOptions);
+      } catch (_fallbackError) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error($tr("error.viewSsrFailed", { message }, locale));
+      }
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * View streaming SSR: return undrained `renderToStream` (optional template wrap).
+ *
+ * @param options SSR 选项（engine 应为 "view"）
+ */
+export async function renderSSRToStream(
+  options: SSROptions,
+): Promise<ViewStreamRenderResult> {
+  const {
+    component,
+    props = {},
+    layouts,
+    skipLayouts,
+    template,
+    errorHandler,
+    debug,
+    lang,
+  } = options;
+
+  const locale = lang as Locale | undefined;
+  if (locale) setRenderLocale(locale);
+
+  debugLog(debug, "view", "start-stream", {
+    layoutsCount: layouts == null ? 0 : layouts.length,
+    skipLayouts,
+    hasTemplate: !!template,
+  });
+
+  try {
+    const shouldSkip = skipLayouts || shouldSkipLayouts(component);
+
+    const componentConfig = layouts && layouts.length > 0 && !shouldSkip
+      ? composeLayouts("view", component, props, layouts, shouldSkip)
+      : { component, props };
+
+    const rootVNode = createComponentTree(
+      viewCreateElement,
+      componentConfig as { component: unknown; props: Record<string, unknown> },
+    ) as VNode;
+
+    const rootFn = () => rootVNode;
+    let body = renderToStream(rootFn);
+    if (template) {
+      body = wrapStreamWithTemplate(body, template);
+    }
+
+    return {
+      body,
+      styles: [],
+      scripts: [],
+      renderInfo: { engine: "view", stream: true },
+    };
+  } catch (error) {
+    const shouldContinue = await handleRenderError(
+      error,
+      { engine: "view", component, phase: "ssr" },
+      errorHandler,
+      locale,
+    );
+
+    if (shouldContinue && errorHandler?.fallbackComponent) {
+      try {
+        return await renderSSRToStream({
+          ...options,
+          component: errorHandler.fallbackComponent,
+        });
       } catch (_fallbackError) {
         const message = error instanceof Error ? error.message : String(error);
         throw new Error($tr("error.viewSsrFailed", { message }, locale));

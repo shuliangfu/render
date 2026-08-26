@@ -59,7 +59,7 @@ jobs:
         run: bun install || true
 
       - name: Test (Bun)
-        run: bun test tests/adapters-preact.test.ts tests/adapters-react.test.ts tests/adapters-view.test.ts tests/client-utils.test.ts tests/edge-cases.test.ts tests/layout.test.ts tests/mod.test.ts tests/ssg-advanced.test.ts tests/ssg.test.ts tests/ssr-comprehensive.test.ts tests/ssr.test.ts tests/utils.test.ts
+        run: bun test tests/adapters-preact.test.ts tests/adapters-react.test.ts tests/adapters-view.test.ts tests/client-utils.test.ts tests/edge-cases.test.ts tests/layout.test.ts tests/mod.test.ts tests/ssg-advanced.test.ts tests/ssg.test.ts tests/ssr-comprehensive.test.ts tests/ssr-stream.test.ts tests/ssr.test.ts tests/utils.test.ts
 
   # ───────────────── Node.js 22+ ─────────────────
   test-node:

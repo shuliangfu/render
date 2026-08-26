@@ -14,7 +14,8 @@
     "ssgCannotStringify": "SSG: 无法将 result.html 转为字符串，类型: {type}",
     "ssgHtmlNotString": "SSG: 写入前 html 不是字符串，类型: {type}",
     "viewSsrFailed": "View SSR 渲染失败（包括降级组件）: {message}",
-    "preactSsrFailed": "Preact SSR 渲染失败（包括降级组件）: {message}"
+    "preactSsrFailed": "Preact SSR 渲染失败（包括降级组件）: {message}",
+    "streamViewOnly": "流式 SSR（renderSSRStream）当前仅支持 engine: \"view\"。react/preact 请使用 renderSSR()。"
   },
   "log": {
     "renderError": "[{engine}] {phase} 渲染错误:"

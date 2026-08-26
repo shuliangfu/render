@@ -39,7 +39,9 @@ const files = readdirSync(testDir)
   .sort()
   .map((f) => join(testDir, f));
 
-console.log(`Found ${files.length} test files (${EXCLUDE.length} browser tests excluded)\n`);
+console.log(
+  `Found ${files.length} test files (${EXCLUDE.length} browser tests excluded)\n`,
+);
 
 let failed = 0;
 for (const file of files) {

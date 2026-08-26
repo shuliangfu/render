@@ -7,30 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.0] - 2026-08-26
+
+### Added
+
+- **`renderSSRStream`** — view-only true streaming SSR returning
+  `StreamRenderResult { body: ReadableStream<Uint8Array> }` (no `html` string).
+  Head injects flush at `</head>`; body scripts splice before `</body>` via
+  `utils/html-stream-inject.ts`. React/Preact must keep using `renderSSR()`.
+- **`StreamRenderResult` type** exported from the package entry.
+- View adapter **`renderSSRToStream`**: undrained `renderToStream` path
+  (optional template outlet / body wrap); existing `renderSSR` + `stream: true`
+  still drains to a string.
+
+### Changed
+
+- **`SSROptions.stream` JSDoc**: clarified as buffered drain-to-string; prefer
+  `renderSSRStream` for a ReadableStream.
+- README: streaming notes — view-only pipe; View stream is coarse (full snapshot
+  then optional re-renders); **not** Suspense selective streaming.
+
+---
+
 ## [1.2.0] - 2026-07-23
 
 ### Added
 
-- **Node.js 22+ compatibility** — `@dreamer/render` now runs on Deno 2.9+,
-  Bun 1.3+, and Node.js 22+.
+- **Node.js 22+ compatibility** — `@dreamer/render` now runs on Deno 2.9+, Bun
+  1.3+, and Node.js 22+.
   - `package.json`: `engines.node >= 22`, `test:node` script via tsx.
-  - `test-node.mjs`: Node test runner — each file runs in the main process
-    (no `--test` fork/IPC), avoiding "Unable to deserialize cloned data" when
-    tests write to stdout. Browser tests excluded.
+  - `test-node.mjs`: Node test runner — each file runs in the main process (no
+    `--test` fork/IPC), avoiding "Unable to deserialize cloned data" when tests
+    write to stdout. Browser tests excluded.
   - `tsconfig.json`: Bundler module resolution + `dom` lib for cross-runtime
     type consistency.
   - CI: 9-job matrix (3 Deno v2.9 + 3 Bun + 3 Node 22, no Chromium).
 
 ### Changed
 
-- **Dependencies**: `@dreamer/view` bumped `^2.1.0` → `^2.2.0` (Node-compatible);
-  `@dreamer/runtime-adapter` `^1.2.2`; `@dreamer/test` `^1.2.3`;
-  `@dreamer/i18n` `^1.1.2` — synced across `deno.json` and `package.json`.
-  Added `happy-dom` to `package.json` devDependencies (was missing, caused
-  Node test failures).
+- **Dependencies**: `@dreamer/view` bumped `^2.1.0` → `^2.2.0`
+  (Node-compatible); `@dreamer/runtime-adapter` `^1.2.2`; `@dreamer/test`
+  `^1.2.3`; `@dreamer/i18n` `^1.1.2` — synced across `deno.json` and
+  `package.json`. Added `happy-dom` to `package.json` devDependencies (was
+  missing, caused Node test failures).
 - **`dom-setup-happy-dom.ts`**: replaced direct `globalThis.X = value`
-  assignments with `Object.defineProperty`. Node 21+ has a read-only
-  `navigator` global (getter-only), so direct assignment throws `TypeError`.
+  assignments with `Object.defineProperty`. Node 21+ has a read-only `navigator`
+  global (getter-only), so direct assignment throws `TypeError`.
   `defineProperty` works uniformly across Deno / Bun / Node.
 
 ### Tests

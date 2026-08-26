@@ -4,14 +4,14 @@ English | [中文](../zh-CN/TEST_REPORT.md)
 
 ## Test Overview
 
-| Item                 | Info                                              |
-| -------------------- | ------------------------------------------------- |
-| Package              | `@dreamer/render`                                 |
-| Version              | **1.2.0** (aligned with `deno.json`/`package.json`) |
-| Runtime adapter      | @dreamer/runtime-adapter@^1.2.2                   |
-| Test framework       | @dreamer/test@^1.2.3                              |
-| Report date          | **2026-07-23**                                    |
-| Test environment     | Deno 2.9+ / Bun 1.3+ / Node.js 22+               |
+| Item             | Info                                                |
+| ---------------- | --------------------------------------------------- |
+| Package          | `@dreamer/render`                                   |
+| Version          | **1.3.0** (aligned with `deno.json`/`package.json`) |
+| Runtime adapter  | @dreamer/runtime-adapter@^1.2.2                     |
+| Test framework   | @dreamer/test@^1.2.3                                |
+| Report date      | **2026-08-26**                                      |
+| Test environment | Deno 2.9+ / Bun 1.3+ / Node.js 22+                  |
 
 ## How to Run
 
@@ -34,11 +34,11 @@ npm run test:node
 
 ### Runtime Compatibility
 
-| Runtime  | Version | Passed      | Failed | Files | Duration |
-| -------- | ------- | ----------- | ------ | ----- | -------- |
-| Deno     | 2.9+    | **266**     | **0**  | 14    | ~43s     |
-| Bun      | 1.3+    | **249**     | **0**  | 14    | ~44s     |
-| Node.js  | 22+     | **12/12**   | **0**  | 12    | ~60s     |
+| Runtime | Version | Passed    | Failed | Files | Duration |
+| ------- | ------- | --------- | ------ | ----- | -------- |
+| Deno    | 2.9+    | **274**   | **0**  | 15    | ~43s     |
+| Bun     | 1.3+    | **216**   | **0**  | 13    | ~1s      |
+| Node.js | 22+     | **13/13** | **0**  | 13    | ~60s     |
 
 > Browser tests (`client-browser.test.ts`, `adapters-view-client.test.ts`)
 > excluded from Node CI (require Playwright/Chromium). Deno/Bun counts differ
@@ -59,6 +59,7 @@ npm run test:node
 | `ssg-advanced.test.ts`      | 13    | ✅ All passed |
 | `ssg.test.ts`               | 25    | ✅ All passed |
 | `ssr-comprehensive.test.ts` | 32    | ✅ All passed |
+| `ssr-stream.test.ts`        | 8     | ✅ All passed |
 | `ssr.test.ts`               | 11    | ✅ All passed |
 | `utils.test.ts`             | 23    | ✅ All passed |
 
@@ -209,5 +210,5 @@ All features of `@dreamer/render` pass comprehensive testing. Tests pass on
 
 ---
 
-**Report date**: 2026-07-23 **Test environment**: Deno 2.9+ / Bun 1.3+ / Node.js 22+
-**Test framework**: @dreamer/test@^1.2.3
+**Report date**: 2026-07-23 **Test environment**: Deno 2.9+ / Bun 1.3+ / Node.js
+22+ **Test framework**: @dreamer/test@^1.2.3
