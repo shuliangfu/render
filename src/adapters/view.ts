@@ -2,14 +2,18 @@
  * View 服务端渲染适配器
  *
  * 提供 @dreamer/view 模板引擎的 SSR 功能，支持布局组合、流式渲染（renderToStream）、
- * 错误处理与性能监控。与 React/Preact 适配器共用同一套 SSROptions。
+ * 可选 `asyncSSR`→`renderToStringAsync`、错误处理与性能监控。与 React/Preact 共用 SSROptions。
  *
- * 注意：当前 view 的 `renderToString` / `renderToStream` 接收 `() => VNode`，不再传入 container；
+ * 注意：当前 view 的 `renderToString` / `renderToStringAsync` / `renderToStream` 接收 `() => VNode`，不再传入 container；
  * 客户端 CSR 和 Hydration 在 @dreamer/render/client 的 view 适配器中。
  */
 
 import type { JSXElementType, VNode } from "@dreamer/view";
-import { renderToStream, renderToString } from "@dreamer/view/ssr";
+import {
+  renderToStream,
+  renderToString,
+  renderToStringAsync,
+} from "@dreamer/view/ssr";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import type { RenderResult, SSROptions } from "../types.ts";
 import { $tr, type Locale, setRenderLocale } from "../i18n.ts";
@@ -178,6 +182,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     skipLayouts,
     template,
     stream = false,
+    asyncSSR = false,
     errorHandler,
     performance: perfOptions,
     debug,
@@ -190,6 +195,7 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
 
   debugLog(debug, "view", "start", {
     stream,
+    asyncSSR,
     layoutsCount: layouts == null ? 0 : layouts.length,
     skipLayouts,
     hasTemplate: !!template,
@@ -230,9 +236,15 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     /** view SSR：无 container 回调，直接传入返回根 VNode 的函数 */
     const rootFn = () => rootVNode;
 
+    /**
+     * stream → renderToStream 再 drain；asyncSSR → renderToStringAsync；否则 sync renderToString。
+     * 意图：默认保持既有 sync 契约；加法开启异步资源排空。为何 stream 优先：流路径已含异步批次。
+     */
     let html: string;
     if (stream) {
       html = await viewStreamToHtml(rootFn);
+    } else if (asyncSSR) {
+      html = await renderToStringAsync(rootFn);
     } else {
       html = renderToString(rootFn);
     }

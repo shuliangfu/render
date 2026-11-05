@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [Unreleased] — planned 1.4.0 (version bump at §5.6 release)
+
+### Added
+
+- **HydrationOptions (view)**: passthrough `mismatchMode`, `bindings`,
+  `warnMismatch`, `onMismatch` to `@dreamer/view` `HydrateOptions`. Adapter
+  **default** remains `mismatchMode: "continue"` (not view 3.0 omit defaults).
+  Types: `ViewHydrationBinding`, `ViewHydrationMismatchMode`,
+  `ViewHydrationMismatch`.
+- **`createReactiveRootHydrate` 4th arg**: optional view hydrate fields.
+- **`SSROptions.asyncSSR`**: view-only; uses `renderToStringAsync` when `true`
+  (default sync `renderToString`). Ignored when `stream: true`.
+- **`view-csr`**: `mount` imported from `@dreamer/view/csr`.
+
+### Changed
+
+- **Dependencies**: `@dreamer/view` `^2.2.0` → `^3.0.0` (already on dirty tree).
+- **Docs**: require View ≥3.0; document that binding tables are produced by
+  dweb / `@dreamer/view/compiler` (this package only forwards).
+
+### Not in this release
+
+- React true undrained `renderSSRStream` (script/meta inject parity not wired;
+  keep buffered `stream: true` + view-only `renderSSRStream`).
+- Selective Suspense streaming; flipping library default hydrate mode to
+  assert/remount (would be render@2).
+
+---
+
 ## [1.3.0] - 2026-08-26
 
 ### Added

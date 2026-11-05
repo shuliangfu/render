@@ -6,6 +6,9 @@
  * @packageDocumentation
  *
  * **导出：** hydrate、buildViewTree、createReactiveRoot、createReactiveRootHydrate
+ *
+ * 水合：与完整 view 适配器一致，默认 `mismatchMode: "continue"`，并透传
+ * `bindings`／`warnMismatch`／`onMismatch`／显式严模式（view 3.0 R1／R3 省略时更严）。
  */
 
 import {
@@ -21,6 +24,7 @@ import type {
   HydrationOptions,
   LayoutComponent,
 } from "../types.ts";
+import { resolveViewHydrateOptions } from "../utils/view-hydrate-options.ts";
 import {
   handleRenderError,
   renderErrorFallback,
@@ -99,7 +103,7 @@ export { createReactiveRoot, createReactiveRootHydrate };
 /**
  * 用 View 引擎对服务端渲染的 HTML 做水合。
  *
- * @param options - 水合选项：component、props、container、layouts、skipLayouts、errorHandler、performance、debug
+ * @param options - 水合选项：component、props、container、layouts、skipLayouts、errorHandler、performance、debug、mismatchMode、bindings、warnMismatch、onMismatch
  * @returns 含 unmount、update、instance、performance 的结果；出错时返回含 unmount、instance 的对象
  * @throws 组件非法或容器未找到时抛出
  */
@@ -114,6 +118,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     performance: perfOptions,
     debug,
   } = options;
+  const viewHydrateOpts = resolveViewHydrateOptions(options);
 
   debugLog(debug, "hydrate", "view", {
     container: typeof container === "string" ? container : "HTMLElement",
@@ -157,10 +162,14 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
+    /**
+     * 默认 continue＋可透传 bindings／严模式（见 view.ts hydrate 与 resolveViewHydrateOptions）。
+     * hybrid 契约同「未传严模式时激活后保留 SSR 内容」。
+     */
     let currentDispose = viewHydrate(
       () => rootVNode,
       containerElement,
-      [],
+      viewHydrateOpts,
     ) as ViewRootDispose;
 
     debugLog(debug, "hydrate", "view hydrate complete");

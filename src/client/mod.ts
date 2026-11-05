@@ -25,6 +25,9 @@ export type {
   LayoutComponent,
   PerformanceMetrics,
   PerformanceOptions,
+  ViewHydrationBinding,
+  ViewHydrationMismatch,
+  ViewHydrationMismatchMode,
 } from "./types.ts";
 
 // Utils (advanced)

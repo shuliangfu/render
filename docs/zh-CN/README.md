@@ -49,7 +49,7 @@ npx jsr add @dreamer/render
 | **浏览器**  | 现代浏览器（ES2020+） | ✅ 支持（CSR、Hydration）                      |
 | **React**   | 18+                   | ✅ 完全支持                                    |
 | **Preact**  | 10+                   | ✅ 完全支持                                    |
-| **View**    | 1.0+                  | ✅ 完全支持（SSR、CSR、Hydration）             |
+| **View**    | ≥3.0                  | ✅ 完全支持（SSR、CSR、Hydration）             |
 | **依赖**    | -                     | 📦 需要对应的模板引擎包（React、Preact、View） |
 
 ---
@@ -59,10 +59,11 @@ npx jsr add @dreamer/render
 - **多模板引擎支持**：
   - React 18+ 支持
   - Preact 10+ 支持
-  - View 1.0+ 支持（@dreamer/view）
+  - View ≥3.0 支持（@dreamer/view）
   - 统一的渲染接口
 - **服务端渲染（SSR）**：
   - 在服务端将组件渲染为 HTML 字符串
+  - View 可选 `asyncSSR: true` → `@dreamer/view/ssr` `renderToStringAsync`
   - `renderSSR` 的 `stream: true` 为缓冲后字符串（各引擎均 drain）
   - **`renderSSRStream`**（仅 view）：真 `ReadableStream<Uint8Array>`；View 流为
     粗粒度（整页快照 + 可选再渲染），**不**宣称 Suspense 选择性流式。
@@ -79,6 +80,8 @@ npx jsr add @dreamer/render
   - 支持错误处理
   - 支持布局系统
 - **水合（Hydration）**：
+  - View：透传 `mismatchMode`／`bindings`／`warnMismatch`／`onMismatch`（适配器默认
+    `mismatchMode: "continue"`；真绑定表由 dweb／`@dreamer/view/compiler` 产出）
   - 将 SSR 生成的 HTML 与客户端 JS 连接
   - 恢复交互性
   - React 支持严格模式
@@ -715,6 +718,8 @@ interface PerformanceMetrics {
 ---
 
 ## 📋 变更日志
+
+**未发布（计划 1.4.x）**：依赖 View ≥3.0；水合选项透传；可选 `asyncSSR`；`view-csr` 走 `@dreamer/view/csr`。版本号留给 §5.6 发布再改。
 
 **v1.3.0**（2026-08-26）：**新增** `renderSSRStream`（仅 view 的
 `ReadableStream` SSR）与 `StreamRenderResult`。`renderSSR` 的缓冲

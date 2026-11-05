@@ -50,7 +50,7 @@ npx jsr add @dreamer/render
 | **Browser**      | Modern (ES2020+) | ✅ CSR, Hydration                               |
 | **React**        | 18+              | ✅ Full support                                 |
 | **Preact**       | 10+              | ✅ Full support                                 |
-| **View**         | 1.0+             | ✅ Full support (SSR, CSR, Hydration)           |
+| **View**         | ≥3.0             | ✅ Full support (SSR, CSR, Hydration)           |
 | **Dependencies** | -                | 📦 Requires template engine (React/Preact/View) |
 
 ---
@@ -60,11 +60,12 @@ npx jsr add @dreamer/render
 - **Multi-engine**:
   - React 18+
   - Preact 10+
-  - View 1.0+ (@dreamer/view)
+  - View ≥3.0 (@dreamer/view)
   - Unified render API
 - **SSR**:
   - Render components to HTML on server
   - Buffered `stream: true` on `renderSSR` (all engines drain to `html: string`)
+  - View optional `asyncSSR: true` → `@dreamer/view/ssr` `renderToStringAsync`
   - **`renderSSRStream`** (view-only): true `ReadableStream<Uint8Array>`; View
     stream is coarse (full snapshot then optional re-renders) — **not** Suspense
     selective streaming. Use `renderSSR()` for react/preact.
@@ -79,6 +80,9 @@ npx jsr add @dreamer/render
   - Connect SSR HTML with client JS
   - Restore interactivity
   - React strict mode, performance, error handling
+  - View: passthrough `mismatchMode` / `bindings` / `warnMismatch` / `onMismatch`
+    (adapter default `mismatchMode: "continue"`; real binding tables from dweb /
+    `@dreamer/view/compiler`)
 - **SSG**:
   - Pre-render routes to static HTML at build time
   - Multi-route, dynamic route expansion
@@ -482,8 +486,16 @@ Hydrate SSR HTML with client JS.
 | `strictMode`   | `boolean`                 | ❌       | Strict mode (React only)   |
 | `errorHandler` | `ErrorHandler`            | ❌       | Error handling             |
 | `performance`  | `PerformanceOptions`      | ❌       | Performance monitoring     |
+| `mismatchMode` | `"continue" \| "assert" \| "remount"` | ❌ | View only; default `continue` |
+| `bindings`     | `[number[], string][]`    | ❌       | View only; compiler table (forwarded) |
+| `warnMismatch` | `boolean`                 | ❌       | View only                  |
+| `onMismatch`   | `(info) => void`          | ❌       | View only                  |
 
 **Returns**: `HydrationResult` (unmount, update, metrics)
+
+**View note**: Binding tables are not generated here — use dweb /
+`@dreamer/view/compiler`. Omitting `mismatchMode` keeps adapter `"continue"`
+(2.x-tolerant), not view 3.0's DEV-assert / prod-remount defaults.
 
 **Note**: Browser only.
 
@@ -701,6 +713,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 ---
 
 ## 📋 Changelog
+
+**Unreleased (planned 1.4.x)**: View ≥3.0 dependency; hydration options
+passthrough (`mismatchMode` / `bindings` / …); optional `asyncSSR`;
+`view-csr` imports `@dreamer/view/csr`. Version bump deferred to release (§5.6).
 
 **v1.3.0** (2026-08-26): **Added** `renderSSRStream` (view-only `ReadableStream`
 SSR) and `StreamRenderResult`. Buffered `stream: true` on `renderSSR` unchanged.

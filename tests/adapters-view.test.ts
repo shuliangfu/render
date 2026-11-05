@@ -8,6 +8,7 @@
 import "./dom-setup-happy-dom.ts";
 import { assertRejects, describe, expect, it } from "@dreamer/test";
 import { jsx } from "@dreamer/view/jsx-runtime";
+import { registerSSRPromise } from "@dreamer/view/ssr";
 import * as viewAdapter from "../src/adapters/view.ts";
 
 describe("View 适配器", () => {
@@ -207,4 +208,36 @@ describe("View 适配器", () => {
       expect(metrics?.["phase"]).toBe("ssr");
     });
   }, { sanitizeOps: false, sanitizeResources: false });
+
+  describe("asyncSSR", () => {
+    it("默认不走 async：sync 路径仍可渲染", async () => {
+      const Component = () => jsx("div", { children: "sync-default" }, undefined);
+      const result = await viewAdapter.renderSSR({
+        engine: "view",
+        component: Component,
+      });
+      expect(result.html).toContain("sync-default");
+    });
+
+    it("asyncSSR: true 应走 renderToStringAsync 并排空 registerSSRPromise", async () => {
+      let resolved = false;
+      const Component = () => {
+        registerSSRPromise(
+          Promise.resolve().then(() => {
+            resolved = true;
+          }),
+        );
+        return jsx("section", { id: "async-ssr", children: "ok" }, undefined);
+      };
+      const result = await viewAdapter.renderSSR({
+        engine: "view",
+        component: Component,
+        asyncSSR: true,
+      });
+      expect(resolved).toBe(true);
+      expect(result.html).toContain('id="async-ssr"');
+      expect(result.html).toContain("ok");
+    });
+  }, { sanitizeOps: false, sanitizeResources: false });
+
 });

@@ -241,6 +241,13 @@ export interface SSROptions {
    * When omitted, locale is auto-detected from env (LANGUAGE/LC_ALL/LANG).
    */
   lang?: string;
+  /**
+   * View only: use `@dreamer/view/ssr` `renderToStringAsync` (drain registered
+   * SSR promises, then re-render). Default `false` keeps sync `renderToString`.
+   * Ignored when `stream: true` (stream path already awaits async batches).
+   * Other engines ignore this flag.
+   */
+  asyncSSR?: boolean;
   /** Engine-specific options */
   options?: Record<string, unknown>;
 }

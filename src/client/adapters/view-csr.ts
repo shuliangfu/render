@@ -1,6 +1,6 @@
 /**
  * View 客户端适配器 — 仅 CSR（mount、render、createReactiveRoot）。
- * 从主包导入 `mount`，不含 `hydrate`，便于 tree-shaking。
+ * 从 `@dreamer/view/csr` 导入 `mount`（不含 SSR），不含 `hydrate`，便于 tree-shaking。
  *
  * @module @dreamer/render/client/view-csr
  * @packageDocumentation
@@ -8,7 +8,8 @@
  * **导出：** renderCSR、buildViewTree（createReactiveRoot 见 @dreamer/render/client/view）
  */
 
-import { type JSXElementType, mount, type VNode } from "@dreamer/view";
+import { mount } from "@dreamer/view/csr";
+import type { JSXElementType, VNode } from "@dreamer/view";
 import { jsx } from "@dreamer/view/jsx-runtime";
 import type { CSROptions, CSRRenderResult, LayoutComponent } from "../types.ts";
 import {

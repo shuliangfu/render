@@ -24,7 +24,7 @@
   "dependencies": {
     "@dreamer/i18n": "npm:@jsr/dreamer__i18n@^1.1.2",
     "@dreamer/runtime-adapter": "npm:@jsr/dreamer__runtime-adapter@^1.2.2",
-    "@dreamer/view": "npm:@jsr/dreamer__view@^2.2.0",
+    "@dreamer/view": "npm:@jsr/dreamer__view@^3.0.0",
     "preact": "npm:preact@^10.29.2",
     "preact-render-to-string": "npm:preact-render-to-string@^6.6.7",
     "react": "npm:react@^19.2.6",
@@ -50,5 +50,8 @@
     "preact",
     "view",
     "dreamer"
-  ]
+  ],
+  "overrides": {
+    "@jsr/dreamer__runtime-adapter": "npm:@jsr/dreamer__runtime-adapter@^1.2.2"
+  }
 }

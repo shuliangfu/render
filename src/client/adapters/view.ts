@@ -4,8 +4,13 @@
  * @module @dreamer/render/client/view
  * @packageDocumentation
  *
- * 与当前 @dreamer/view 对齐：`mount` / `hydrate` 接收 `(fn, container[, bindings])`，
+ * 与当前 @dreamer/view 对齐：`mount` / `hydrate` 接收 `(fn, container[, bindings|HydrateOptions])`，
  * 返回根 `dispose`；`createRoot` 仅接受 `(dispose) => T`，配合 `insert(container, getter)` 做响应式根。
+ *
+ * 水合：view 3.0 R1／R3 省略 `mismatchMode` 时 DEV→assert／生产→remount；本适配器
+ * **默认**显式 `mismatchMode: "continue"`（可通过 HydrationOptions 透传覆盖），保持 2.x
+ * 容忍错位（SSR 节点保留；unmount 仅 dispose Owner）。`bindings`／`warnMismatch`／
+ * `onMismatch` 一并透传；真编译器绑定表由 dweb 产出。
  */
 
 import {
@@ -25,6 +30,10 @@ import type {
   HydrationOptions,
   LayoutComponent,
 } from "../types.ts";
+import {
+  resolveViewHydrateOptions,
+  type ViewHydrateOptionFields,
+} from "../utils/view-hydrate-options.ts";
 import {
   handleRenderError,
   renderErrorFallback,
@@ -116,15 +125,20 @@ export function createReactiveRoot<T>(
 
 /**
  * 先对已有 SSR DOM 做 internalHydrate，再 `insert(container, getter)` 绑定响应式树。
+ *
+ * @param hydrateOptions - 可选透传 view 水合字段；省略时默认 `mismatchMode: "continue"`
  */
 export function createReactiveRootHydrate<T>(
   container: Element,
   getState: () => T,
   buildTree: (state: T) => VNode,
+  hydrateOptions?: ViewHydrateOptionFields,
 ): { unmount: () => void; container: Element } {
+  const viewOpts = resolveViewHydrateOptions(hydrateOptions);
   const unmount = createRoot((dispose) => {
     stopHydration();
-    internalHydrate(container, []);
+    // 默认 continue（见 resolveViewHydrateOptions）；消费方可显式传 assert／remount／bindings。
+    internalHydrate(container, viewOpts.bindings, viewOpts);
     insert(container, () => buildTree(getState()));
     return dispose;
   }) as ViewRootDispose;
@@ -265,7 +279,7 @@ export function renderCSR(options: CSROptions): CSRRenderResult {
 /**
  * Hydrate server-rendered HTML with View engine.
  *
- * @param options - Hydration options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug
+ * @param options - Hydration options: component, props, container, layouts, skipLayouts, errorHandler, performance, debug, mismatchMode, bindings, warnMismatch, onMismatch
  * @returns Result with unmount, update, instance, performance; on error returns object with unmount, instance
  * @throws If component invalid or container not found
  */
@@ -280,6 +294,7 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
     performance: perfOptions,
     debug,
   } = options;
+  const viewHydrateOpts = resolveViewHydrateOptions(options);
 
   debugLog(debug, "hydrate", "view", {
     container: typeof container === "string" ? container : "HTMLElement",
@@ -323,11 +338,17 @@ export function hydrate(options: HydrationOptions): CSRRenderResult {
       componentConfig as { component: unknown; props: Record<string, unknown> },
     ) as VNode;
 
-    /** `hydrate(() => vnode, container)`：不先清空 SSR 节点，与 browser.hydrate 一致 */
+    /**
+     * `hydrate(() => vnode, container, opts)`：不先清空 SSR 节点，与 browser.hydrate 一致。
+     * 默认 `mismatchMode: "continue"`（resolveViewHydrateOptions）——意图：对齐 2.x 容忍错位；
+     * 不变量：未传严模式时 mismatch 不抛、不 remount；unmount 仅回收 Owner。
+     * 边界：bindings／warnMismatch／onMismatch／mismatchMode 均可由 HydrationOptions 覆盖；
+     * 为何不跟 3.0 省略默认：库层勿替应用决定 DEV 抛错或清空重挂。
+     */
     let currentDispose = viewHydrate(
       () => rootVNode,
       containerElement,
-      [],
+      viewHydrateOpts,
     ) as ViewRootDispose;
 
     debugLog(debug, "hydrate", "view hydrate complete");
