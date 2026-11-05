@@ -7,6 +7,25 @@
 
 ---
 
+## [1.5.0] - 2026-11-05
+
+### 变更
+
+- **Preact 11**：`preact` `^10.29.8` → `^11.1.1`；钉死
+  `preact-render-to-string@6.8.2`（Preact 11 新 VNode 标记所需；旧 6.7.x 在
+  Bun／Node 下 SSR 会吐空 HTML）。
+- **依赖**：`@dreamer/view` `^3.0.0` → `^3.0.1`；`happy-dom` `^20` → `^21.0.4`。
+- **测试**：Preact 浏览器 fixture 改为从包 import map 取 `preact`（原硬钉
+  `npm:preact@10.28.3`，与适配器双实例）。
+
+### 说明
+
+- 仍用 Preact 10 的消费方请升到 Preact ≥11，并配
+  `preact-render-to-string@≥6.8.2`。React／View 路径仍为 `react@^19.3.1`／
+  `@dreamer/view@^3.0.1`。
+
+---
+
 ## [1.4.0] - 2026-11-05
 
 ### 新增

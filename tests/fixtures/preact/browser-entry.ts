@@ -12,7 +12,7 @@ import {
   renderErrorFallback,
 } from "../../../src/client/mod.ts";
 import { PerformanceMonitor } from "../../../src/client/utils/performance.ts";
-import { h } from "npm:preact@10.28.3";
+import { h } from "preact";
 
 /** 挂到 globalName，供测试内通过 RenderClient 调用 renderCSR / hydrate；PreactH 用于构造 Preact 组件 */
 const RenderClient = {

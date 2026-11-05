@@ -714,15 +714,11 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**v1.4.0** (2026-11-05): **Changed** `@dreamer/view` `^3.0.0`. **Added** View
-hydration options passthrough (`mismatchMode` / `bindings` / …; adapter default
-`continue`), optional `asyncSSR`, and `view-csr` from `@dreamer/view/csr`. React
-undrained stream still skipped.
-
-**v1.3.0** (2026-08-26): **Added** `renderSSRStream` (view-only `ReadableStream`
-SSR) and `StreamRenderResult`. Buffered `stream: true` on `renderSSR` unchanged.
-Full history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md). Test report:
-[TEST_REPORT.md](./docs/en-US/TEST_REPORT.md).
+**v1.5.0** (2026-11-05): **Changed** `preact` → `^11.1.1` with
+`preact-render-to-string@6.8.2` (Preact 11 VNode marker); `@dreamer/view`
+`^3.0.1`; `happy-dom` `^21`. Browser fixture uses import-map `preact` (no hard
+pin to 10.x). Full history: [CHANGELOG.md](./docs/en-US/CHANGELOG.md). Test
+report: [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md).
 
 ---
 

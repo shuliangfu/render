@@ -720,13 +720,10 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**v1.4.0**（2026-11-05）：**变更** `@dreamer/view` `^3.0.0`。**新增** View
-水合选项透传（`mismatchMode`／`bindings`／…；适配器默认 `continue`）、可选
-`asyncSSR`、`view-csr` 自 `@dreamer/view/csr` 导入。React 真流仍跳过。
-
-**v1.3.0**（2026-08-26）：**新增** `renderSSRStream`（仅 view 的
-`ReadableStream` SSR）与 `StreamRenderResult`。`renderSSR` 的缓冲 `stream: true`
-不变。完整历史见 [CHANGELOG.md](./CHANGELOG.md)；测试报告见
+**v1.5.0**（2026-11-05）：**变更** `preact` → `^11.1.1`，配
+`preact-render-to-string@6.8.2`（Preact 11 VNode 标记）；`@dreamer/view`
+`^3.0.1`；`happy-dom` `^21`。浏览器 fixture 改走 import map 的 `preact`（不再
+硬钉 10.x）。完整历史见 [CHANGELOG.md](./CHANGELOG.md)；测试报告见
 [TEST_REPORT.md](./TEST_REPORT.md)。
 
 ---

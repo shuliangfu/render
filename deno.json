@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/render",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A rendering library for SSR, CSR, Hydration, and SSG, supporting React, Preact, and View.",
   "license": "Apache-2.0",
   "exports": {
@@ -52,16 +52,16 @@
     "@dreamer/i18n": "jsr:@dreamer/i18n@^1.1.2",
     "@dreamer/runtime-adapter": "jsr:@dreamer/runtime-adapter@^1.2.2",
     "@dreamer/test": "jsr:@dreamer/test@^1.2.3",
-    "@dreamer/view": "jsr:@dreamer/view@^3.0.0",
+    "@dreamer/view": "jsr:@dreamer/view@^3.0.1",
     "react": "npm:react@^19.3.1",
     "react-dom": "npm:react-dom@^19.3.1",
     "scheduler": "npm:scheduler@^0.27.0",
-    "preact": "npm:preact@^10.29.8",
-    "preact-render-to-string": "npm:preact-render-to-string@^6.8.2",
-    "happy-dom": "npm:happy-dom@^20.14.6"
+    "preact": "npm:preact@^11.1.1",
+    "preact-render-to-string": "npm:preact-render-to-string@6.8.2",
+    "happy-dom": "npm:happy-dom@^21.0.4"
   },
   "nodeModulesDir": "auto",
-  "minimumDependencyAge": "0",
+  "minimumDependencyAge": 0,
   "compilerOptions": {
     "lib": [
       "deno.window",

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.0] - 2026-11-05
+
+### Changed
+
+- **Preact 11**: bump `preact` `^10.29.8` → `^11.1.1`; pin
+  `preact-render-to-string@6.8.2` (required for Preact 11 VNode marker; older
+  6.7.x returns empty SSR HTML under Bun/Node).
+- **Dependencies**: `@dreamer/view` `^3.0.0` → `^3.0.1`; `happy-dom` `^20` →
+  `^21.0.4`.
+- **Tests**: Preact browser fixture imports `preact` from the package import map
+  (was hard-pinned `npm:preact@10.28.3`, dual-instance with adapter).
+
+### Notes
+
+- Consumers on Preact 10 should upgrade to Preact ≥11 with
+  `preact-render-to-string@≥6.8.2`. React / View paths unchanged at
+  `react@^19.3.1` / `@dreamer/view@^3.0.1`.
+
+---
+
 ## [1.4.0] - 2026-11-05
 
 ### Added
