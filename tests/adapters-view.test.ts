@@ -211,7 +211,8 @@ describe("View 适配器", () => {
 
   describe("asyncSSR", () => {
     it("默认不走 async：sync 路径仍可渲染", async () => {
-      const Component = () => jsx("div", { children: "sync-default" }, undefined);
+      const Component = () =>
+        jsx("div", { children: "sync-default" }, undefined);
       const result = await viewAdapter.renderSSR({
         engine: "view",
         component: Component,
@@ -239,5 +240,4 @@ describe("View 适配器", () => {
       expect(result.html).toContain("ok");
     });
   }, { sanitizeOps: false, sanitizeResources: false });
-
 });

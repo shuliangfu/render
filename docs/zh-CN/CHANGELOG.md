@@ -7,21 +7,22 @@
 
 ---
 
-## [未发布] — 计划 1.4.0（版本号在 §5.6 发布时再改）
+## [1.4.0] - 2026-11-05
 
 ### 新增
 
-- **HydrationOptions（view）**：透传 `mismatchMode`／`bindings`／`warnMismatch`／
-  `onMismatch` 至 `@dreamer/view` `HydrateOptions`。适配器**默认**仍为
-  `mismatchMode: "continue"`（不跟随 view 3.0 省略默认）。
+- **HydrationOptions（view）**：透传
+  `mismatchMode`／`bindings`／`warnMismatch`／ `onMismatch` 至 `@dreamer/view`
+  `HydrateOptions`。适配器**默认**仍为 `mismatchMode: "continue"`（不跟随 view
+  3.0 省略默认）。
 - **`createReactiveRootHydrate` 第四参**：可选 view 水合字段。
-- **`SSROptions.asyncSSR`**：仅 view；`true` 时走 `renderToStringAsync`（默认 sync）。
-  `stream: true` 时忽略。
+- **`SSROptions.asyncSSR`**：仅 view；`true` 时走 `renderToStringAsync`（默认
+  sync）。 `stream: true` 时忽略。
 - **`view-csr`**：自 `@dreamer/view/csr` 导入 `mount`。
 
 ### 变更
 
-- **依赖**：`@dreamer/view` `^2.2.0` → `^3.0.0`（脏树已含）。
+- **依赖**：`@dreamer/view` `^2.2.0` → `^3.0.0`。
 - **文档**：要求 View ≥3.0；标明绑定表由 dweb／compiler 产出，本包只透传。
 
 ### 本版不做

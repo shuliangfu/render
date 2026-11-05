@@ -80,9 +80,9 @@ npx jsr add @dreamer/render
   - Connect SSR HTML with client JS
   - Restore interactivity
   - React strict mode, performance, error handling
-  - View: passthrough `mismatchMode` / `bindings` / `warnMismatch` / `onMismatch`
-    (adapter default `mismatchMode: "continue"`; real binding tables from dweb /
-    `@dreamer/view/compiler`)
+  - View: passthrough `mismatchMode` / `bindings` / `warnMismatch` /
+    `onMismatch` (adapter default `mismatchMode: "continue"`; real binding
+    tables from dweb / `@dreamer/view/compiler`)
 - **SSG**:
   - Pre-render routes to static HTML at build time
   - Multi-route, dynamic route expansion
@@ -476,20 +476,20 @@ Hydrate SSR HTML with client JS.
 
 **Options**:
 
-| Param          | Type                      | Required | Description                |
-| -------------- | ------------------------- | -------- | -------------------------- |
-| `engine`       | `Engine`                  | ✅       | Engine type                |
-| `component`    | `unknown`                 | ✅       | Component (must match SSR) |
-| `props`        | `Record<string, unknown>` | ❌       | Props                      |
-| `container`    | `string \| HTMLElement`   | ✅       | Mount container            |
-| `layouts`      | `unknown[]`               | ❌       | Layouts                    |
-| `strictMode`   | `boolean`                 | ❌       | Strict mode (React only)   |
-| `errorHandler` | `ErrorHandler`            | ❌       | Error handling             |
-| `performance`  | `PerformanceOptions`      | ❌       | Performance monitoring     |
-| `mismatchMode` | `"continue" \| "assert" \| "remount"` | ❌ | View only; default `continue` |
-| `bindings`     | `[number[], string][]`    | ❌       | View only; compiler table (forwarded) |
-| `warnMismatch` | `boolean`                 | ❌       | View only                  |
-| `onMismatch`   | `(info) => void`          | ❌       | View only                  |
+| Param          | Type                                  | Required | Description                           |
+| -------------- | ------------------------------------- | -------- | ------------------------------------- |
+| `engine`       | `Engine`                              | ✅       | Engine type                           |
+| `component`    | `unknown`                             | ✅       | Component (must match SSR)            |
+| `props`        | `Record<string, unknown>`             | ❌       | Props                                 |
+| `container`    | `string \| HTMLElement`               | ✅       | Mount container                       |
+| `layouts`      | `unknown[]`                           | ❌       | Layouts                               |
+| `strictMode`   | `boolean`                             | ❌       | Strict mode (React only)              |
+| `errorHandler` | `ErrorHandler`                        | ❌       | Error handling                        |
+| `performance`  | `PerformanceOptions`                  | ❌       | Performance monitoring                |
+| `mismatchMode` | `"continue" \| "assert" \| "remount"` | ❌       | View only; default `continue`         |
+| `bindings`     | `[number[], string][]`                | ❌       | View only; compiler table (forwarded) |
+| `warnMismatch` | `boolean`                             | ❌       | View only                             |
+| `onMismatch`   | `(info) => void`                      | ❌       | View only                             |
 
 **Returns**: `HydrationResult` (unmount, update, metrics)
 
@@ -714,9 +714,10 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
-**Unreleased (planned 1.4.x)**: View ≥3.0 dependency; hydration options
-passthrough (`mismatchMode` / `bindings` / …); optional `asyncSSR`;
-`view-csr` imports `@dreamer/view/csr`. Version bump deferred to release (§5.6).
+**v1.4.0** (2026-11-05): **Changed** `@dreamer/view` `^3.0.0`. **Added** View
+hydration options passthrough (`mismatchMode` / `bindings` / …; adapter default
+`continue`), optional `asyncSSR`, and `view-csr` from `@dreamer/view/csr`. React
+undrained stream still skipped.
 
 **v1.3.0** (2026-08-26): **Added** `renderSSRStream` (view-only `ReadableStream`
 SSR) and `StreamRenderResult`. Buffered `stream: true` on `renderSSR` unchanged.

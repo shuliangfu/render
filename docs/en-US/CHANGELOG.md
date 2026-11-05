@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [Unreleased] — planned 1.4.0 (version bump at §5.6 release)
+## [1.4.0] - 2026-11-05
 
 ### Added
 
@@ -23,9 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- **Dependencies**: `@dreamer/view` `^2.2.0` → `^3.0.0` (already on dirty tree).
-- **Docs**: require View ≥3.0; document that binding tables are produced by
-  dweb / `@dreamer/view/compiler` (this package only forwards).
+- **Dependencies**: `@dreamer/view` `^2.2.0` → `^3.0.0`.
+- **Docs**: require View ≥3.0; document that binding tables are produced by dweb
+  / `@dreamer/view/compiler` (this package only forwards).
 
 ### Not in this release
 

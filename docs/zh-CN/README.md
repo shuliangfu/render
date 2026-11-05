@@ -80,7 +80,8 @@ npx jsr add @dreamer/render
   - 支持错误处理
   - 支持布局系统
 - **水合（Hydration）**：
-  - View：透传 `mismatchMode`／`bindings`／`warnMismatch`／`onMismatch`（适配器默认
+  - View：透传
+    `mismatchMode`／`bindings`／`warnMismatch`／`onMismatch`（适配器默认
     `mismatchMode: "continue"`；真绑定表由 dweb／`@dreamer/view/compiler` 产出）
   - 将 SSR 生成的 HTML 与客户端 JS 连接
   - 恢复交互性
@@ -719,11 +720,13 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
-**未发布（计划 1.4.x）**：依赖 View ≥3.0；水合选项透传；可选 `asyncSSR`；`view-csr` 走 `@dreamer/view/csr`。版本号留给 §5.6 发布再改。
+**v1.4.0**（2026-11-05）：**变更** `@dreamer/view` `^3.0.0`。**新增** View
+水合选项透传（`mismatchMode`／`bindings`／…；适配器默认 `continue`）、可选
+`asyncSSR`、`view-csr` 自 `@dreamer/view/csr` 导入。React 真流仍跳过。
 
 **v1.3.0**（2026-08-26）：**新增** `renderSSRStream`（仅 view 的
-`ReadableStream` SSR）与 `StreamRenderResult`。`renderSSR` 的缓冲
-`stream: true` 不变。完整历史见 [CHANGELOG.md](./CHANGELOG.md)；测试报告见
+`ReadableStream` SSR）与 `StreamRenderResult`。`renderSSR` 的缓冲 `stream: true`
+不变。完整历史见 [CHANGELOG.md](./CHANGELOG.md)；测试报告见
 [TEST_REPORT.md](./TEST_REPORT.md)。
 
 ---
