@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.3] - 2026-11-06
+
+### Changed
+
+- **Dependencies**: `@dreamer/view` `^3.0.3` → `^3.0.4` (DevTools float
+  default corner bottom-right).
+
 ## [1.5.2] - 2026-11-06
 
 ### Changed
