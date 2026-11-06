@@ -714,6 +714,8 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
+**v1.5.1** (2026-11-06): **Changed** `@dreamer/view` → `^3.0.2`.
+
 **v1.5.0** (2026-11-05): **Changed** `preact` → `^11.1.1` with
 `preact-render-to-string@6.8.2` (Preact 11 VNode marker); `@dreamer/view`
 `^3.0.1`; `happy-dom` `^21`. Browser fixture uses import-map `preact` (no hard
