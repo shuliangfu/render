@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.2] - 2026-11-06
+
+### Changed
+
+- **Dependencies**: `@dreamer/view` `^3.0.2` → `^3.0.3` (function-ref
+  schedule when disconnected; DevTools fab drag + hide-on-open; Affix SSG hydrate).
+
 ## [1.5.1] - 2026-11-06
 
 ### Changed
