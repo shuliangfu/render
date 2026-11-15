@@ -714,6 +714,8 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
+**v1.5.5** (2026-11-15): **Changed** `@dreamer/view` → `^3.1.0`.
+
 **v1.5.4** (2026-11-15): **Changed** `@dreamer/view` → `^3.0.6`, `preact` →
 `^11.2.0`, `@dreamer/test` → `^1.2.4`.
 

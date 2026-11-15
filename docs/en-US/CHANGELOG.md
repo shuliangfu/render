@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.5] - 2026-11-15
+
+### Changed
+
+- **Dependencies**: `@dreamer/view` `^3.0.6` → `^3.1.0` (style / URL / store
+  sanitizers, plus `@dreamer/view/escape`).
+
 ## [1.5.4] - 2026-11-15
 
 ### Changed
