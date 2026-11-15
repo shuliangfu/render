@@ -720,6 +720,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
+**v1.5.4**（2026-11-15）：**变更** `@dreamer/view` → `^3.0.6`，`preact` →
+`^11.2.0`，`@dreamer/test` → `^1.2.4`。
+
 **v1.5.3**（2026-11-06）：**变更** `@dreamer/view` → `^3.0.4`。
 
 **v1.5.2**（2026-11-06）：**变更** `@dreamer/view` → `^3.0.3`。

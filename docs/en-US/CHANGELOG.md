@@ -7,19 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.4] - 2026-11-15
+
+### Changed
+
+- **Dependencies**: `@dreamer/view` `^3.0.4` → `^3.0.6`; `preact` `^11.1.1` →
+  `^11.2.0`; `@dreamer/test` `^1.2.3` → `^1.2.4`.
+
 ## [1.5.3] - 2026-11-06
 
 ### Changed
 
-- **Dependencies**: `@dreamer/view` `^3.0.3` → `^3.0.4` (DevTools float
-  default corner bottom-right).
+- **Dependencies**: `@dreamer/view` `^3.0.3` → `^3.0.4` (DevTools float default
+  corner bottom-right).
 
 ## [1.5.2] - 2026-11-06
 
 ### Changed
 
-- **Dependencies**: `@dreamer/view` `^3.0.2` → `^3.0.3` (function-ref
-  schedule when disconnected; DevTools fab drag + hide-on-open; Affix SSG hydrate).
+- **Dependencies**: `@dreamer/view` `^3.0.2` → `^3.0.3` (function-ref schedule
+  when disconnected; DevTools fab drag + hide-on-open; Affix SSG hydrate).
 
 ## [1.5.1] - 2026-11-06
 
