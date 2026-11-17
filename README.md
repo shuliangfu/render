@@ -709,6 +709,9 @@ See [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md) for details.
 
 ## 📋 Changelog
 
+**v1.5.6** (2026-11-17): **Removed** automatic `window.__DATA__` injection.
+**Changed** `@dreamer/view` → `^3.1.2`.
+
 **v1.5.5** (2026-11-15): **Changed** `@dreamer/view` → `^3.1.0`.
 
 **v1.5.4** (2026-11-15): **Changed** `@dreamer/view` → `^3.0.6`, `preact` →

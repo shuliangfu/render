@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/render",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "A rendering library for SSR, CSR, Hydration, and SSG, supporting React, Preact, and View.",
   "license": "Apache-2.0",
   "exports": {

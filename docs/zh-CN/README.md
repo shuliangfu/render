@@ -713,6 +713,9 @@ interface PerformanceMetrics {
 
 ## 📋 变更日志
 
+**v1.5.6**（2026-11-17）：**移除** 自动注入 `window.__DATA__`。**变更**
+`@dreamer/view` → `^3.1.2`。
+
 **v1.5.5**（2026-11-15）：**变更** `@dreamer/view` → `^3.1.0`。
 
 **v1.5.4**（2026-11-15）：**变更** `@dreamer/view` → `^3.0.6`，`preact` →

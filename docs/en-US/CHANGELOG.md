@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.6] - 2026-11-17
+
+### Removed
+
+- SSR no longer injects `window.__DATA__` into the HTML. `load()` data remains
+  available on the render result as `pageData` / `layoutData`. Removed the
+  compression and lazy-loading helpers that only served that injection.
+
+### Changed
+
+- **Dependencies**: `@dreamer/view` `^3.1.0` → `^3.1.2`.
+
 ## [1.5.5] - 2026-11-15
 
 ### Changed
