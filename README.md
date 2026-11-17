@@ -70,7 +70,7 @@ npx jsr add @dreamer/render
     stream is coarse (full snapshot then optional re-renders) — **not** Suspense
     selective streaming. Use `renderSSR()` for react/preact.
   - HTML template wrapping
-  - Metadata, server data injection, layout system
+  - Metadata, `load` data, layout system
   - Script extraction and injection
 - **CSR**:
   - Render to DOM in browser
@@ -89,10 +89,10 @@ npx jsr add @dreamer/render
   - Auto sitemap.xml, robots.txt
 - **Advanced**:
   - Metadata (static, sync, async)
-  - Data injection via `load`
+  - `load` data (`pageData` / `layoutData`)
   - Layout system (nested, `inheritLayout = false`)
   - Script management, error handling, performance monitoring
-  - Metadata cache, compression, lazy-loading
+  - Metadata cache
   - Context API
 
 **Design**:
@@ -110,7 +110,7 @@ npx jsr add @dreamer/render
 - **SSG**: Blogs, docs, marketing pages
 - **Multi-engine**: Choose React, Preact, or View
 - **Metadata**: SEO, OG, Twitter Card
-- **Data injection**: Server → client
+- **`load` data**: Returned as `pageData` / `layoutData`
 - **Layout system**: Unified page layouts
 
 ---
@@ -315,7 +315,7 @@ const result = await renderSSR({
 });
 ```
 
-### Server Data Injection
+### Server `load` Data
 
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
@@ -341,10 +341,9 @@ const result = await renderSSR({
     params: { id: "123" },
   },
   template: "<html><body></body></html>",
-  // Data auto-injected before </head>
 });
 
-// Data auto-injected to window.__DATA__.page
+// load() data is returned as result.pageData / result.layoutData
 ```
 
 ### Layout System
@@ -436,9 +435,7 @@ Server-side render function. Uses the adapter for the specified engine.
 | `errorHandler`  | `ErrorHandler`            | ❌       | Error handling                         |
 | `performance`   | `PerformanceOptions`      | ❌       | Performance monitoring                 |
 | `metadataCache` | `CacheOptions`            | ❌       | Metadata cache                         |
-| `compression`   | `CompressionOptions`      | ❌       | Data compression                       |
 | `contextData`   | `ContextData`             | ❌       | Context API data                       |
-| `lazyData`      | `boolean`                 | ❌       | Enable lazy data loading               |
 
 **Returns**: Render result (HTML, metadata, data)
 
@@ -684,8 +681,6 @@ interface PerformanceMetrics {
 - **Streaming**: React, Preact, and View support streaming for faster first
   paint
 - **Metadata cache**: Optional cache to reduce repeated computation
-- **Data compression**: Reduce HTML size
-- **Lazy data loading**: Optimize first-screen performance
 - **Script priority**: Scripts sorted by priority
 - **Performance monitoring**: Built-in render timing
 - **Error handling**: Error capture and fallback
@@ -741,8 +736,7 @@ report: [TEST_REPORT.md](./docs/en-US/TEST_REPORT.md).
 - **Type safety**: Full TypeScript support
 - **Component exports**: `metadata`, `load`, `scripts`, `inheritLayout`
 - **Metadata merge**: Deep merge; page metadata overrides layout
-- **Data injection**: Auto-injected to `window.__DATA__`; access via
-  `globalThis.__DATA__`
+- **`load` data**: Returned on the render result as `pageData` / `layoutData`
 - **Layout system**: Single or nested layouts; `inheritLayout = false` to skip
 
 ---

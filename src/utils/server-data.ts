@@ -1,16 +1,11 @@
 /**
- * Server data utilities: extract load function, call it, generate data script.
+ * Server data utilities: extract load function and call it.
  *
  * @packageDocumentation
  */
 
 import { $tr } from "../i18n.ts";
-import type {
-  LoadContext,
-  LoadFunction,
-  Metadata,
-  ServerData,
-} from "../types.ts";
+import type { LoadContext, LoadFunction, ServerData } from "../types.ts";
 
 /**
  * Extract load function from component (direct or default.load).
@@ -64,63 +59,4 @@ export async function loadServerData(
     console.error($tr("error.loadFailed"), error);
     return null;
   }
-}
-
-/**
- * Generate data script that assigns window.__DATA__ with metadata, layout, page, route, etc.
- *
- * @param options - metadata, layoutData, pageData, route, url, params, etc.
- * @returns Script HTML string
- */
-export function generateDataScript(options: {
-  metadata: Metadata;
-  layoutData: ServerData;
-  pageData: ServerData;
-  route?: string;
-  url?: string;
-  params?: Record<string, string>;
-  layoutRoutes?: string[];
-  pageRoute?: string;
-  [key: string]: unknown;
-}): string {
-  const data: Record<string, unknown> = {
-    metadata: options.metadata,
-    layout: options.layoutData,
-    page: options.pageData,
-  };
-
-  if (options.route !== undefined) {
-    data.route = options.route;
-  }
-  if (options.url !== undefined) {
-    data.url = options.url;
-  }
-  if (options.params !== undefined) {
-    data.params = options.params;
-  }
-  if (options.layoutRoutes !== undefined) {
-    data.layoutRoutes = options.layoutRoutes;
-  }
-  if (options.pageRoute !== undefined) {
-    data.pageRoute = options.pageRoute;
-  }
-
-  const excludedKeys = [
-    "metadata",
-    "layoutData",
-    "pageData",
-    "route",
-    "url",
-    "params",
-    "layoutRoutes",
-    "pageRoute",
-  ];
-  for (const [key, value] of Object.entries(options)) {
-    if (!excludedKeys.includes(key)) {
-      data[key] = value;
-    }
-  }
-
-  const json = JSON.stringify(data);
-  return `<script>window.__DATA__ = ${json};</script>`;
 }

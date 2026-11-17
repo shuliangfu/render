@@ -9,15 +9,10 @@ import {
   generateCacheKey,
   getCachedMetadata,
 } from "../src/utils/cache.ts";
-import { compressData, decompressData } from "../src/utils/compression.ts";
 import {
   mergeContextMetadata,
   mergeContextServerData,
 } from "../src/utils/context.ts";
-import {
-  generateLazyDataScript,
-  shouldLazyLoad,
-} from "../src/utils/lazy-loading.ts";
 import {
   extractMetadata,
   generateMetaTags,
@@ -35,7 +30,6 @@ import {
 } from "../src/utils/scripts.ts";
 import {
   extractLoadFunction,
-  generateDataScript,
   loadServerData,
 } from "../src/utils/server-data.ts";
 
@@ -153,21 +147,6 @@ describe("工具函数测试", () => {
         url: "/test",
         data: "test",
       });
-    });
-
-    it("应该生成数据脚本", () => {
-      const script = generateDataScript({
-        metadata: { title: "测试" },
-        layoutData: { layout: "data" },
-        pageData: { page: "data" },
-        route: "/test",
-        url: "/test?foo=bar",
-        params: { id: "123" },
-      });
-
-      expect(script).toContain("window.__DATA__");
-      expect(script).toContain('"title":"测试"');
-      expect(script).toContain('"route":"/test"');
     });
   });
 
@@ -298,54 +277,6 @@ describe("工具函数测试", () => {
         expect(recordedMetrics.phase).toBe("ssr");
         expect(recordedMetrics.duration).toBeGreaterThanOrEqual(0);
       }
-    });
-  });
-
-  describe("compression 工具", () => {
-    it("应该压缩数据", () => {
-      const data = { large: "x".repeat(20000) };
-      const result = compressData(data, {
-        enabled: true,
-        threshold: 10240,
-      });
-
-      // 对于重复字符，压缩应该有效
-      expect(result).toBeDefined();
-      if (result) {
-        expect(result.compressedSize).toBeLessThan(result.originalSize);
-      }
-    });
-
-    it("应该解压数据", () => {
-      const data = { test: "value" };
-      const compressed = compressData(data, {
-        enabled: true,
-        threshold: 0,
-      });
-
-      if (compressed) {
-        const decompressed = decompressData(compressed.compressed);
-        expect(decompressed).toEqual(data);
-      }
-    });
-  });
-
-  describe("lazy-loading 工具", () => {
-    it("应该判断是否需要懒加载", () => {
-      const smallData = { data: "test" };
-      const largeData = { data: "x".repeat(20000) };
-
-      expect(shouldLazyLoad(smallData, 10240)).toBe(false);
-      expect(shouldLazyLoad(largeData, 10240)).toBe(true);
-    });
-
-    it("应该生成懒加载脚本", () => {
-      const data = { test: "value" };
-      const script = generateLazyDataScript(data);
-
-      expect(script).toContain("__DATA__");
-      expect(script).toContain("__DATA_LOADED__");
-      expect(script).toContain("DOMContentLoaded");
     });
   });
 

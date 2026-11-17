@@ -30,16 +30,11 @@ describe(
           engine: "react",
           component: Component,
           loadContext: { url: "/", params: {} },
-          compression: {
-            enabled: true,
-            threshold: 10240, // 10KB
-          },
         });
 
         expect(result.html).toBeDefined();
         expect(result.html).toContain("Large Data");
-        // 验证数据被注入
-        expect(result.html).toContain("window.__DATA__");
+        expect(result.pageData?.items).toHaveLength(10000);
       });
 
       it("应该能够处理大量元数据", async () => {
@@ -85,7 +80,7 @@ describe(
         });
 
         expect(result.html).toBeDefined();
-        expect(result.html).toContain("window.__DATA__");
+        expect(result.pageData).toBeDefined();
       });
     });
 

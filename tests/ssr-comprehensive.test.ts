@@ -1,6 +1,6 @@
 /**
  * SSR 全面测试
- * 覆盖所有 SSR 功能：元数据、数据注入、脚本、错误处理、性能监控、缓存、压缩等
+ * 覆盖所有 SSR 功能：元数据、load 数据、脚本、错误处理、性能监控、缓存等
  */
 
 import { assertRejects, describe, expect, it } from "@dreamer/test";
@@ -124,7 +124,7 @@ describe(
       });
     });
 
-    describe("数据注入", () => {
+    describe("load 数据", () => {
       it("应该支持页面 load 方法", async () => {
         const Component = () => "Content";
         Component.load = async (context: LoadContext) => ({
@@ -142,7 +142,6 @@ describe(
           pageData: "页面数据",
           url: "/test",
         });
-        expect(result.html).toContain("window.__DATA__");
       });
 
       it("应该支持布局 load 方法", async () => {
@@ -165,23 +164,6 @@ describe(
 
         expect(result.layoutData).toEqual({ layoutData: "布局数据" });
         expect(result.pageData).toEqual({ pageData: "页面数据" });
-        expect(result.html).toContain("window.__DATA__");
-      });
-
-      it("应该注入完整的数据对象", async () => {
-        const Component = () => "Content";
-        Component.load = async () => ({ data: "test" });
-
-        const result = await renderSSR({
-          engine: "react",
-          component: Component,
-          loadContext: { url: "/test?foo=bar", params: { id: "123" } },
-        });
-
-        expect(result.html).toContain("window.__DATA__");
-        expect(result.html).toContain('"route":"/test"');
-        expect(result.html).toContain('"url":"/test?foo=bar"');
-        expect(result.html).toContain('"params":{"id":"123"}');
       });
     });
 
@@ -403,72 +385,6 @@ describe(
         expect(cacheGetCount).toBeGreaterThan(0);
         expect(result2.fromCache).toBe(true);
         expect(result2.metadata?.title).toBe("缓存测试");
-      });
-    });
-
-    describe("数据压缩", () => {
-      it("应该压缩大数据", async () => {
-        const Component = () => "Content";
-        Component.load = async () => {
-          // 生成大于阈值的数据
-          return {
-            largeData: "x".repeat(20000), // 20KB
-          };
-        };
-
-        const result = await renderSSR({
-          engine: "react",
-          component: Component,
-          loadContext: { url: "/", params: {} },
-          compression: {
-            enabled: true,
-            threshold: 10240, // 10KB
-          },
-        });
-
-        expect(result.compressedSize).toBeDefined();
-        expect(result.originalSize).toBeDefined();
-        expect(result.compressedSize!).toBeLessThan(result.originalSize!);
-        expect(result.html).toContain("decompressData");
-      });
-
-      it("应该在小数据时不压缩", async () => {
-        const Component = () => "Content";
-        Component.load = async () => ({
-          smallData: "test",
-        });
-
-        const result = await renderSSR({
-          engine: "react",
-          component: Component,
-          loadContext: { url: "/", params: {} },
-          compression: {
-            enabled: true,
-            threshold: 10240,
-          },
-        });
-
-        expect(result.compressedSize).toBeUndefined();
-        expect(result.originalSize).toBeUndefined();
-      });
-    });
-
-    describe("数据懒加载", () => {
-      it("应该对大数据启用懒加载", async () => {
-        const Component = () => "Content";
-        Component.load = async () => ({
-          largeData: "x".repeat(20000),
-        });
-
-        const result = await renderSSR({
-          engine: "react",
-          component: Component,
-          loadContext: { url: "/", params: {} },
-          lazyData: true,
-        });
-
-        expect(result.html).toContain("__DATA_LOADED__");
-        expect(result.html).toContain("DOMContentLoaded");
       });
     });
 

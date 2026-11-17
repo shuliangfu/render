@@ -79,13 +79,11 @@ describe(
       const streamed = await readStreamText(streamResult.body);
 
       // Shared markers (stream scopes head/body separately so body scripts
-      // land before </body>; string inject may attach after head data-script)
+      // land before </body>)
       expect(streamed).toContain("Parity Body");
-      expect(streamed).toContain("window.__DATA__");
       expect(streamed).toContain("Parity Meta");
       expect(streamed).toContain("parity desc");
       expect(stringResult.html).toContain("Parity Body");
-      expect(stringResult.html).toContain("window.__DATA__");
       expect(stringResult.html).toContain('<script src="/client.js"></script>');
       expect(streamed).toContain('<script src="/client.js"></script>');
       expect(streamed.indexOf('<script src="/client.js"></script>'))
@@ -125,7 +123,6 @@ describe(
       const options = {
         engine: "view" as const,
         component: Page,
-        skipDataInjection: true,
       };
 
       const stringResult = await renderSSR(options);

@@ -70,7 +70,7 @@ npx jsr add @dreamer/render
     react/preact 请使用 `renderSSR()`。
   - 支持 HTML 模板包装
   - 支持元数据管理
-  - 支持服务端数据注入
+  - 支持通过 `load` 获取服务端数据
   - 支持布局系统
   - 支持脚本提取和注入
 - **客户端渲染（CSR）**：
@@ -96,14 +96,12 @@ npx jsr add @dreamer/render
   - 自动生成 robots.txt
 - **高级功能**：
   - 元数据管理（静态、同步、异步）
-  - 数据注入（通过 `load` 方法）
+  - 通过 `load` 获取数据（`pageData` / `layoutData`）
   - 布局系统（单层和多层嵌套，支持 `inheritLayout = false` 跳过）
   - 脚本管理（自动提取和注入）
   - 错误处理（错误捕获和降级）
   - 性能监控（渲染时间统计）
   - 元数据缓存（可选缓存机制）
-  - 数据压缩（减少 HTML 体积）
-  - 数据懒加载（优化首屏性能）
   - Context API（动态设置元数据和数据）
 
 **设计原则**：
@@ -121,7 +119,7 @@ npx jsr add @dreamer/render
 - **静态站点生成（SSG）**：博客、文档站点、营销页面
 - **多模板引擎支持**：根据项目需求选择 React、Preact 或 View
 - **元数据管理**：SEO 优化，社交分享（OG、Twitter Card）
-- **数据注入**：服务端数据传递到客户端
+- **`load` 数据**：通过 `pageData` / `layoutData` 返回
 - **布局系统**：统一的页面布局管理
 
 ---
@@ -322,11 +320,11 @@ const result = await renderSSR({
   engine: "react",
   component: Page,
   template: "<html><head></head><body></body></html>",
-  // 元数据、数据脚本、脚本标签会自动注入到合适位置
+  // 元数据和脚本标签会自动注入到合适位置
 });
 ```
 
-### 服务端数据注入
+### 服务端 `load` 数据
 
 ```typescript
 import { renderSSR } from "jsr:@dreamer/render";
@@ -352,10 +350,9 @@ const result = await renderSSR({
     params: { id: "123" },
   },
   template: "<html><body></body></html>",
-  // 数据会自动注入到 </head> 之前
 });
 
-// 数据会自动注入到 window.__DATA__.page
+// load() 的数据通过 result.pageData / result.layoutData 返回
 ```
 
 ### 布局系统
@@ -447,9 +444,7 @@ const result = await renderSSR({
 | `errorHandler`  | `ErrorHandler`            | ❌   | 错误处理选项                                     |
 | `performance`   | `PerformanceOptions`      | ❌   | 性能监控选项                                     |
 | `metadataCache` | `CacheOptions`            | ❌   | 元数据缓存选项                                   |
-| `compression`   | `CompressionOptions`      | ❌   | 数据压缩选项                                     |
 | `contextData`   | `ContextData`             | ❌   | Context API 数据                                 |
-| `lazyData`      | `boolean`                 | ❌   | 是否启用数据懒加载                               |
 
 **返回**：渲染结果，包含 HTML、元数据、数据等
 
@@ -690,8 +685,6 @@ interface PerformanceMetrics {
 
 - **流式渲染**：React、Preact、View 支持流式渲染，提高首屏性能
 - **元数据缓存**：可选的元数据缓存机制，减少重复计算
-- **数据压缩**：支持大数据压缩，减少 HTML 体积
-- **数据懒加载**：支持大数据懒加载，优化首屏性能
 - **脚本优先级**：支持脚本优先级排序，优化加载顺序
 - **性能监控**：内置性能监控，记录渲染时间
 - **错误处理**：完善的错误捕获和降级机制
@@ -748,8 +741,7 @@ interface PerformanceMetrics {
 - **组件导出约定**：组件可以导出 `metadata`、`load`、`scripts`、`inheritLayout`
   等属性
 - **元数据合并策略**：采用深度合并策略，页面的元数据会覆盖布局的元数据
-- **数据注入**：数据自动注入到 `window.__DATA__` 中，客户端可以通过
-  `globalThis.__DATA__` 访问
+- **`load` 数据**：通过渲染结果的 `pageData` / `layoutData` 返回
 - **布局系统**：支持单层和多层嵌套布局，可以通过 `inheritLayout = false`
   跳过布局
 

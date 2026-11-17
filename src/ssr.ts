@@ -15,10 +15,6 @@ import type {
 } from "./types.ts";
 import { cacheMetadata, getCachedMetadata } from "./utils/cache.ts";
 import {
-  compressData,
-  generateCompressedDataScript,
-} from "./utils/compression.ts";
-import {
   mergeContextMetadata,
   mergeContextServerData,
 } from "./utils/context.ts";
@@ -29,10 +25,6 @@ import {
   type StreamInjection,
 } from "./utils/html-stream-inject.ts";
 import { filterLayouts } from "./utils/layout.ts";
-import {
-  generateLazyDataScript,
-  shouldLazyLoad,
-} from "./utils/lazy-loading.ts";
 import {
   extractMetadata,
   generateRouteMetaTagsWithoutTitle,
@@ -50,11 +42,7 @@ import {
   generateScriptTags,
   mergeScripts,
 } from "./utils/scripts.ts";
-import {
-  extractLoadFunction,
-  generateDataScript,
-  loadServerData,
-} from "./utils/server-data.ts";
+import { extractLoadFunction, loadServerData } from "./utils/server-data.ts";
 import { $tr, type Locale } from "./i18n.ts";
 
 /** Shared SSR prep: layouts/load/metadata/scripts/injections. */
@@ -64,8 +52,6 @@ interface SSRPrepResult {
   pageData: Record<string, unknown>;
   fromCache: boolean;
   injections: StreamInjection[];
-  compressedSize?: number;
-  originalSize?: number;
   perfMonitor: ReturnType<typeof createPerformanceMonitor>;
 }
 
@@ -89,7 +75,6 @@ async function prepareSSR(options: SSROptions): Promise<SSRPrepResult> {
 
   const layoutMetadataList: Metadata[] = [];
   let layoutData: Record<string, unknown> = {};
-  const layoutRoutes: string[] = [];
   const layoutScripts: ScriptDefinition[][] = [];
 
   if (options.layouts && options.layouts.length > 0) {
@@ -120,19 +105,11 @@ async function prepareSSR(options: SSROptions): Promise<SSRPrepResult> {
       if (scripts.length > 0) {
         layoutScripts.push(scripts);
       }
-
-      if (layout.component && typeof layout.component === "object") {
-        const comp = layout.component as Record<string, unknown>;
-        if (typeof comp.route === "string") {
-          layoutRoutes.push(comp.route);
-        }
-      }
     }
   }
 
   let pageMetadata: Metadata | null = null;
   let pageData: Record<string, unknown> = {};
-  let pageRoute: string | undefined;
   let pageScripts: ScriptDefinition[] = [];
 
   if (!cachedMetadata) {
@@ -151,13 +128,6 @@ async function prepareSSR(options: SSROptions): Promise<SSRPrepResult> {
   }
 
   pageScripts = extractScripts(options.component);
-
-  if (options.component && typeof options.component === "object") {
-    const comp = options.component as Record<string, unknown>;
-    if (typeof comp.route === "string") {
-      pageRoute = comp.route;
-    }
-  }
 
   let mergedMetadata = cachedMetadata ||
     mergeMetadata(layoutMetadataList, pageMetadata);
@@ -186,42 +156,6 @@ async function prepareSSR(options: SSROptions): Promise<SSRPrepResult> {
   const scriptTagsHtml = generateScriptTags(allScripts);
   const asyncScriptLoaderHtml = generateAsyncScriptLoader(allScripts);
 
-  let dataScript = "";
-  let compressedSize: number | undefined;
-  let originalSize: number | undefined;
-
-  if (!options.skipDataInjection) {
-    const dataToInject = {
-      metadata: mergedMetadata,
-      layoutData,
-      pageData,
-      route: context.url.split("?")[0],
-      url: context.url,
-      params: context.params,
-      layoutRoutes,
-      pageRoute,
-    };
-
-    if (options.compression?.enabled) {
-      const compressed = compressData(dataToInject, options.compression);
-      if (compressed) {
-        dataScript = generateCompressedDataScript(
-          compressed.compressed,
-          compressed.originalSize,
-          compressed.compressedSize,
-        );
-        compressedSize = compressed.compressedSize;
-        originalSize = compressed.originalSize;
-      } else {
-        dataScript = generateDataScript(dataToInject);
-      }
-    } else if (options.lazyData && shouldLazyLoad(dataToInject)) {
-      dataScript = generateLazyDataScript(dataToInject);
-    } else {
-      dataScript = generateDataScript(dataToInject);
-    }
-  }
-
   const clientScriptsHtml =
     options.clientScripts && options.clientScripts.length > 0
       ? options.clientScripts.map((script) => {
@@ -246,12 +180,6 @@ async function prepareSSR(options: SSROptions): Promise<SSRPrepResult> {
       options: { type: "meta", inHead: true },
     });
   }
-  if (dataScript) {
-    injections.push({
-      content: dataScript,
-      options: { type: "data-script", inHead: true },
-    });
-  }
   if (scriptTagsHtml) {
     injections.push({ content: scriptTagsHtml, options: { type: "script" } });
   }
@@ -274,8 +202,6 @@ async function prepareSSR(options: SSROptions): Promise<SSRPrepResult> {
     pageData,
     fromCache: !!cachedMetadata,
     injections,
-    compressedSize,
-    originalSize,
     perfMonitor,
   };
 }
@@ -386,8 +312,6 @@ export async function renderSSR(options: SSROptions): Promise<RenderResult> {
     pageData: prep.pageData,
     performance: performanceMetrics,
     fromCache: prep.fromCache,
-    compressedSize: prep.compressedSize,
-    originalSize: prep.originalSize,
   };
 }
 

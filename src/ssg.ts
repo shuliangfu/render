@@ -193,7 +193,6 @@ export async function renderSSG(options: SSGOptions): Promise<string[]> {
         },
         layouts: layouts.length > 0 ? layouts : undefined,
         template,
-        skipDataInjection: !options.enableDataInjection,
         loadContext: {
           url: route,
           params: {},

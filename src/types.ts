@@ -171,18 +171,6 @@ export interface CacheOptions {
 }
 
 /**
- * Compression options (enabled, threshold, algorithm).
- */
-export interface CompressionOptions {
-  /** Enable compression */
-  enabled?: boolean;
-  /** Min size in bytes to compress */
-  threshold?: number;
-  /** Algorithm: gzip, deflate, brotli */
-  algorithm?: "gzip" | "deflate" | "brotli";
-}
-
-/**
  * Context API data (metadata + serverData).
  */
 export interface ContextData {
@@ -226,14 +214,8 @@ export interface SSROptions {
   performance?: PerformanceOptions;
   /** Metadata cache */
   metadataCache?: CacheOptions;
-  /** Compression options */
-  compression?: CompressionOptions;
   /** Context API data */
   contextData?: ContextData;
-  /** Enable lazy data loading */
-  lazyData?: boolean;
-  /** @internal Skip data injection (used by SSG) */
-  skipDataInjection?: boolean;
   /** Enable debug logging */
   debug?: boolean;
   /**
@@ -278,8 +260,6 @@ export interface SSGOptions {
   headInject?: string;
   /** Pure static HTML (no scripts) */
   pureHTML?: boolean;
-  /** Inject data into HTML for hydration */
-  enableDataInjection?: boolean;
   /** Generate sitemap.xml */
   generateSitemap?: boolean;
   /** Generate robots.txt */
@@ -319,10 +299,6 @@ export interface RenderResult {
   performance?: PerformanceMetrics;
   /** Whether result was from cache */
   fromCache?: boolean;
-  /** Compressed size (if compression used) */
-  compressedSize?: number;
-  /** Original size (if compression used) */
-  originalSize?: number;
 }
 
 /**

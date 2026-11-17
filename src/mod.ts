@@ -7,7 +7,7 @@
  * Provides SSR and SSG with React, Preact, and View engines. For CSR and Hydration use `@dreamer/render/client`.
  *
  * **Exports:** renderSSR, renderSSRStream, renderSSG, expandDynamicRoute, generateRobots, generateSitemap;
- * cache, compression, context, error-handler, html-inject, layout, lazy-loading, metadata, performance,
+ * cache, context, error-handler, html-inject, layout, metadata, performance,
  * scripts, server-data utils; types: SSROptions, RenderResult, StreamRenderResult, Engine, Metadata, etc.
  *
  * @example
@@ -24,7 +24,6 @@
 // Server-related type exports
 export type {
   CacheOptions,
-  CompressionOptions,
   ContextData,
   Engine,
   ErrorHandler,
@@ -66,11 +65,6 @@ export {
   setCache,
 } from "./utils/cache.ts";
 export {
-  compressData,
-  decompressData,
-  generateCompressedDataScript,
-} from "./utils/compression.ts";
-export {
   createContextProvider,
   mergeContextMetadata,
   mergeContextServerData,
@@ -91,10 +85,6 @@ export {
   shouldSkipLayouts,
 } from "./utils/layout.ts";
 export {
-  generateLazyDataScript,
-  shouldLazyLoad,
-} from "./utils/lazy-loading.ts";
-export {
   DWEB_ROUTE_META_ATTR,
   extractMetadata,
   generateMetaTags,
@@ -114,10 +104,6 @@ export {
   generateScriptTags,
   mergeScripts,
 } from "./utils/scripts.ts";
-export {
-  extractLoadFunction,
-  generateDataScript,
-  loadServerData,
-} from "./utils/server-data.ts";
+export { extractLoadFunction, loadServerData } from "./utils/server-data.ts";
 
 // Client DOM helpers (applyMetadata, updateTitle, etc.) live in @dreamer/render/client
